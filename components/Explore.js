@@ -76,30 +76,30 @@ const db = [
   {
     name: 'Richard Hendricks',
     tag:"",
-    img: require('./assets/download.jpeg')
+    img: require('../assets/download.jpeg')
   },
   {
     name: 'Erlich Bachman',
-    img: require('./assets/pic2.jpeg')
+    img: require('../assets/pic2.jpeg')
   },
   {
     name: 'Monica Hall',
-    img: require('./assets/pic3.jpeg')
+    img: require('../assets/pic3.jpeg')
   },
   {
     name: 'Jared Dunn',
-    img: require('./assets/pic4.jpeg')
+    img: require('../assets/pic4.jpeg')
   },
   {
     name: 'Dinesh Chugtai',
-    img: require('./assets/pic5.jpeg')
+    img: require('../assets/pic5.jpeg')
   }
 ]
 
 const alreadyRemoved = [];
 let charactersState = db; // This fixes issues with updating characters state forcing it to use the current state and not the state that was active when the card was created.
 
-const Advanced = () => {
+const Explore = () => {
   const [characters, setCharacters] = useState(db);
   const [lastDirection, setLastDirection] = useState();
 
@@ -146,4 +146,4 @@ const Advanced = () => {
   )
 }
 
-export default Advanced;
+export default Explore;
