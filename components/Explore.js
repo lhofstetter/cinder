@@ -60,46 +60,53 @@ const styles = {
     P(L) = P(M) * P(C) * P(T)
     where P(L) = Probability of user liking clothing,
     P(M) = Probability of it being in the users price range
-    P(C) = Probability of it being a category the user is looking for,
-    P(T) = Probability of it being tagged with similar tags to what the user is looking for
+    P(C) = Probability of it being a category the user has liked in the past,
+    P(T) = Probability of it being tagged with similar tags the user has liked
     
 
     item
     {
         "listing_name": String,
+        "id": (32-bit Unique) AlphaNumeric String
         "price": Number,
         "categories": Array of Strings, each containing a category name
-        ""
+        "tags": Array of Strings, each containing a tag name
+        "swap-compatible": Boolean
     }
+
+    user
 */
 const db = [
   {
-    name: 'Richard Hendricks',
-    tag:"",
-    img: require('../assets/download.jpeg')
+    name: 'Dark Jeans, barely worn',
+    categories:["jeans", "dark", "cotton"],
+    tags: ["like new"],
+    price: 12,
+    swapCompatible:true,
+    img: require('./assets/download.jpeg')
   },
   {
     name: 'Erlich Bachman',
-    img: require('../assets/pic2.jpeg')
+    img: require('./assets/pic2.jpeg')
   },
   {
     name: 'Monica Hall',
-    img: require('../assets/pic3.jpeg')
+    img: require('./assets/pic3.jpeg')
   },
   {
     name: 'Jared Dunn',
-    img: require('../assets/pic4.jpeg')
+    img: require('./assets/pic4.jpeg')
   },
   {
     name: 'Dinesh Chugtai',
-    img: require('../assets/pic5.jpeg')
+    img: require('./assets/pic5.jpeg')
   }
 ]
 
 const alreadyRemoved = [];
 let charactersState = db; // This fixes issues with updating characters state forcing it to use the current state and not the state that was active when the card was created.
 
-const Explore = () => {
+const Advanced = ({navigation}) => {
   const [characters, setCharacters] = useState(db);
   const [lastDirection, setLastDirection] = useState();
 
@@ -146,4 +153,4 @@ const Explore = () => {
   )
 }
 
-export default Explore;
+export default Advanced;
