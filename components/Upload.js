@@ -35,7 +35,7 @@ export default function UploadItem() {
     const { showActionSheetWithOptions } = useActionSheet();
 
     const UploadImage = asUploadButton((props) => {
-        return (<ImageBackground {...props} source={require('../assets/Upload_Icon.png')} style={styles.uploadborder}>
+        return (<ImageBackground {...props} source={require('../assets/Upload_Icon.png')} style={styles.uploadborder}><Text></Text>
             </ImageBackground>);
     });
 
@@ -53,19 +53,19 @@ export default function UploadItem() {
                                 cancelButtonIndex:2,
                             }, (selectedIndex) => {
                                 switch (selectedIndex) {
-                                  case 1:
+                                  case 0:
                                     launchImageLibrary({noData: true}, (response) => {
 
                                     });
                                     break;
                           
-                                  case 2:
+                                  case 1:
                                     launchCamera({mediaType:'photo'}, (response) => {
 
                                     });
                                     break;
                           
-                                  case 3:
+                                  case 2:
                                     
                                     break;
                                 }});
