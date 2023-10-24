@@ -3,13 +3,14 @@ import UploadItem from "./components/Upload.js";
 import Explore from "./components/Explore.js";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Button, View, Text } from "react-native";
+import { Button, View, Text, Platform } from "react-native";
 import { SafeAreaView } from "react-native";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
 function Swipe({ navigation }) {
     return (
         <>
-            <Explore />
+            <Explore/>
             <Button
                 title="Upload"
                 onPress={() => navigation.navigate("Upload")}
@@ -25,14 +26,30 @@ function Upload() {
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-    return (
-        <SafeAreaView>
-            <NavigationContainer>
-                <Stack.Navigator initialRouteName="Swipe">
-                    <Stack.Screen name="Swipe" component={Swipe} />
-                    <Stack.Screen name="Upload" component={Upload} />
-                </Stack.Navigator>
-            </NavigationContainer>
-        </SafeAreaView>
-    );
+    if (Platform.OS == 'ios') {
+        return (
+            <SafeAreaView>
+                <ActionSheetProvider>
+                    <NavigationContainer>
+                        <Stack.Navigator initialRouteName="Swipe">
+                            <Stack.Screen name="Swipe" component={Swipe} />
+                            <Stack.Screen name="Upload" component={Upload} />
+                        </Stack.Navigator>
+                    </NavigationContainer>
+                </ActionSheetProvider>
+            </SafeAreaView>
+        );
+    } else {
+        return (
+            <ActionSheetProvider>
+                <NavigationContainer>
+                    <Stack.Navigator initialRouteName="Swipe">
+                        <Stack.Screen name="Swipe" component={Swipe} />
+                        <Stack.Screen name="Upload" component={Upload} />
+                     </Stack.Navigator>
+                </NavigationContainer>
+            </ActionSheetProvider>
+        );
+    }
+   
 }

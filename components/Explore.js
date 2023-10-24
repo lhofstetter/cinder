@@ -83,23 +83,23 @@ const db = [
     tags: ["like new"],
     price: 12,
     swapCompatible:true,
-    img: require('./assets/download.jpeg')
+    img: require('../assets/download.jpeg')
   },
   {
     name: 'Erlich Bachman',
-    img: require('./assets/pic2.jpeg')
+    img: require('../assets/pic2.jpeg')
   },
   {
     name: 'Monica Hall',
-    img: require('./assets/pic3.jpeg')
+    img: require('../assets/pic3.jpeg')
   },
   {
     name: 'Jared Dunn',
-    img: require('./assets/pic4.jpeg')
+    img: require('../assets/pic4.jpeg')
   },
   {
     name: 'Dinesh Chugtai',
-    img: require('./assets/pic5.jpeg')
+    img: require('../assets/pic5.jpeg')
   }
 ]
 
