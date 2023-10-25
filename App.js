@@ -21,8 +21,8 @@ export default function App() {
     return (
         <ActionSheetProvider>
             <NavigationContainer>
-                <Stack.Navigator initialRouteName="Swipe">
-                    <Stack.Screen name="Swipe" component={Swipe} />
+                <Stack.Navigator initialRouteName="Swipe" screenOptions={{presentation: "modal"}}>
+                    <Stack.Screen name="Swipe" component={Swipe} options={{ headerShown: false }} />
                     <Stack.Screen name="Upload" component={Upload} />
                 </Stack.Navigator>
             </NavigationContainer>
