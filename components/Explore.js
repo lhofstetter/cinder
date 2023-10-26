@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react'
-import { ImageBackground, Text, View, Button } from 'react-native'
+import { ImageBackground, Text, View, Button, Pressable, useWindowDimensions } from 'react-native'
 import TinderCard from 'react-tinder-card'
 
-const styles = {
+let styles = {
   container: {
     display: 'flex',
     alignItems: 'center',
@@ -22,7 +22,6 @@ const styles = {
   },
   card: {
     position: 'absolute',
-    backgroundColor: '#fff',
     width: '100%',
     maxWidth: 400,
     height: 400,
@@ -31,6 +30,7 @@ const styles = {
     shadowRadius: 20,
     borderRadius: 20,
     resizeMode: 'cover',
+    zIndex:-100,
   },
   cardImage: {
     width: '100%',
@@ -54,7 +54,15 @@ const styles = {
     justifyContent: 'center',
     display: 'flex',
     zIndex: -100,
-  }
+  },
+  likeOrDislikeText: {
+    textAlign:'center',
+    color: '#fff',
+    fontSize: 30,
+    marginTop: 175,
+    position:'relative',
+    zIndex:100,
+  },
 }
 /*
     P(L) = P(M) * P(C) * P(T)
@@ -109,17 +117,17 @@ let charactersState = db; // This fixes issues with updating characters state fo
 const Advanced = ({navigation}) => {
   const [characters, setCharacters] = useState(db);
   const [lastDirection, setLastDirection] = useState();
+  const [color, setColor] = useState([null, 1.0, '#fff', ""]);
+  const {height, width} = useWindowDimensions();
 
   const childRefs = useMemo(() => Array(db.length).fill(0).map(i => React.createRef()), []);
 
   const swiped = (direction, nameToDelete) => {
-    console.log('removing: ' + nameToDelete + ' to the ' + direction);
     setLastDirection(direction);
     alreadyRemoved.push(nameToDelete);
   }
 
   const outOfFrame = (name) => {
-    console.log(name + ' left the screen!');
     charactersState = charactersState.filter(character => character.name !== name);
     setCharacters(charactersState);
   }
@@ -139,16 +147,61 @@ const Advanced = ({navigation}) => {
       <Text style={styles.header}>Cinder</Text>
       <View style={styles.cardContainer}>
         {characters.map((character, index) =>
-          <TinderCard ref={childRefs[index]} key={character.name} onSwipe={(dir) => swiped(dir, character.name)} onCardLeftScreen={() => outOfFrame(character.name)}>
-            <View style={styles.card}>
-              <ImageBackground style={styles.cardImage} source={character.img}>
-                <Text style={styles.cardTitle}>{character.name}</Text>
-              </ImageBackground>
-            </View>
-          </TinderCard>
+        <Pressable key={character.name} ref={childRefs[index]}
+          onTouchStart={(event) => {
+            setColor([[event.nativeEvent.pageX, event.nativeEvent.pageY], 1.0, '#fff', ""]);
+          }}
+          
+        onTouchMove={(event) => {
+          if (color[0] != null) {
+            if (event.nativeEvent.pageX - color[0][0] > 50) { // moving to the right
+              let xRatio; 
+              
+              xRatio = ((event.nativeEvent.pageX) / width);
+              setColor([color[0], 1.0 - xRatio, '#00FF00', "Slay"]);
+            } else if (event.nativeEvent.pageX - color[0][0] < -50) {
+              let xRatio; 
+               
+              xRatio = (1 / ((event.nativeEvent.pageX)/(width / 16)));
+              setColor([color[0], (1.0 - xRatio), '#FF0000', "Nay"]);
+            } else {
+              setColor([color[0], 1.0, '#fff', ""]);
+            }
+          }
+        }} onMouseMove={(event) => {
+          if (color[0] != null) {
+            if (event.nativeEvent.pageX - color[0][0] > 100) { // moving to the right
+              let xRatio; 
+              
+              xRatio = ((event.nativeEvent.pageX - 100) / width);
+              setColor([color[0], 1.0 - xRatio, '#00FF00', "Slay"]);
+            } else if (event.nativeEvent.pageX - color[0][0] < -100) { // moving to the left
+                let xRatio; 
+               
+                xRatio = (1 / ((event.nativeEvent.pageX)/(width / 8)));
+                setColor([color[0], (1.0 - xRatio), '#FF0000', "Nay"]);
+            } else {
+                setColor([color[0], 1.0, '#fff', ""]);
+            }
+        }}} onPressIn={(event) => {
+            setColor([[event.nativeEvent.pageX, event.nativeEvent.pageY], 1.0, '#fff', ""]);
+        }} onTouchEnd={() => {
+          setColor([null, 1.0, '#fff', ""]);
+        }}
+        onPressOut={() => {
+            setColor([null, 1.0, '#fff', ""]);
+        }}>
+            <TinderCard ref={childRefs[index]} key={character.name} onSwipe={(dir) => swiped(dir, character.name)} onCardLeftScreen={() => outOfFrame(character.name)}>
+              <View style={[styles.card, {backgroundColor: color[2]}]}>
+                <ImageBackground style={[styles.cardImage, {opacity: color[1]}]} source={character.img}>
+                  <Text style={styles.cardTitle}>{character.name}</Text>
+                  <Text style={styles.likeOrDislikeText}>{color[3]}</Text>
+                </ImageBackground>
+              </View>
+            </TinderCard>
+          </Pressable>
         )}
       </View>
-      {lastDirection ? <Text style={styles.infoText} key={lastDirection}>You swiped {lastDirection}</Text> : <Text style={styles.infoText}>Swipe a card or press a button to get started!</Text>}
     </View>
   )
 }

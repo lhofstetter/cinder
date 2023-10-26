@@ -55,7 +55,9 @@ export default function UploadItem() {
                                 switch (selectedIndex) {
                                   case 0:
                                     launchImageLibrary({noData: true}, (response) => {
-
+                                        if (response.assets != null) {
+                                            
+                                        }
                                     });
                                     break;
                           
