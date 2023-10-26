@@ -6,17 +6,24 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "db:push": "bunx drizzle-kit push:sqlite",
+    "db:studio": "bunx drizzle-kit studio"
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^4.0.1",
     "@expo/webpack-config": "^19.0.0",
+    "@libsql/client": "^0.3.6",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.16",
     "@react-spring/native": "^9.7.3",
     "@react-spring/web": "^9.5.5",
     "@rpldy/upload-button": "^1.6.0",
     "@rpldy/uploady": "^1.6.0",
+    "@types/express": "^4.17.20",
+    "better-sqlite3": "^9.0.0",
+    "dotenv": "^16.3.1",
+    "drizzle-orm": "^0.28.6",
     "expo": "~49.0.15",
     "expo-splash-screen": "^0.20.5",
     "expo-status-bar": "~1.6.0",
@@ -29,10 +36,12 @@
     "react-native-screens": "^3.27.0",
     "react-native-web": "^0.19.9",
     "react-spring": "^8.0.27",
-    "react-tinder-card": "^1.4.5"
+    "react-tinder-card": "^1.4.5",
+    "typescript": "^5.2.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "drizzle-kit": "^0.19.13"
   },
   "private": true
 }
