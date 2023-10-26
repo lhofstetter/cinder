@@ -8,8 +8,8 @@ const envFilePath = path.resolve(__dirname, "../../.env");
 dotenv.config({ path: envFilePath });
 
 const client = createClient({
-    url: process.env.DATABASE_URL!,
-    authToken: process.env.DATABASE_TOKEN,
+  url: process.env.DATABASE_URL!,
+  authToken: process.env.DATABASE_TOKEN,
 });
 
 export const db = drizzle(client, { schema, logger: true });

@@ -8,24 +8,49 @@ import { SafeAreaView } from "react-native";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
 function Swipe({ navigation }) {
-    return (Platform.OS == 'ios' ? <SafeAreaView><Explore/><Button title="Upload" onPress={() => navigation.navigate("Upload")}/></SafeAreaView> : <><Explore/><Button title="Upload" onPress={() => navigation.navigate("Upload")}/></>);
+  return Platform.OS == "ios" ? (
+    <SafeAreaView>
+      <Explore />
+      <Button title="Upload" onPress={() => navigation.navigate("Upload")} />
+    </SafeAreaView>
+  ) : (
+    <>
+      <Explore />
+      <Button title="Upload" onPress={() => navigation.navigate("Upload")} />
+    </>
+  );
 }
 
 function Upload() {
-    return (Platform.OS == 'ios' ? <SafeAreaView><UploadItem/></SafeAreaView> : <><UploadItem/></>);
+  return Platform.OS == "ios" ? (
+    <SafeAreaView>
+      <UploadItem />
+    </SafeAreaView>
+  ) : (
+    <>
+      <UploadItem />
+    </>
+  );
 }
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-    return (
-        <ActionSheetProvider>
-            <NavigationContainer>
-                <Stack.Navigator initialRouteName="Swipe" screenOptions={{presentation: "modal"}}>
-                    <Stack.Screen name="Swipe" component={Swipe} options={{ headerShown: false }} />
-                    <Stack.Screen name="Upload" component={Upload} />
-                </Stack.Navigator>
-            </NavigationContainer>
-        </ActionSheetProvider>
-    );
+  return (
+    <ActionSheetProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Swipe"
+          screenOptions={{ presentation: "modal" }}
+        >
+          <Stack.Screen
+            name="Swipe"
+            component={Swipe}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="Upload" component={Upload} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ActionSheetProvider>
+  );
 }
