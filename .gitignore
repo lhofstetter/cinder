@@ -1,5 +1,4 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-server/server.js
 
 # dependencies
 node_modules/
@@ -36,5 +35,6 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+server/server.js
 server/db/*.js
 drizzle.config.js
