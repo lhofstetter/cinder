@@ -76,10 +76,18 @@ app.post("/echoimage", async (req: Request, res: Response) => {
 type Category = "top" | "bottom" | "accessory" | "shoes";
 interface ListingFormData {
   listing_name: string;
-  price: string;
+  price?: string;
   description: string;
   category: Category;
 }
+
+/**
+ * Creates a listing for an item of clothing to be published on cinder
+ *
+ * @route POST /listing
+ * @param {file: Binary, listing_name: string, price?: number, description: string, category: Category} reqBody
+ * @returns {JSON} - status 200 or 500 with JSON containing either {"message"": "OK"} or an error
+ */
 app.post("/listing", async (req: Request, res: Response) => {
   // Extract the images from the request
   try {
@@ -87,11 +95,11 @@ app.post("/listing", async (req: Request, res: Response) => {
     for (const file of req.files?.file as { data: Buffer; name: string }[]) {
       imageUrlPromises.push(getUrlForImage(file?.data, file?.name));
     }
-    // await reply with url links to each image
+    // Await reply with url links to each image
     const imageUrls: string[] = await Promise.all(imageUrlPromises);
     const listingFormData: ListingFormData = req.body;
 
-    // update db
+    // Update DB
     const [{ inserted_id }] = await db
       .insert(listings)
       .values({
@@ -114,11 +122,25 @@ app.post("/listing", async (req: Request, res: Response) => {
 
 app.listen(3000, () => console.log("Server started on port 3000"));
 
+/**
+ * Gets the url for the provided image after it has been uploaded
+ *
+ * @param {string} name - The name of the image
+ * @param {Buffer} image - The binary of the image data
+ * @returns {string} - The url of the image
+ */
 async function getUrlForImage(image: Buffer, name: string) {
   const apiRes = await uploadImage(image, name);
   return apiRes.data?.data?.link as string;
 }
 
+/**
+ * Uploads an image to imgur
+ *
+ * @param {string} name - The name of the image
+ * @param {Buffer} image - The binary of the image data
+ * @returns {AxiosResponse | AxiosError}
+ */
 async function uploadImage(image: Buffer, name: string) {
   return await axios.post(
     "https://api.imgur.com/3/image",
