@@ -7,7 +7,7 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 ## Running the application in a development environment
 
 1. `npm install --force --save`
-2. `npx tsc` 
+2. `npx tsc`
 3. `node server/server.js`
 4. `npm start`
 
