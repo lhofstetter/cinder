@@ -3,11 +3,9 @@ import {
   ImageBackground,
   Text,
   View,
-  Button,
   Image,
   Pressable,
   Platform,
-  ActionSheetIOS,
 } from "react-native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import { useActionSheet } from "@expo/react-native-action-sheet";
@@ -17,7 +15,6 @@ import {
   useItemProgressListener,
   useUploady,
 } from "@rpldy/uploady";
-import { UploadButton, asUploadButton } from "@rpldy/upload-button";
 
 let styles = {
   container: {
@@ -40,55 +37,98 @@ let styles = {
   uploadborder: {
     display: "flex",
   },
+  listingText: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
 };
+
+function DisplayPhoto(imageData, width, height) {
+  if (width != null && height != null) {
+    if (Platform.OS == "web") {
+      console.log(imageData);
+      return (
+        <img
+          src={imageData.imageData}
+          style={{ borderRadius: 10 }}
+          width={width}
+          height={height}
+          alt={"image thingy"}
+        />
+      );
+    } else {
+      return (
+        <Image
+          source={{ uri: imageData.uri }}
+          style={[styles.uploadborder, { width: width, height: height }]}
+          height={height}
+          width={width}
+          borderRadius={10}
+        />
+      );
+    }
+  } else {
+    if (Platform.OS == "web") {
+      console.log(imageData);
+      return (
+        <img
+          src={imageData.imageData}
+          style={{ borderRadius: 10 }}
+          width={400}
+          height={600}
+          alt={"image thingy"}
+        />
+      );
+    } else {
+      return (
+        <Image
+          source={{ uri: imageData.uri }}
+          style={[{ display: "flex", width: width, height: height }]}
+          height={600}
+          width={400}
+          borderRadius={10}
+        />
+      );
+    }
+  }
+}
 
 export default function UploadItem() {
   const [upload, setUpload] = useState(false); // create a state for whether we are currently uploading or not (whether user has hit the uplaod button)
   const { showActionSheetWithOptions } = useActionSheet();
   const [itemImage, setItemImage] = useState(null);
+  let inputElement;
 
-  const UploadImage = asUploadButton((props) => {
-    useItemFinishListener((item) => {
-      console.log(item.uploadResponse.data);
-      let binary = "";
-      let bytes = new Uint8Array(item.uploadResponse.data.file.data.data);
-      let len = bytes.byteLength;
-      for (let i = 0; i < len; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      let img = window.btoa(binary);
-      let w, h;
-      Image.getSize(
-        "data:" + item.file.type + ";base64," + img,
-        (width, height) => {
-          h = height;
-          w = width;
-        },
-      );
-      setItemImage([img, item.file.type, [w, h]]);
-    });
-
-    return itemImage == null ? (
-      <ImageBackground
-        {...props}
-        source={require("../assets/Upload_Icon.png")}
-        style={[styles.uploadborder, { width: 100, height: 100 }]}
-      >
-        <Text></Text>
-      </ImageBackground>
-    ) : (
-      <ImageBackground
-        {...props}
-        source={{ uri: "data:" + itemImage[1] + ";base64," + itemImage[0] }}
-        style={[
-          styles.uploadborder,
-          { width: itemImage[2][0], height: itemImage[2][1] },
-        ]}
-      >
-        <Text></Text>
-      </ImageBackground>
+  const UploadImage = (props) => {
+    const handleClick = (event) => {
+      inputElement.click();
+    };
+    return (
+      <Pressable onPressIn={handleClick}>
+        <ImageBackground
+          {...props}
+          source={require("../assets/Upload_Icon.png")}
+          style={[styles.uploadborder, { width: 100, height: 100 }]}
+        >
+          {Platform.OS == "web" ? (
+            <input
+              name="image"
+              type="file"
+              style={{ opacity: 0.0 }}
+              ref={(input) => (inputElement = input)}
+              onChange={() => {
+                console.log(inputElement.value);
+                let img = URL.createObjectURL(inputElement.files[0]);
+                setItemImage(img);
+              }}
+            />
+          ) : (
+            <Text></Text>
+          )}
+        </ImageBackground>
+      </Pressable>
     );
-  });
+  };
 
   return (
     <View style={styles.container}>
@@ -113,6 +153,7 @@ export default function UploadItem() {
                       case 0:
                         launchImageLibrary({ noData: true }, (response) => {
                           if (response.assets != null) {
+                            setItemImage(response.assets[0]);
                           }
                         });
                         break;
@@ -158,9 +199,11 @@ export default function UploadItem() {
             }
           }}
         >
-          <Uploady destination={{ url: "http://localhost:3000/echoimage" }}>
+          {itemImage == null ? (
             <UploadImage />
-          </Uploady>
+          ) : (
+            <DisplayPhoto imageData={itemImage} />
+          )}
         </Pressable>
       </View>
     </View>

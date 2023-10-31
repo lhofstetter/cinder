@@ -69,10 +69,6 @@ app.get("/recommended", async (req: Request, res: Response) => {
   res.send(listingsFromDb);
 });
 
-app.post("/echoimage", async (req: Request, res: Response) => {
-  res.send(req.files);
-});
-
 type Category = "top" | "bottom" | "accessory" | "shoes";
 interface ListingFormData {
   listing_name: string;

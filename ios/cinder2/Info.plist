@@ -53,5 +53,9 @@
   <string>UIStatusBarStyleDefault</string>
   <key>CADisableMinimumFrameDurationOnPhone</key>
   <true/>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>Photo Library Access Warning</string>
+  <key>NSCameraUsageDescription</key>
+  <string>Camera Access Warning</string>
 </dict>
 </plist>
