@@ -1,9 +1,15 @@
 import { sql, InferSelectModel } from "drizzle-orm";
-import { integer, text, sqliteTable } from "drizzle-orm/sqlite-core";
+import {
+  integer,
+  text,
+  sqliteTable,
+  primaryKey,
+} from "drizzle-orm/sqlite-core";
 
 export const listings = sqliteTable("listings", {
-  id: integer("id").primaryKey(),
+  id: integer("id").primaryKey({ autoIncrement: true }),
   listing_name: text("listing_name").notNull(),
+  description: text("description").notNull(),
   price: integer("price"),
   category: text("category").notNull(),
   createdAt: integer("created_at", { mode: "timestamp" }).default(
@@ -11,4 +17,13 @@ export const listings = sqliteTable("listings", {
   ),
 });
 
+export const images = sqliteTable("images", {
+  image_id: integer("id").primaryKey({ autoIncrement: true }),
+  listing_id: integer("listing_id")
+    .references(() => listings.id)
+    .notNull(),
+  source: text("source").notNull(),
+});
+
 export type Listing = InferSelectModel<typeof listings>;
+export type Image = InferSelectModel<typeof images>;
