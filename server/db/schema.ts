@@ -1,10 +1,5 @@
 import { sql, InferSelectModel } from "drizzle-orm";
-import {
-  integer,
-  text,
-  sqliteTable,
-  primaryKey,
-} from "drizzle-orm/sqlite-core";
+import { integer, text, sqliteTable, primaryKey } from "drizzle-orm/sqlite-core";
 
 export const listings = sqliteTable("listings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -12,9 +7,7 @@ export const listings = sqliteTable("listings", {
   description: text("description").notNull(),
   price: integer("price"),
   category: text("category").notNull(),
-  created_at: integer("created_at", { mode: "timestamp" }).default(
-    sql`(strftime('%s', 'now'))`,
-  ),
+  created_at: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
 });
 
 export const images = sqliteTable("images", {
