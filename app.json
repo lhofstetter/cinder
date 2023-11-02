@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "cinder2",
-    "slug": "cinder2",
+    "name": "Cindr_",
+    "slug": "Cindr_",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "auto",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -14,7 +14,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.cinder2"
+      "bundleIdentifier": "com.anonymous.cindr_"
     },
     "android": {
       "adaptiveIcon": {

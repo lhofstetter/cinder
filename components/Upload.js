@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ImageBackground,
   Text,
@@ -15,6 +15,7 @@ import {
   useItemProgressListener,
   useUploady,
 } from "@rpldy/uploady";
+import { useNavigation } from "@react-navigation/native";
 
 let styles = {
   container: {
@@ -44,9 +45,9 @@ let styles = {
 };
 
 function DisplayPhoto(imageData, width, height) {
+  const navigation = useNavigation();
   if (width != null && height != null) {
     if (Platform.OS == "web") {
-      console.log(imageData);
       return (
         <img
           src={imageData.imageData}
@@ -54,22 +55,29 @@ function DisplayPhoto(imageData, width, height) {
           width={width}
           height={height}
           alt={"image thingy"}
+          onLoad={() => {
+            setTimeout(() => {navigation.navigate("New Listing", {
+              image: imageData.imageData,
+            })}, 1000)
+          }}
         />
       );
     } else {
       return (
         <Image
-          source={{ uri: imageData.uri }}
+          source={{ uri: imageData.imageData.uri }}
           style={[styles.uploadborder, { width: width, height: height }]}
-          height={height}
-          width={width}
           borderRadius={10}
+          onLoad={() => {
+            setTimeout(() => {navigation.navigate("New Listing", {
+              image: imageData.imageData.uri,
+            })}, 1000)
+          }}
         />
       );
     }
   } else {
     if (Platform.OS == "web") {
-      console.log(imageData);
       return (
         <img
           src={imageData.imageData}
@@ -77,16 +85,26 @@ function DisplayPhoto(imageData, width, height) {
           width={400}
           height={600}
           alt={"image thingy"}
+          onLoad={() => {
+            setTimeout(() => {navigation.navigate("New Listing", {
+              image: imageData.imageData,
+            })}, 1000)
+          }}
         />
       );
     } else {
       return (
         <Image
-          source={{ uri: imageData.uri }}
-          style={[{ display: "flex", width: width, height: height }]}
+          source={{ uri: imageData.imageData.uri }}
+          style={[{ display: "flex" }]}
           height={600}
           width={400}
           borderRadius={10}
+          onLoad={() => {
+            setTimeout(() => {navigation.navigate("New Listing", {
+              image: imageData.imageData.uri,
+            })}, 1000)
+          }}
         />
       );
     }
@@ -100,34 +118,46 @@ export default function UploadItem() {
   let inputElement;
 
   const UploadImage = (props) => {
-    const handleClick = (event) => {
-      inputElement.click();
+    const handleClick = () => {
+        inputElement.click();
     };
-    return (
-      <Pressable onPressIn={handleClick}>
-        <ImageBackground
-          {...props}
-          source={require("../assets/Upload_Icon.png")}
-          style={[styles.uploadborder, { width: 100, height: 100 }]}
-        >
-          {Platform.OS == "web" ? (
-            <input
-              name="image"
-              type="file"
-              style={{ opacity: 0.0 }}
-              ref={(input) => (inputElement = input)}
-              onChange={() => {
-                console.log(inputElement.value);
-                let img = URL.createObjectURL(inputElement.files[0]);
-                setItemImage(img);
-              }}
-            />
-          ) : (
-            <Text></Text>
-          )}
-        </ImageBackground>
-      </Pressable>
-    );
+    
+    if (Platform.OS == 'web') {
+      return (
+        <Pressable onPressIn={handleClick}>
+          <ImageBackground
+            {...props}
+            source={require("../assets/Upload_Icon.png")}
+            style={[styles.uploadborder, { width: 100, height: 100 }]}
+          >
+            {Platform.OS == "web" ? (
+              <input
+                name="image"
+                type="file"
+                style={{ opacity: 0.0 }}
+                ref={(input) => (inputElement = input)}
+                onChange={() => {
+                  let img = URL.createObjectURL(inputElement.files[0]);
+                  setItemImage(img);
+                }}
+              />
+            ) : (
+              <Text></Text>
+            )}
+          </ImageBackground>
+        </Pressable>
+      );
+    } else {
+        return (
+            <ImageBackground
+              {...props}
+              source={require("../assets/Upload_Icon.png")}
+              style={[styles.uploadborder, { width: 100, height: 100 }]}
+            ><Text></Text>
+            </ImageBackground>
+        );
+    }
+    
   };
 
   return (
@@ -202,8 +232,7 @@ export default function UploadItem() {
           {itemImage == null ? (
             <UploadImage />
           ) : (
-            <DisplayPhoto imageData={itemImage} />
-          )}
+            <DisplayPhoto imageData={itemImage}/>) }
         </Pressable>
       </View>
     </View>
