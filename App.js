@@ -25,11 +25,11 @@ function Swipe({ navigation }) {
 function Upload() {
   return Platform.OS == "ios" ? (
     <SafeAreaView>
-      <UploadItem/>
+      <UploadItem />
     </SafeAreaView>
   ) : (
     <>
-      <UploadItem/>
+      <UploadItem />
     </>
   );
 }
@@ -37,11 +37,11 @@ function Upload() {
 function Preview() {
   return Platform.OS == "ios" ? (
     <SafeAreaView>
-      <PreviewPost/>
+      <PreviewPost />
     </SafeAreaView>
   ) : (
     <>
-      <PreviewPost/>
+      <PreviewPost />
     </>
   );
 }
@@ -52,18 +52,11 @@ export default function App() {
   return (
     <ActionSheetProvider>
       <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Swipe"
-          screenOptions={{presentation:"modal"}}
-        >
-          <Stack.Screen
-            name="Swipe"
-            component={Swipe}
-            options={{ headerShown: false }}
-          />
-            <Stack.Screen name="Upload" component={Upload}/>
-          
-          <Stack.Screen name="New Listing" component={Preview}/>
+        <Stack.Navigator initialRouteName="Swipe" screenOptions={{ presentation: "modal" }}>
+          <Stack.Screen name="Swipe" component={Swipe} options={{ headerShown: false }} />
+          <Stack.Screen name="Upload" component={Upload} />
+
+          <Stack.Screen name="New Listing" component={Preview} />
         </Stack.Navigator>
       </NavigationContainer>
     </ActionSheetProvider>

@@ -1,12 +1,5 @@
 import React, { useState, useMemo } from "react";
-import {
-  ImageBackground,
-  Text,
-  View,
-  Button,
-  Pressable,
-  useWindowDimensions,
-} from "react-native";
+import { ImageBackground, Text, View, Button, Pressable, useWindowDimensions } from "react-native";
 import TinderCard from "react-tinder-card";
 
 let styles = {
@@ -141,16 +134,12 @@ const Advanced = ({ navigation }) => {
   };
 
   const outOfFrame = (name) => {
-    charactersState = charactersState.filter(
-      (character) => character.name !== name,
-    );
+    charactersState = charactersState.filter((character) => character.name !== name);
     setCharacters(charactersState);
   };
 
   const swipe = (dir) => {
-    const cardsLeft = characters.filter(
-      (person) => !alreadyRemoved.includes(person.name),
-    );
+    const cardsLeft = characters.filter((person) => !alreadyRemoved.includes(person.name));
     if (cardsLeft.length) {
       const toBeRemoved = cardsLeft[cardsLeft.length - 1].name; // Find the card object to be removed
       const index = db.map((person) => person.name).indexOf(toBeRemoved); // Find the index of which to make the reference to
@@ -168,12 +157,7 @@ const Advanced = ({ navigation }) => {
             key={character.name}
             ref={childRefs[index]}
             onTouchStart={(event) => {
-              setColor([
-                [event.nativeEvent.pageX, event.nativeEvent.pageY],
-                1.0,
-                "#fff",
-                "",
-              ]);
+              setColor([[event.nativeEvent.pageX, event.nativeEvent.pageY], 1.0, "#fff", ""]);
             }}
             onTouchMove={(event) => {
               if (color[0] != null) {
@@ -213,12 +197,7 @@ const Advanced = ({ navigation }) => {
               }
             }}
             onPressIn={(event) => {
-              setColor([
-                [event.nativeEvent.pageX, event.nativeEvent.pageY],
-                1.0,
-                "#fff",
-                "",
-              ]);
+              setColor([[event.nativeEvent.pageX, event.nativeEvent.pageY], 1.0, "#fff", ""]);
             }}
             onTouchEnd={() => {
               setColor([null, 1.0, "#fff", ""]);
@@ -234,10 +213,7 @@ const Advanced = ({ navigation }) => {
               onCardLeftScreen={() => outOfFrame(character.name)}
             >
               <View style={[styles.card, { backgroundColor: color[2] }]}>
-                <ImageBackground
-                  style={[styles.cardImage, { opacity: color[1] }]}
-                  source={character.img}
-                >
+                <ImageBackground style={[styles.cardImage, { opacity: color[1] }]} source={character.img}>
                   <Text style={styles.cardTitle}>{character.name}</Text>
                   <Text style={styles.likeOrDislikeText}>{color[3]}</Text>
                 </ImageBackground>

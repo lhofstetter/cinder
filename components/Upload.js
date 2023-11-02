@@ -1,20 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  ImageBackground,
-  Text,
-  View,
-  Image,
-  Pressable,
-  Platform,
-} from "react-native";
+import { ImageBackground, Text, View, Image, Pressable, Platform } from "react-native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import { useActionSheet } from "@expo/react-native-action-sheet";
-import {
-  Uploady,
-  useItemFinishListener,
-  useItemProgressListener,
-  useUploady,
-} from "@rpldy/uploady";
+import { Uploady, useItemFinishListener, useItemProgressListener, useUploady } from "@rpldy/uploady";
 import { useNavigation } from "@react-navigation/native";
 
 let styles = {
@@ -56,9 +44,11 @@ function DisplayPhoto(imageData, width, height) {
           height={height}
           alt={"image thingy"}
           onLoad={() => {
-            setTimeout(() => {navigation.navigate("New Listing", {
-              image: imageData.imageData,
-            })}, 1000)
+            setTimeout(() => {
+              navigation.navigate("New Listing", {
+                image: imageData.imageData,
+              });
+            }, 1000);
           }}
         />
       );
@@ -69,9 +59,11 @@ function DisplayPhoto(imageData, width, height) {
           style={[styles.uploadborder, { width: width, height: height }]}
           borderRadius={10}
           onLoad={() => {
-            setTimeout(() => {navigation.navigate("New Listing", {
-              image: imageData.imageData.uri,
-            })}, 1000)
+            setTimeout(() => {
+              navigation.navigate("New Listing", {
+                image: imageData.imageData.uri,
+              });
+            }, 1000);
           }}
         />
       );
@@ -86,9 +78,11 @@ function DisplayPhoto(imageData, width, height) {
           height={600}
           alt={"image thingy"}
           onLoad={() => {
-            setTimeout(() => {navigation.navigate("New Listing", {
-              image: imageData.imageData,
-            })}, 1000)
+            setTimeout(() => {
+              navigation.navigate("New Listing", {
+                image: imageData.imageData,
+              });
+            }, 1000);
           }}
         />
       );
@@ -101,9 +95,11 @@ function DisplayPhoto(imageData, width, height) {
           width={400}
           borderRadius={10}
           onLoad={() => {
-            setTimeout(() => {navigation.navigate("New Listing", {
-              image: imageData.imageData.uri,
-            })}, 1000)
+            setTimeout(() => {
+              navigation.navigate("New Listing", {
+                image: imageData.imageData.uri,
+              });
+            }, 1000);
           }}
         />
       );
@@ -119,10 +115,10 @@ export default function UploadItem() {
 
   const UploadImage = (props) => {
     const handleClick = () => {
-        inputElement.click();
+      inputElement.click();
     };
-    
-    if (Platform.OS == 'web') {
+
+    if (Platform.OS == "web") {
       return (
         <Pressable onPressIn={handleClick}>
           <ImageBackground
@@ -148,16 +144,16 @@ export default function UploadItem() {
         </Pressable>
       );
     } else {
-        return (
-            <ImageBackground
-              {...props}
-              source={require("../assets/Upload_Icon.png")}
-              style={[styles.uploadborder, { width: 100, height: 100 }]}
-            ><Text></Text>
-            </ImageBackground>
-        );
+      return (
+        <ImageBackground
+          {...props}
+          source={require("../assets/Upload_Icon.png")}
+          style={[styles.uploadborder, { width: 100, height: 100 }]}
+        >
+          <Text></Text>
+        </ImageBackground>
+      );
     }
-    
   };
 
   return (
@@ -165,11 +161,7 @@ export default function UploadItem() {
       <View style={styles.uploadcontainer}>
         <Pressable
           onPress={() => {
-            const options = [
-              "Choose Photo from Library",
-              "Take Photo",
-              "Cancel",
-            ];
+            const options = ["Choose Photo from Library", "Take Photo", "Cancel"];
 
             switch (Platform.OS) {
               case "ios":
@@ -229,10 +221,7 @@ export default function UploadItem() {
             }
           }}
         >
-          {itemImage == null ? (
-            <UploadImage />
-          ) : (
-            <DisplayPhoto imageData={itemImage}/>) }
+          {itemImage == null ? <UploadImage /> : <DisplayPhoto imageData={itemImage} />}
         </Pressable>
       </View>
     </View>
