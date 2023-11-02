@@ -4,6 +4,7 @@ import { db } from "./db";
 import express, { Request, Response } from "express";
 import cors from "cors";
 import fileUpload, { UploadedFile } from "express-fileupload";
+import { eq } from "drizzle-orm";
 import dotenv from "dotenv";
 import * as path from "path";
 
@@ -72,17 +73,65 @@ app.get("/", (req, res) => {
 
 app.get("/recommended", async (req: Request, res: Response) => {
   const listingsFromDb = await db.select().from(listings);
-  res.send(listingsFromDb);
+  res.json(listingsFromDb);
 });
 
-type Category = "top" | "bottom" | "accessory" | "shoes";
-interface ListingFormData {
-  listing_name: string;
-  price?: string;
-  description: string;
-  category: Category;
-  tags?: string | string[];
-}
+/**
+ * Gets the data for a particular listing id
+ *
+ * @route GET /listing/:listing_id
+ * @param {number} listing_id - The id for the listing you want data for
+ * @returns {ListingData}
+ */
+app.get("/listing/:listing_id", async (req: Request, res: Response) => {
+  const { listing_id: unsafe_listing_id }: { listing_id?: any } = req.params;
+  try {
+    // Ensure listing_id is valid
+    if (!unsafe_listing_id) {
+      return res.status(400).json({ error: "Please provide a listing_id" });
+    }
+    const listing_id = parseInt(unsafe_listing_id);
+    if (isNaN(listing_id)) {
+      return res
+        .status(400)
+        .json({ error: "Please provide a valid numeric listing_id" });
+    }
+
+    // Get the listing's data from the DB
+    const listingDataFromDb = await db
+      .select()
+      .from(listings)
+      .where(eq(listings.id, listing_id));
+    const listingFromDb = listingDataFromDb["0"];
+
+    const listingTagData = await db
+      .select({ tag_name: tags.tag_name })
+      .from(tags)
+      .where(eq(tags.listing_id, listing_id));
+    const listingTags: string[] = listingTagData.map(
+      (tagData) => tagData.tag_name,
+    );
+
+    const listingImageData = await db
+      .select({ source: images.source })
+      .from(images)
+      .where(eq(images.listing_id, listing_id));
+    const listingImages: string[] = listingImageData.map(
+      (imageData) => imageData.source,
+    );
+
+    const responseData = {
+      ...listingFromDb,
+      tags: listingTags,
+      image_links: listingImages,
+    };
+    console.log(responseData);
+    return res.status(200).json(responseData);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: String(error) });
+  }
+});
 
 /**
  * Creates a listing for an item of clothing to be published on cinder
