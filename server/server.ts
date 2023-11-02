@@ -1,9 +1,9 @@
 import axios from "axios";
-import { listings, Listing, images, Image } from "./db/schema";
+import { listings, images, tags } from "./db/schema";
 import { db } from "./db";
 import express, { Request, Response } from "express";
 import cors from "cors";
-import fileUpload from "express-fileupload";
+import fileUpload, { UploadedFile } from "express-fileupload";
 import dotenv from "dotenv";
 import * as path from "path";
 
@@ -40,6 +40,12 @@ app.get("/", (req, res) => {
             Price
             <input type="number" name="price" />
         </label>
+        <label>
+          Enter tags
+          <input type="text" name="tags" value="tags1"/> <input type="text" name="tags" value="tags2"/>
+          <input type="text" name="tags" value="tags3"/>
+          <input type="text" name="tags" value="tags4"/>
+        </label>
         <fieldset>
           <legend>Select the category of clothes:</legend>
           <div>
@@ -75,20 +81,35 @@ interface ListingFormData {
   price?: string;
   description: string;
   category: Category;
+  tags?: string | string[];
 }
 
 /**
  * Creates a listing for an item of clothing to be published on cinder
  *
  * @route POST /listing
- * @param {file: Binary, listing_name: string, price?: number, description: string, category: Category} reqBody
- * @returns {JSON} - status 200 or 500 with JSON containing either {"message"": "OK"} or an error
+ * @param {Object} reqBody - The body of the request
+ * @param {Buffer|Buffer[]} reqBody.file - The binary of the image(s) of the listing
+ * @param {string} reqBody.listing_name - The name of the listing
+ * @param {string} reqBody.description - The description for the listing
+ * @param {undefined|number} reqBody.price - The price for the listing (optional)
+ * @param {Category} reqBody.category - The category of the listing (top, bottom, shoes, or accessory)
+ * @param {undefined|string|string[]} reqBody.tags - The user provided tag(s) corresponding to the listing (optional)
+ * @returns {JSON} - status 200, 400, 500 with JSON containing either {"message"": "OK"} or an error
  */
 app.post("/listing", async (req: Request, res: Response) => {
   // Extract the images from the request
   try {
     const imageUrlPromises = [];
-    for (const file of req.files?.file as { data: Buffer; name: string }[]) {
+    if (!req.files?.file) {
+      return res.status(400).json({ error: "No image provided for listing" });
+    }
+    if (Array.isArray(req.files?.file)) {
+      for (const file of req.files?.file as UploadedFile[]) {
+        imageUrlPromises.push(getUrlForImage(file?.data, file?.name));
+      }
+    } else {
+      const file = req.files?.file as UploadedFile;
       imageUrlPromises.push(getUrlForImage(file?.data, file?.name));
     }
     // Await reply with url links to each image
@@ -106,12 +127,29 @@ app.post("/listing", async (req: Request, res: Response) => {
       })
       .returning({ inserted_id: listings.id });
 
+    // Add images to images table
     for (const url of imageUrls) {
       await db.insert(images).values({ listing_id: inserted_id, source: url });
     }
 
+    // Add tags to the tags table
+    const { tags: userProvidedTags } = listingFormData;
+    if (Array.isArray(userProvidedTags)) {
+      for (const tag of userProvidedTags) {
+        await db
+          .insert(tags)
+          .values({ listing_id: inserted_id, tag_name: tag });
+      }
+    } else if (typeof userProvidedTags === "string") {
+      await db.insert(tags).values({
+        listing_id: inserted_id,
+        tag_name: userProvidedTags,
+      });
+    }
+
     return res.status(200).json({ message: "OK" });
   } catch (error) {
+    console.log(error);
     return res.status((error as any)?.status ?? 500).json({ error });
   }
 });

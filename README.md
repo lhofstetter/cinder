@@ -18,19 +18,21 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 
 ##### Parameters
 
-> | name           | type     | data type | description                                                        |
-> | -------------- | -------- | --------- | ------------------------------------------------------------------ |
-> | `file`         | optional | string    | The binary of an image, can be more than one                       |
-> | `listing_name` | required | string    | The name of the listing                                            |
-> | `price`        | optional | number    | The price of the listing                                           |
-> | `description`  | required | string    | The description for the listing                                    |
-> | `category`     | required | string    | The category the listing is for (top, bottom, accessory, or shoes) |
+> | name           | type     | data type          | description                                                        |
+> | -------------- | -------- | ------------------ | ------------------------------------------------------------------ |
+> | `file`         | required | Buffer or Buffer[] | The binary of an image, can be more than one                       |
+> | `listing_name` | required | string             | The name of the listing                                            |
+> | `price`        | optional | number             | The price of the listing                                           |
+> | `description`  | required | string             | The description for the listing                                    |
+> | `category`     | required | string             | The category the listing is for (top, bottom, accessory, or shoes) |
+> | `tags`         | required | string[] or string | The user generated tags for the listing                            |
 
 ##### Responses
 
 > | http code | content-type       | response                                         |
 > | --------- | ------------------ | ------------------------------------------------ |
 > | `200`     | `application/json` | `{"message": "OK"}`                              |
+> | `400`     | `application/json` | `{"error":"No image provided for listing"}`      |
 > | `500`     | `application/json` | `{"error":"status 500, failed to upload image"}` |
 
 ##### Example cURL
