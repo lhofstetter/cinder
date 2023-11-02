@@ -25,5 +25,17 @@ export const images = sqliteTable("images", {
   source: text("source").notNull(),
 });
 
+export const tags = sqliteTable(
+  "tags",
+  {
+    tag_name: text("tag_name").notNull(),
+    listing_id: integer("listing_id")
+      .references(() => listings.id)
+      .notNull(),
+  },
+  (table) => ({ pk: primaryKey(table.tag_name, table.listing_id) }),
+);
+
 export type Listing = InferSelectModel<typeof listings>;
 export type Image = InferSelectModel<typeof images>;
+export type Tag = InferSelectModel<typeof tags>;
