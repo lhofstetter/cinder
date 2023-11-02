@@ -33,8 +33,7 @@ app.get("/", (req, res) => {
             <label for="listing_name">Listing Name</label>
             <input type="text" id="listing_name" name="listing_name" />
         </div>
-        <label>
-            Descrption
+        <label> Descrption
             <input type="text" name="description" />
         </label>
         <label>
@@ -83,49 +82,34 @@ app.get("/recommended", async (req: Request, res: Response) => {
  * @param {number} listing_id - The id for the listing you want data for
  * @returns {ListingData}
  */
-app.get("/listing/:listing_id", async (req: Request, res: Response) => {
-  const { listing_id: unsafe_listing_id }: { listing_id?: any } = req.params;
+app.get("/listing/:listing_id", validateListingId, async (req: Request, res: Response) => {
+  let { listing_id: listing_id_string } = req.params;
+  const listing_id = parseInt(listing_id_string);
   try {
-    // Ensure listing_id is valid
-    if (!unsafe_listing_id) {
-      return res.status(400).json({ error: "Please provide a listing_id" });
-    }
-    const listing_id = parseInt(unsafe_listing_id);
-    if (isNaN(listing_id)) {
-      return res
-        .status(400)
-        .json({ error: "Please provide a valid numeric listing_id" });
-    }
-
     // Get the listing's data from the DB
-    const listingDataFromDb = await db
-      .select()
-      .from(listings)
-      .where(eq(listings.id, listing_id));
+    const listingDataFromDb = await db.select().from(listings).where(eq(listings.id, listing_id));
     const listingFromDb = listingDataFromDb["0"];
+    if (listingFromDb === undefined) {
+      return res.status(400).json({ error: "No listing with that id exists" });
+    }
 
     const listingTagData = await db
       .select({ tag_name: tags.tag_name })
       .from(tags)
       .where(eq(tags.listing_id, listing_id));
-    const listingTags: string[] = listingTagData.map(
-      (tagData) => tagData.tag_name,
-    );
+    const listingTags: string[] = listingTagData.map((tagData) => tagData.tag_name);
 
     const listingImageData = await db
       .select({ source: images.source })
       .from(images)
       .where(eq(images.listing_id, listing_id));
-    const listingImages: string[] = listingImageData.map(
-      (imageData) => imageData.source,
-    );
+    const listingImages: string[] = listingImageData.map((imageData) => imageData.source);
 
     const responseData = {
       ...listingFromDb,
       tags: listingTags,
       image_links: listingImages,
     };
-    console.log(responseData);
     return res.status(200).json(responseData);
   } catch (error) {
     console.log(error);
@@ -185,9 +169,7 @@ app.post("/listing", async (req: Request, res: Response) => {
     const { tags: userProvidedTags } = listingFormData;
     if (Array.isArray(userProvidedTags)) {
       for (const tag of userProvidedTags) {
-        await db
-          .insert(tags)
-          .values({ listing_id: inserted_id, tag_name: tag });
+        await db.insert(tags).values({ listing_id: inserted_id, tag_name: tag });
       }
     } else if (typeof userProvidedTags === "string") {
       await db.insert(tags).values({
@@ -230,4 +212,22 @@ async function uploadImage(image: Buffer, name: string) {
     { image: image.toString("base64"), name },
     { headers: { Authorization: `Client-ID ${CLIENT_ID}` } },
   );
+}
+
+function validateListingId(req: Request, res: Response, next: () => void) {
+  const { listing_id: unsafe_listing_id } = req.params;
+
+  if (!unsafe_listing_id) {
+    return res.status(400).json({ error: "Please provide a listing_id" });
+  }
+
+  const listing_id = parseInt(unsafe_listing_id);
+
+  if (isNaN(listing_id)) {
+    return res.status(400).json({ error: "Please provide a valid numeric listing_id" });
+  }
+
+  // Store the validated listing_id in the request object for later use
+  req.params.listing_id = String(listing_id);
+  next();
 }
