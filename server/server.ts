@@ -76,6 +76,28 @@ app.get("/recommended", async (req: Request, res: Response) => {
 });
 
 /**
+ * Deletes a specified listing from the database
+ *
+ * @param {number} listing_id - The id of the listing you want to delete
+ * @returns {JSON} - 200 { "message": "OK" } or 500 { "error": "some error" }
+ */
+app.delete("/listing/:listing_id", validateListingId, async (req: Request, res: Response) => {
+  let { listing_id: listing_id_string } = req.params;
+  const listing_id = parseInt(listing_id_string);
+  try {
+    const deleteQueue = [];
+    deleteQueue.push(db.delete(images).where(eq(images.listing_id, listing_id)));
+    deleteQueue.push(db.delete(tags).where(eq(tags.listing_id, listing_id)));
+    await Promise.all(deleteQueue);
+    await db.delete(listings).where(eq(listings.id, listing_id));
+    return res.status(200).json({ message: "OK" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: String(error) });
+  }
+});
+
+/**
  * Gets the data for a particular listing id
  *
  * @route GET /listing/:listing_id
