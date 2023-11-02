@@ -12,7 +12,7 @@ export const listings = sqliteTable("listings", {
   description: text("description").notNull(),
   price: integer("price"),
   category: text("category").notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).default(
+  created_at: integer("created_at", { mode: "timestamp" }).default(
     sql`(strftime('%s', 'now'))`,
   ),
 });
