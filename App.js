@@ -65,8 +65,8 @@ function UploadRoute () {
   return (
     <UploadStack.Navigator>
         <UploadStack.Screen name="Upload" component={Upload}/>
-        <UploadStack.Screen name="New Listing" component={Preview}/>
-    </UploadStack.Navigator>
+        <UploadStack.Screen name="New Listing" component={Preview} options={{headerBackVisible: false}}/>    
+      </UploadStack.Navigator>
   );
 }
 
