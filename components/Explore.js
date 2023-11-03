@@ -3,11 +3,14 @@ import {
   ImageBackground,
   Text,
   View,
-  Button,
+  Image,
   Pressable,
   useWindowDimensions,
+  Platform
 } from "react-native";
 import TinderCard from "react-tinder-card";
+
+const logo = require("../assets/cindr.png");
 
 let styles = {
   container: {
@@ -16,30 +19,45 @@ let styles = {
     justifyContent: "center",
     width: "100%",
   },
-  header: {
-    color: "#000",
-    fontSize: 30,
+  webHeader: {
+    marginBottom: 30,
+    marginTop: 30,
+  },
+  mobileHeader: {
+    marginTop: 20,
     marginBottom: 30,
   },
   cardContainer: {
     width: "90%",
-    maxWidth: 260,
+    maxWidth: 400,
     height: 300,
     marginBottom: 100,
   },
-  card: {
+  cardWeb: {
     position: "absolute",
     width: "100%",
     maxWidth: 400,
     height: 400,
-    shadowColor: "black",
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
     borderRadius: 20,
     resizeMode: "cover",
     zIndex: -100,
   },
-  cardImage: {
+  cardMobile: {
+    position: "absolute",
+    width: "100%",
+    maxWidth: 600,
+    height: 650,
+    borderRadius: 20,
+    resizeMode: "cover",
+    zIndex: -100,
+  },
+  cardImageMobile: {
+    width: "100%",
+    height: "100%",
+    overflow: "hidden",
+    borderRadius: 20,
+  },
+  cardImageWeb: {
     width: "100%",
     height: "100%",
     overflow: "hidden",
@@ -141,7 +159,7 @@ const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
       }}
       onTouchMove={(event) => {
         if (color[0] != null) {
-          if (event.nativeEvent.pageX - color[0][0] > 50) {
+          if (event.nativeEvent.pageX - color[0][0] > 0) {
             // moving to the right
             let xRatio;
 
@@ -197,15 +215,29 @@ const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
         onSwipe={(dir) => swiped(dir, character.name)}
         onCardLeftScreen={() => outOfFrame(character.name)}
       >
-        <View style={[styles.card, { backgroundColor: color[2] }]}>
-          <ImageBackground
-            style={[styles.cardImage, { opacity: color[1] }]}
+       
+          { Platform.OS == 'web' ? 
+           <View style={[styles.cardWeb, { backgroundColor: color[2] }]}>
+            <ImageBackground
+              style={[styles.cardImageWeb, { opacity: color[1] }]}
+              source={character.img}
+            >
+              <Text style={styles.cardTitle}>{character.name}</Text>
+              <Text style={styles.likeOrDislikeText}>{color[3]}</Text>
+            </ImageBackground>        
+          </View>
+          :
+          <View style={[styles.cardMobile, { backgroundColor: color[2] }]}>
+            <ImageBackground
+            style={[styles.cardImageMobile, { opacity: color[1] }]}
             source={character.img}
-          >
-            <Text style={styles.cardTitle}>{character.name}</Text>
-            <Text style={styles.likeOrDislikeText}>{color[3]}</Text>
-          </ImageBackground>
-        </View>
+            >
+              <Text style={styles.cardTitle}>{character.name}</Text>
+              <Text style={styles.likeOrDislikeText}>{color[3]}</Text>
+            </ImageBackground>
+          </View>
+          }
+          
       </TinderCard>
     </Pressable>
   );
@@ -248,7 +280,7 @@ const Advanced = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Cinder</Text>
+      { Platform.OS == 'web' ? <img src={logo} style={styles.webHeader} alt={"logo"}/> : <Image source={logo} style={styles.mobileHeader}/>}
       <View style={styles.cardContainer}>
         {characters.map((character, index) => (
           <SwipeableCard

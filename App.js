@@ -3,21 +3,36 @@ import UploadItem from "./components/Upload.js";
 import Explore from "./components/Explore.js";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Button, View, Text, Platform } from "react-native";
+import { Button, View, Text, Platform, Pressable } from "react-native";
 import { SafeAreaView } from "react-native";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import PreviewPost from "./components/Preview.js";
+
+const styles = {
+  buttonMobile: {
+    position: "flex",
+    bottom: "-55%",
+  },
+  buttonText: {
+    textAlign: "center",
+    fontSize:24,
+  }
+}
 
 function Swipe({ navigation }) {
   return Platform.OS == "ios" ? (
     <SafeAreaView>
       <Explore />
-      <Button color={"#000000"} title="Upload" onPress={() => navigation.navigate("Upload")} />
+      <Pressable onPressIn={() => navigation.navigate("Upload")} style={styles.buttonMobile}>
+        <Text style={styles.buttonText}>Upload</Text>
+      </Pressable>
     </SafeAreaView>
   ) : (
     <>
       <Explore />
-      <Button title="Upload" onPress={() => navigation.navigate("Upload")} />
+      <Pressable onPressIn={() => navigation.navigate("Upload")} style={{marginTop:20}}>
+        <Text style={styles.buttonText}>Upload</Text>
+      </Pressable>
     </>
   );
 }
@@ -55,7 +70,6 @@ export default function App() {
         <Stack.Navigator initialRouteName="Swipe" screenOptions={{ presentation: "modal" }}>
           <Stack.Screen name="Swipe" component={Swipe} options={{ headerShown: false }} />
           <Stack.Screen name="Upload" component={Upload} />
-
           <Stack.Screen name="New Listing" component={Preview} />
         </Stack.Navigator>
       </NavigationContainer>
