@@ -68,3 +68,67 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 > ```
 
 </details>
+
+
+<details>
+ <summary><code>GET</code> <code><b>/listing/:listing_id</b></code> <code>(Gets the data for a particular listing id)</code></summary>
+
+ ##### Parameters
+
+> | name           | type     | data type          | description                                                        |
+> | -------------- | -------- | ------------------ | ------------------------------------------------------------------ |
+> | `listing_id`   | required | number             | The id for the listing you want data for                           |
+
+##### Responses
+
+> | http code | content-type       | response                                         |
+> | --------- | ------------------ | ------------------------------------------------ |
+> | `200`     | `application/json` | `{"message": "OK"}`                              |
+> | `400`     | `application/json` | `{"No listing with that id exists"}`             |
+> | `500`     | `application/json` | `Server Error`                                   |
+
+</details>
+<details>
+ <summary><code>DELETE</code> <code><b>/listing/:listing_id</b></code> <code>(Deletes a specified listing from the database)</code></summary>
+
+ ##### Parameters
+
+> | name           | type     | data type          | description                                                        |
+> | -------------- | -------- | ------------------ | ------------------------------------------------------------------ |
+> | `listing_id`   | required | number             | The id for the listing you want to delete                          |
+
+##### Responses
+
+> | http code | content-type       | response                                         |
+> | --------- | ------------------ | ------------------------------------------------ |
+> | `200`     | `application/json` | `{"message": "OK"}`                              |
+> | `500`     | `application/json` | `{"error": "some error"}`                        |
+
+</details>
+
+<details>
+ <summary><code>PUT</code> <code><b>/listing/:listing_id</b></code> <code>(Updates a listing for an item of clothing to be published on Cinder)</code></summary>
+
+##### Parameters
+
+> | name              | type     | data type          | description                                                                  |
+> | --------------    | -------- | ------------------ | ------------------------------------------------------------------           |
+> | `file`            | required | Buffer or Buffer[] | The binary of an image, can be more than one                                 |
+> | `listing_name`    | required | string             | The name of the listing                                                      |
+> | `price`           | optional | number             | The price of the listing                                                     |
+> | `description`     | required | string             | The description for the listing                                              |
+> | `category`        | required | string             | The category the listing is for (top, bottom, accessory, or shoes)           |
+> | `tags`            | required | string[] or string | The user generated tags for the listing                                      |
+> | `tags_to_remove`  | required | string             | The user provided tag(s) previously on the listing you are wanting to remove |
+> | `images_to_remove`| required | string[] or string | The image url(s) previously for the listing you are wanting to remove        |
+
+##### Responses
+
+> | http code | content-type       | response                                         |
+> | --------- | ------------------ | ------------------------------------------------ |
+> | `200`     | `application/json` | `{"message": "OK"}`                              |
+> | `400`     | `application/json` | `{"error":"No image provided for listing"}`      |
+> | `500`     | `application/json` | `{"error":"status 500, failed to upload image"}` |
+
+</details>
+
