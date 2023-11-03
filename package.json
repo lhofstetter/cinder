@@ -19,6 +19,7 @@
     "@expo/webpack-config": "^19.0.0",
     "@libsql/client": "^0.3.6",
     "@libsql/linux-x64-gnu": "^0.1.34",
+    "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.16",
     "@react-spring/native": "^9.7.3",
