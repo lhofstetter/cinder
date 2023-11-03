@@ -4,10 +4,9 @@ import { db } from "./db";
 import express, { Request, Response } from "express";
 import cors from "cors";
 import fileUpload, { UploadedFile } from "express-fileupload";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import dotenv from "dotenv";
 import * as path from "path";
-
 const envFilePath = path.resolve(__dirname, "../.env");
 dotenv.config({ path: envFilePath });
 
@@ -73,6 +72,71 @@ app.get("/", (req, res) => {
 app.get("/recommended", async (req: Request, res: Response) => {
   const listingsFromDb = await db.select().from(listings);
   res.json(listingsFromDb);
+});
+
+/**
+ * Updates a listing for an item of clothing to be published on cinder
+ *
+ * @route PUT /listing/:listing_id
+ * @param {Object} reqBody - The body of the request
+ * @param {Buffer|Buffer[]} reqBody.file - The binary of the image(s) of the listing
+ * @param {string} reqBody.listing_name - The name of the listing
+ * @param {string} reqBody.description - The description for the listing
+ * @param {undefined|number} reqBody.price - The price for the listing (optional)
+ * @param {Category} reqBody.category - The category of the listing (top, bottom, shoes, or accessory)
+ * @param {undefined|string|string[]} reqBody.tags - The user provided tag(s) corresponding to the listing (optional)
+ * @param {string[]} reqBody.tags_to_remove - The user provided tag(s) previously on the listing you are wanting to
+ * remove
+ * @param {string[]} reqBody.images_to_remove - The image url(s) previously for the listing you are wanting to remove
+ * @returns {JSON} - status 200, 400, 500 with JSON containing either {"message"": "OK"} or an error
+ */
+app.put("/listing/:listing_id", validateListingId, async (req: Request, res: Response) => {
+  try {
+    let { listing_id: listing_id_string } = req.params;
+    const listing_id = parseInt(listing_id_string);
+
+    const imageUrlPromises = [];
+    if (!req.files?.file) {
+      return res.status(400).json({ error: "No image provided for listing" });
+    }
+    if (Array.isArray(req.files?.file)) {
+      for (const file of req.files?.file as UploadedFile[]) {
+        imageUrlPromises.push(getUrlForImage(file?.data, file?.name));
+      }
+    } else {
+      const file = req.files?.file as UploadedFile;
+      imageUrlPromises.push(getUrlForImage(file?.data, file?.name));
+    }
+
+    const { images_to_remove }: { images_to_remove: string[] } = req.body;
+    const deleteQueue = [];
+    for (const image_url of images_to_remove) {
+      deleteQueue.push(db.delete(images).where(and(eq(images.source, image_url), eq(images.listing_id, listing_id))));
+    }
+
+    const { tags_to_remove }: { tags_to_remove: string[] } = req.body;
+    for (const tag of tags_to_remove) {
+      deleteQueue.push(db.delete(tags).where(and(eq(tags.tag_name, tag), eq(tags.listing_id, listing_id))));
+    }
+
+    const listingFormData: ListingFormData = req.body;
+
+    await db
+      .update(listings)
+      .set({
+        listing_name: listingFormData.listing_name,
+        category: listingFormData.category,
+        price: Number(listingFormData.price),
+        description: listingFormData.description,
+      })
+      .where(eq(listings.id, listing_id));
+    await Promise.all(imageUrlPromises);
+    await Promise.all(deleteQueue);
+    return res.status(200).json({ message: "OK" });
+  } catch (error) {
+    console.log(error);
+    return res.status((error as any)?.status ?? 500).json({ error: String(error) });
+  }
 });
 
 /**
@@ -203,7 +267,7 @@ app.post("/listing", async (req: Request, res: Response) => {
     return res.status(200).json({ message: "OK" });
   } catch (error) {
     console.log(error);
-    return res.status((error as any)?.status ?? 500).json({ error });
+    return res.status((error as any)?.status ?? 500).json({ error: String(error) });
   }
 });
 
