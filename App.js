@@ -7,7 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Button, View, Text, Platform, Pressable, Image } from "react-native";
 import { SafeAreaView } from "react-native";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
-import PreviewPost from "./components/Preview.js";
+import DetailsPost from "./components/SetPost.js";
 
 const homeFocused = require("./assets/home.png");
 const homeUnfocused = require("./assets/home_unfocused.png");
@@ -47,14 +47,14 @@ function Upload() {
   );
 }
 
-function Preview() {
+function Details() {
   return Platform.OS == "ios" ? (
     <SafeAreaView>
-      <PreviewPost />
+      <DetailsPost />
     </SafeAreaView>
   ) : (
     <>
-      <PreviewPost />
+      <DetailsPost />
     </>
   );
 }
@@ -65,7 +65,7 @@ function UploadRoute () {
   return (
     <UploadStack.Navigator>
         <UploadStack.Screen name="Upload" component={Upload}/>
-        <UploadStack.Screen name="New Listing" component={Preview} options={{headerBackVisible: false}}/>    
+        <UploadStack.Screen name="New Listing" component={Details} options={{headerBackVisible: false}}/>    
       </UploadStack.Navigator>
   );
 }
