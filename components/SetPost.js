@@ -5,9 +5,10 @@ import {
   Image,
   Platform,
   TextInput,
+  Pressable
 } from "react-native";
 import * as Font from "expo-font";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import { SelectList } from "react-native-dropdown-select-list";
 
 const styles = {
@@ -80,6 +81,11 @@ const styles = {
     marginLeft: 20,
     top:50,
     paddingLeft:5,
+  },
+  previewMobile: {
+    textAlign: "center",
+    fontSize:18,
+    color:"#DF85FF",
   }
 };
 
@@ -180,12 +186,25 @@ export default function DetailsPost() {
   const [selectedSize, setSelectedSize] = useState();
   const [currentStyle, setCurrentStyle] = useState(styles.title);
 
+  const navigation = useNavigation();
 
   const route = useRoute();
 
   let image = route.params;
 
   useEffect(() => {
+    navigation.setOptions({headerRight: () => (
+      <Pressable onPress={()=> {
+        navigation.navigate("Preview", {
+          title:text,
+          description:description,
+          selectedType:selectedType,
+          selectedSize:selectedSize,
+        });
+      }}>
+      <Text style={styles.previewMobile}>Preview</Text>
+    </Pressable>
+    )})
     async function loadFont() {
       await Font.loadAsync({
         Inter: require("../assets/fonts/static/Inter-Medium.ttf"),
