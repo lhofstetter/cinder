@@ -1,7 +1,7 @@
 import * as React from "react";
 import UploadItem from "./components/Upload.js";
 import Explore from "./components/Explore.js";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Button, View, Text, Platform, Pressable, Image } from "react-native";
@@ -22,7 +22,7 @@ const styles = {
   buttonText: {
     textAlign: "center",
     fontSize:24,
-  }
+  },
 }
 
 function Swipe({ navigation }) {
@@ -62,6 +62,8 @@ function Details() {
 const UploadStack = createNativeStackNavigator();
 
 function UploadRoute () {
+  const navigation = useNavigation();
+
   return (
     <UploadStack.Navigator>
         <UploadStack.Screen name="Upload" component={Upload}/>
