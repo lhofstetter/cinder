@@ -8,6 +8,8 @@ import { Button, View, Text, Platform, Pressable, Image } from "react-native";
 import { SafeAreaView } from "react-native";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import DetailsPost from "./components/SetPost.js";
+import PreviewPost from "./components/Preview.js";
+
 
 const homeFocused = require("./assets/home.png");
 const homeUnfocused = require("./assets/home_unfocused.png");
@@ -59,6 +61,18 @@ function Details() {
   );
 }
 
+function Preview() {
+  return Platform.OS == "ios" ? (
+    <SafeAreaView>
+      <PreviewPost />
+    </SafeAreaView>
+  ) : (
+    <>
+      <PreviewPost />
+    </>
+  );
+}
+
 const UploadStack = createNativeStackNavigator();
 
 function UploadRoute () {
@@ -67,7 +81,8 @@ function UploadRoute () {
   return (
     <UploadStack.Navigator>
         <UploadStack.Screen name="Upload" component={Upload}/>
-        <UploadStack.Screen name="New Listing" component={Details} options={{headerBackVisible: false}}/>    
+        <UploadStack.Screen name="New Listing" component={Details} options={{headerBackVisible: false}}/> 
+        <UploadStack.Screen name="Preview" component={Preview} options={{headerBackVisible: false}}/>       
       </UploadStack.Navigator>
   );
 }

@@ -39,6 +39,16 @@ const styles = {
     paddingLeft: 10,
     top: -100,
   },
+  postDescriptionFocus: {
+    backgroundColor: "#D9D9D9",
+    borderColor: "#DF85FF",
+    width: "60%",
+    height: 100,
+    marginLeft: 150,
+    borderRadius: 5,
+    paddingLeft: 10,
+    top: -100,
+  },
   previewImageWeb: {
     display: "flex",
     marginLeft: 50,
@@ -200,6 +210,7 @@ export default function DetailsPost() {
           description:description,
           selectedType:selectedType,
           selectedSize:selectedSize,
+          image:image,
         });
       }}>
       <Text style={styles.previewMobile}>Preview</Text>
@@ -232,6 +243,8 @@ export default function DetailsPost() {
       setTypeOfSize(shoeSizes);
     } else if (selectedType == "Accessories") {
       setTypeOfSize(accessorySize);
+    } else {
+      setTypeOfSize(topSizes);
     }
   }
 
