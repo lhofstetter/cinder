@@ -210,6 +210,7 @@ export default function DetailsPost() {
   const [typeOfSize, setTypeOfSize] = useState(defaultSizes);
   const [selectedSize, setSelectedSize] = useState();
   const [currentStyle, setCurrentStyle] = useState(styles.title);
+
   const [descriptionStyle, setDescriptionStyle] = useState(styles.postDescription);
 
   const navigation = useNavigation();
@@ -219,6 +220,7 @@ export default function DetailsPost() {
 
   useEffect(() => {
     navigation.setOptions({headerRight: () => (
+
         <Text style={styles.previewMobileInvalid}>Preview</Text>      
     )});
     async function loadFont() {
