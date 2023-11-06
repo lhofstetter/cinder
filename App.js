@@ -1,13 +1,15 @@
 import * as React from "react";
 import UploadItem from "./components/Upload.js";
 import Explore from "./components/Explore.js";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Button, View, Text, Platform, Pressable, Image } from "react-native";
 import { SafeAreaView } from "react-native";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+import DetailsPost from "./components/SetPost.js";
 import PreviewPost from "./components/Preview.js";
+
 
 const homeFocused = require("./assets/home.png");
 const homeUnfocused = require("./assets/home_unfocused.png");
@@ -22,7 +24,7 @@ const styles = {
   buttonText: {
     textAlign: "center",
     fontSize:24,
-  }
+  },
 }
 
 function Swipe({ navigation }) {
@@ -47,6 +49,18 @@ function Upload() {
   );
 }
 
+function Details() {
+  return Platform.OS == "ios" ? (
+    <SafeAreaView>
+      <DetailsPost />
+    </SafeAreaView>
+  ) : (
+    <>
+      <DetailsPost />
+    </>
+  );
+}
+
 function Preview() {
   return Platform.OS == "ios" ? (
     <SafeAreaView>
@@ -62,10 +76,13 @@ function Preview() {
 const UploadStack = createNativeStackNavigator();
 
 function UploadRoute () {
+  const navigation = useNavigation();
+
   return (
     <UploadStack.Navigator>
         <UploadStack.Screen name="Upload" component={Upload}/>
-        <UploadStack.Screen name="New Listing" component={Preview} options={{headerBackVisible: false}}/>    
+        <UploadStack.Screen name="New Listing" component={Details} options={{headerBackVisible: false}}/> 
+        <UploadStack.Screen name="Preview" component={Preview} options={{headerBackVisible: false}}/>       
       </UploadStack.Navigator>
   );
 }
