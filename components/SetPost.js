@@ -5,7 +5,8 @@ import {
   Image,
   Platform,
   TextInput,
-  Pressable
+  Pressable,
+  RefreshControl
 } from "react-native";
 import * as Font from "expo-font";
 import { useRoute, useNavigation } from "@react-navigation/native";
@@ -38,6 +39,16 @@ const styles = {
     borderRadius: 5,
     paddingLeft: 10,
     top: -100,
+  },
+  postDescriptionError: {
+    backgroundColor: "#D9D9D9",
+    width: "60%",
+    height: 100,
+    marginLeft: 150,
+    borderRadius: 5,
+    paddingLeft: 10,
+    top: -100,
+    borderColor: "#F71111",
   },
   postDescriptionFocus: {
     backgroundColor: "#D9D9D9",
@@ -96,6 +107,11 @@ const styles = {
     textAlign: "center",
     fontSize:18,
     color:"#DF85FF",
+  },
+  previewMobileInvalid: {
+    textAlign: "center",
+    fontSize:18,
+    color:"#D9D9D9",
   }
 };
 
@@ -181,7 +197,6 @@ function PreviewImage({ imageSrc }) {
   if (Platform.OS == "web") {
     return <img src={imageSrc.image} style={styles.previewImageWeb} width={100} height={100} alt={"preview image"} />;
   } else {
-    console.log(imageSrc.image);
     return <Image source={{ uri: imageSrc.image }} width={100} height={100} style={styles.previewImageMobile} />;
   }
 }
@@ -196,26 +211,18 @@ export default function DetailsPost() {
   const [selectedSize, setSelectedSize] = useState();
   const [currentStyle, setCurrentStyle] = useState(styles.title);
 
-  const navigation = useNavigation();
+  const [descriptionStyle, setDescriptionStyle] = useState(styles.postDescription);
 
+  const navigation = useNavigation();
   const route = useRoute();
 
   let image = route.params;
 
   useEffect(() => {
     navigation.setOptions({headerRight: () => (
-      <Pressable onPress={()=> {
-        navigation.navigate("Preview", {
-          title:text,
-          description:description,
-          selectedType:selectedType,
-          selectedSize:selectedSize,
-          image:image,
-        });
-      }}>
-      <Text style={styles.previewMobile}>Preview</Text>
-    </Pressable>
-    )})
+
+        <Text style={styles.previewMobileInvalid}>Preview</Text>      
+    )});
     async function loadFont() {
       await Font.loadAsync({
         Inter: require("../assets/fonts/static/Inter-Medium.ttf"),
@@ -236,7 +243,6 @@ export default function DetailsPost() {
   }
 
   function checkSelected() {
-    console.log(selectedType);
     if (selectedType == "Bottoms") {
       setTypeOfSize(bottomSizes);
     } else if (selectedType == "Shoes") {
@@ -256,7 +262,7 @@ export default function DetailsPost() {
         multiline
         onChangeText={setDescription}
         value={description}
-        style={styles.postDescription}
+        style={descriptionStyle}
       ></TextInput>
       <View style={styles.categoryListContainer}>
         <Text style={styles.categoryListLabel}>Clothing Type</Text>
@@ -264,12 +270,43 @@ export default function DetailsPost() {
       </View>
       <View style={styles.sizeContainer}>
         <Text style={styles.categoryListLabel}>Size</Text>
-        <SelectList boxStyles={styles.categoryList} setSelected={(val) => setSelectedSize(val)} data={typeOfSize} save="value"/>
+        <SelectList boxStyles={styles.categoryList} setSelected={(val) => setSelectedSize(val)} data={typeOfSize} save="value" onSelect={() => {
+          navigation.setOptions({headerRight: () => (
+            <Pressable onPress={()=> {
+                navigation.navigate("Preview", {
+                  title:text,
+                  description:description,
+                  selectedType:selectedType,
+                  selectedSize:selectedSize,
+                  image:image,
+                });
+            }}>
+            <Text style={styles.previewMobile}>Preview</Text>
+          </Pressable>
+          )})
+        }}/>
       </View>
       <Text style={styles.categoryListLabel}>Add Tags</Text>
       <TextInput
         multiline
-        onChangeText={setTags}
+        onChangeText={(currentTags) => {
+          console.log(currentTags);
+          setTags(currentTags);
+          navigation.setOptions({headerRight: () => (
+            <Pressable onPress={()=> {
+                navigation.navigate("Preview", {
+                  title:text,
+                  description:description,
+                  selectedType:selectedType,
+                  selectedSize:selectedSize,
+                  tags:currentTags,
+                  image:image,
+                });
+            }}>
+            <Text style={styles.previewMobile}>Preview</Text>
+          </Pressable>
+          )})
+        }}
         value={tags}
         style={styles.tagsContainer}
       ></TextInput>
