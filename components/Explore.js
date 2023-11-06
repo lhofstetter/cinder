@@ -9,6 +9,8 @@ import {
   Platform
 } from "react-native";
 import TinderCard from "react-tinder-card";
+import * as ImagePicker from 'expo-image-picker';
+
 
 const logo = require("../assets/cindr.png");
 
@@ -246,6 +248,8 @@ const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
 const Advanced = () => {
   const [characters, setCharacters] = useState(db);
   const [lastDirection, setLastDirection] = useState();
+  const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
+
   const childRefs = useMemo(
     () =>
       Array(db.length)
@@ -277,7 +281,6 @@ const Advanced = () => {
       childRefs[index].current.swipe(dir); // Swipe the card!
     }
   };
-
   return (
     <View style={styles.container}>
       { Platform.OS == 'web' ? <img src={logo} style={styles.webHeader} alt={"logo"}/> : <Image source={logo} style={styles.mobileHeader}/>}

@@ -54,8 +54,8 @@
   <key>CADisableMinimumFrameDurationOnPhone</key>
   <true/>
   <key>NSPhotoLibraryUsageDescription</key>
-  <string>Photo Library Access Warning</string>
+  <string>$(PRODUCT_NAME) would like access to your photo gallery</string>
   <key>NSCameraUsageDescription</key>
-  <string>Camera Access Warning</string>
+  <string>$(PRODUCT_NAME) would like access to your camera.</string>
 </dict>
 </plist>

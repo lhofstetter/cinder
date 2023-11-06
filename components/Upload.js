@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ImageBackground, Text, View, Image, Pressable, Platform } from "react-native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import { useActionSheet } from "@expo/react-native-action-sheet";
-import { Uploady, useItemFinishListener, useItemProgressListener, useUploady } from "@rpldy/uploady";
 import { useNavigation } from "@react-navigation/native";
+import * as ImagePicker from 'expo-image-picker';
 
 let styles = {
   container: {
@@ -55,13 +55,13 @@ function DisplayPhoto(imageData, width, height) {
     } else {
       return (
         <Image
-          source={{ uri: imageData.imageData.uri }}
+          source={{ uri: imageData.imageData }}
           style={[styles.uploadborder, { width: width, height: height }]}
           borderRadius={10}
           onLoad={() => {
             setTimeout(() => {
               navigation.navigate("New Listing", {
-                image: imageData.imageData.uri,
+                image: imageData.imageData,
               });
             }, 1000);
           }}
@@ -89,7 +89,7 @@ function DisplayPhoto(imageData, width, height) {
     } else {
       return (
         <Image
-          source={{ uri: imageData.imageData.uri }}
+          source={{ uri:imageData.imageData }}
           style={[{ display: "flex" }]}
           height={600}
           width={400}
@@ -97,7 +97,7 @@ function DisplayPhoto(imageData, width, height) {
           onLoad={() => {
             setTimeout(() => {
               navigation.navigate("New Listing", {
-                image: imageData.imageData.uri,
+                image: imageData.imageData,
               });
             }, 1000);
           }}
@@ -111,7 +111,35 @@ export default function UploadItem() {
   const [upload, setUpload] = useState(false); // create a state for whether we are currently uploading or not (whether user has hit the uplaod button)
   const { showActionSheetWithOptions } = useActionSheet();
   const [itemImage, setItemImage] = useState(null);
+  const [status, requestPermission] = ImagePicker.useCameraPermissions();
+
   let inputElement;
+
+  let result;
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setItemImage(result.assets[0].uri);
+    }
+  };
+
+  const takeImage = async () => {
+    requestPermission();
+    result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setItemImage(result.assets[0].uri);
+    }
+  };
 
   const UploadImage = (props) => {
     const handleClick = () => {
@@ -162,7 +190,6 @@ export default function UploadItem() {
         <Pressable
           onPress={() => {
             const options = ["Choose Photo from Library", "Take Photo", "Cancel"];
-
             switch (Platform.OS) {
               case "ios":
                 showActionSheetWithOptions(
@@ -173,15 +200,11 @@ export default function UploadItem() {
                   (selectedIndex) => {
                     switch (selectedIndex) {
                       case 0:
-                        launchImageLibrary({ noData: true }, (response) => {
-                          if (response.assets != null) {
-                            setItemImage(response.assets[0]);
-                          }
-                        });
+                        pickImage();
                         break;
 
                       case 1:
-                        launchCamera({ mediaType: "photo" }, (response) => {});
+                        takeImage();
                         break;
 
                       case 2:
@@ -203,11 +226,11 @@ export default function UploadItem() {
                   (selectedIndex) => {
                     switch (selectedIndex) {
                       case 1:
-                        launchImageLibrary({ noData: true }, (response) => {});
+                        pickImage();
                         break;
 
                       case 2:
-                        launchCamera({ mediaType: "photo" }, (response) => {});
+                        takeImage();
                         break;
 
                       case 3:
