@@ -35,6 +35,7 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-server/server.js
+server/*.js
+server/routers/*.js
 server/db/*.js
 drizzle.config.js

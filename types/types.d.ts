@@ -18,3 +18,12 @@ declare interface ListingData {
   tags?: string[];
   image_links: string[];
 }
+
+/// <reference types="lucia" />
+declare namespace Lucia {
+  type Auth = import("./server/lucia.js").Auth;
+  type DatabaseUserAttributes = {
+    username: string;
+  };
+  type DatabaseSessionAttributes = {};
+}
