@@ -3,18 +3,20 @@ import UploadItem from "./components/Upload.js";
 import Explore from "./components/Explore.js";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Button, View, Text, Platform, Pressable, Image } from "react-native";
 import { SafeAreaView } from "react-native";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import DetailsPost from "./components/SetPost.js";
 import PreviewPost from "./components/Preview.js";
-
+import Profile from "./components/Profile.js";
 
 const homeFocused = require("./assets/home.png");
 const homeUnfocused = require("./assets/home_unfocused.png");
 const uploadFocused = require("./assets/upload.png");
 const uploadUnfocused = require("./assets/upload_unfocused.png");
+const profileFocused = require("./assets/profile.png");
+const profileUnfocused = require("./assets/profile_unfocused.png");
 
 const styles = {
   buttonMobile: {
@@ -23,9 +25,9 @@ const styles = {
   },
   buttonText: {
     textAlign: "center",
-    fontSize:24,
+    fontSize: 24,
   },
-}
+};
 
 function Swipe({ navigation }) {
   return Platform.OS == "ios" ? (
@@ -33,7 +35,17 @@ function Swipe({ navigation }) {
       <Explore />
     </SafeAreaView>
   ) : (
-      <Explore />
+    <Explore />
+  );
+}
+
+function User() {
+  return Platform.OS == "ios" ? (
+    <SafeAreaView>
+      <Profile />
+    </SafeAreaView>
+  ) : (
+    <Profile />
   );
 }
 
@@ -75,19 +87,17 @@ function Preview() {
 
 const UploadStack = createNativeStackNavigator();
 
-function UploadRoute () {
+function UploadRoute() {
   const navigation = useNavigation();
 
   return (
     <UploadStack.Navigator>
-        <UploadStack.Screen name="Upload" component={Upload}/>
-        <UploadStack.Screen name="New Listing" component={Details} options={{headerBackVisible: false}}/> 
-        <UploadStack.Screen name="Preview" component={Preview} options={{headerBackVisible: false}}/>       
-      </UploadStack.Navigator>
+      <UploadStack.Screen name="Upload" component={Upload} />
+      <UploadStack.Screen name="New Listing" component={Details} options={{ headerBackVisible: false }} />
+      <UploadStack.Screen name="Preview" component={Preview} options={{ headerBackVisible: false }} />
+    </UploadStack.Navigator>
   );
 }
-
-
 
 const Tab = createBottomTabNavigator();
 
@@ -95,30 +105,39 @@ export default function App() {
   return (
     <ActionSheetProvider>
       <NavigationContainer>
-        <Tab.Navigator initialRouteName="Swipe" screenOptions={({ route }) => ({
-          presentation: "modal",
-          tabBarIcon: ({ focused }) => {
-            let iconName;
-            let image;
+        <Tab.Navigator
+          initialRouteName="Swipe"
+          screenOptions={({ route }) => ({
+            presentation: "modal",
+            tabBarIcon: ({ focused }) => {
+              let iconName;
+              let image;
 
-            if (route.name === 'Swipe') {
-              iconName = focused ? 'homeFocus' : 'homeUnfocused';
-              image = focused ? homeFocused : homeUnfocused;
-              
-              return (Platform.OS == 'web' ? <img src={image}/> : <Image source={image}/>);
-            } else if (route.name === 'UploadRoute') {
-              iconName = focused ? 'uploadFocus' : 'uploadUnfocused';
-              image = focused ? uploadFocused : uploadUnfocused;
+              if (route.name === "Swipe") {
+                iconName = focused ? "homeFocus" : "homeUnfocused";
+                image = focused ? homeFocused : homeUnfocused;
 
-              return (Platform.OS == 'web' ? <img src={image}/> : <Image source={image}/>);
-            }
-          }, 
-          tabBarActiveTintColor: 'black',
-          tabBarInactiveTintColor: 'gray',
-          tabBarShowLabel: false,
-        })}>
+                return Platform.OS == "web" ? <img src={image} /> : <Image source={image} />;
+              } else if (route.name === "UploadRoute") {
+                iconName = focused ? "uploadFocus" : "uploadUnfocused";
+                image = focused ? uploadFocused : uploadUnfocused;
+
+                return Platform.OS == "web" ? <img src={image} /> : <Image source={image} />;
+              } else if (route.name === "User") {
+                iconName = focused ? "profileFocus" : "profileUnfocused";
+                image = focused ? profileFocused : profileUnfocused;
+
+                return <Image source={image} />;
+              }
+            },
+            tabBarActiveTintColor: "black",
+            tabBarInactiveTintColor: "gray",
+            tabBarShowLabel: false,
+          })}
+        >
           <Tab.Screen name="Swipe" component={Swipe} options={{ headerShown: false }} />
           <Tab.Screen name="UploadRoute" component={UploadRoute} options={{ headerShown: false }} />
+          <Tab.Screen name="User" component={User} options={{ headerShown: false }} />
         </Tab.Navigator>
       </NavigationContainer>
     </ActionSheetProvider>

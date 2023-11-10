@@ -3,7 +3,7 @@ import { ImageBackground, Text, View, Image, Pressable, Platform } from "react-n
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useNavigation } from "@react-navigation/native";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
 
 let styles = {
   container: {
@@ -89,7 +89,7 @@ function DisplayPhoto(imageData, width, height) {
     } else {
       return (
         <Image
-          source={{ uri:imageData.imageData }}
+          source={{ uri: imageData.imageData }}
           style={[{ display: "flex" }]}
           height={600}
           width={400}
