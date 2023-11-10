@@ -1,16 +1,7 @@
 import React, { useState, useMemo } from "react";
-import {
-  ImageBackground,
-  Text,
-  View,
-  Image,
-  Pressable,
-  useWindowDimensions,
-  Platform
-} from "react-native";
+import { ImageBackground, Text, View, Image, Pressable, useWindowDimensions, Platform } from "react-native";
 import TinderCard from "react-tinder-card";
-import * as ImagePicker from 'expo-image-picker';
-
+import * as ImagePicker from "expo-image-picker";
 
 const logo = require("../assets/cindr.png");
 
@@ -112,7 +103,6 @@ let styles = {
     user
 */
 
-
 const db = [
   {
     name: "Dark Jeans, barely worn",
@@ -152,12 +142,7 @@ const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
       key={character.name}
       ref={childRef}
       onTouchStart={(event) => {
-        setColor([
-          [event.nativeEvent.pageX, event.nativeEvent.pageY],
-          1.0,
-          "#fff",
-          "",
-        ]);
+        setColor([[event.nativeEvent.pageX, event.nativeEvent.pageY], 1.0, "#fff", ""]);
       }}
       onTouchMove={(event) => {
         if (color[0] != null) {
@@ -165,7 +150,7 @@ const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
             // moving to the right
             let xRatio;
 
-            xRatio = event.nativeEvent.pageX / (width);
+            xRatio = event.nativeEvent.pageX / width;
             setColor([color[0], 1.0 - xRatio, "#00FF00", "Slay"]);
           } else if (event.nativeEvent.pageX - color[0][0] < -50) {
             let xRatio;
@@ -197,12 +182,7 @@ const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
         }
       }}
       onPressIn={(event) => {
-        setColor([
-          [event.nativeEvent.pageX, event.nativeEvent.pageY],
-          1.0,
-          "#fff",
-          "",
-        ]);
+        setColor([[event.nativeEvent.pageX, event.nativeEvent.pageY], 1.0, "#fff", ""]);
       }}
       onTouchEnd={() => {
         setColor([null, 1.0, "#fff", ""]);
@@ -217,29 +197,21 @@ const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
         onSwipe={(dir) => swiped(dir, character.name)}
         onCardLeftScreen={() => outOfFrame(character.name)}
       >
-       
-          { Platform.OS == 'web' ? 
-           <View style={[styles.cardWeb, { backgroundColor: color[2] }]}>
-            <ImageBackground
-              style={[styles.cardImageWeb, { opacity: color[1] }]}
-              source={character.img}
-            >
-              <Text style={styles.cardTitle}>{character.name}</Text>
-              <Text style={styles.likeOrDislikeText}>{color[3]}</Text>
-            </ImageBackground>        
-          </View>
-          :
-          <View style={[styles.cardMobile, { backgroundColor: color[2] }]}>
-            <ImageBackground
-            style={[styles.cardImageMobile, { opacity: color[1] }]}
-            source={character.img}
-            >
+        {Platform.OS == "web" ? (
+          <View style={[styles.cardWeb, { backgroundColor: color[2] }]}>
+            <ImageBackground style={[styles.cardImageWeb, { opacity: color[1] }]} source={character.img}>
               <Text style={styles.cardTitle}>{character.name}</Text>
               <Text style={styles.likeOrDislikeText}>{color[3]}</Text>
             </ImageBackground>
           </View>
-          }
-          
+        ) : (
+          <View style={[styles.cardMobile, { backgroundColor: color[2] }]}>
+            <ImageBackground style={[styles.cardImageMobile, { opacity: color[1] }]} source={character.img}>
+              <Text style={styles.cardTitle}>{character.name}</Text>
+              <Text style={styles.likeOrDislikeText}>{color[3]}</Text>
+            </ImageBackground>
+          </View>
+        )}
       </TinderCard>
     </Pressable>
   );
@@ -264,16 +236,12 @@ const Advanced = () => {
   };
 
   const outOfFrame = (name) => {
-    charactersState = charactersState.filter(
-      (character) => character.name !== name,
-    );
+    charactersState = charactersState.filter((character) => character.name !== name);
     setCharacters(charactersState);
   };
 
   const swipe = (dir) => {
-    const cardsLeft = characters.filter(
-      (person) => !alreadyRemoved.includes(person.name),
-    );
+    const cardsLeft = characters.filter((person) => !alreadyRemoved.includes(person.name));
     if (cardsLeft.length) {
       const toBeRemoved = cardsLeft[cardsLeft.length - 1].name; // Find the card object to be removed
       const index = db.map((person) => person.name).indexOf(toBeRemoved); // Find the index of which to make the reference to
@@ -283,7 +251,11 @@ const Advanced = () => {
   };
   return (
     <View style={styles.container}>
-      { Platform.OS == 'web' ? <img src={logo} style={styles.webHeader} alt={"logo"}/> : <Image source={logo} style={styles.mobileHeader}/>}
+      {Platform.OS == "web" ? (
+        <img src={logo} style={styles.webHeader} alt={"logo"} />
+      ) : (
+        <Image source={logo} style={styles.mobileHeader} />
+      )}
       <View style={styles.cardContainer}>
         {characters.map((character, index) => (
           <SwipeableCard
