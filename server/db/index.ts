@@ -7,7 +7,7 @@ import * as schema from "./schema";
 const envFilePath = path.resolve(__dirname, "../../.env");
 dotenv.config({ path: envFilePath });
 
-const client = createClient({
+export const client = createClient({
   url: process.env.DATABASE_URL!,
   authToken: process.env.DATABASE_TOKEN,
 });
