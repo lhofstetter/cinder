@@ -11,6 +11,7 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import { Buffer } from "buffer";
 import * as Font from "expo-font";
 import * as FileSystem from "expo-file-system";
+import axios from "axios";
 
 const styles = {
     postMobile: {
@@ -83,32 +84,42 @@ export default function PreviewPost() {
      * @param {*} imageUri 
      */
     const postImage = async (imageUri) => {
-       
+       console.log(imageUri);
        // let fileContent = await FileSystem.readAsStringAsync(source.uri, {encoding: 'base64'});
        // let buf = Buffer.from(fileContent, "base64");
        let form = new FormData();
-       form.append("file", {
-            name: imageUri.fileName,
-            type: imageUri.type,
-            uri: imageUri.uri
-                //Platform.OS === 'android' ? imageUri.uri : imageUri.uri.replace('file://', ''),
-       }); 
+       //const data = newf URLSearchParams();
+       console.log(imageUri)
+       form.append("file", {uri: imageUri.uri, type:imageUri.fileType, name:imageUri.fileName}); 
        form.append("listing_name", details.title);
        form.append("description", details.description);
        form.append("category", details.selectedType);
        form.append("tags", tags.split(" "));
+       form.append("price", Number(details.price.replace("$", "")));
 
+       /*
+       axios({
+        method: "POST",
+        url: "http://localhost:3000/listing",
+        headers: {
+          "Content-Type": "multipart/form-data", // add this
+        },
+        form, //pass datas directly
+      });
+    */
+        
        fetch("http://127.0.0.1:3000/listing", {
             method: "POST",
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-            form,
+            body: form,
         }).then((data) => {
             console.log(data);
         })
+        
     }
-
+    
     useEffect(() => {
         navigation.setOptions({headerRight: () => (
           <Pressable onPress={()=> {

@@ -219,8 +219,6 @@ app.get("/listing/:listing_id", validateListingId, async (req: Request, res: Res
 app.post("/listing", async (req: Request, res: Response) => {
   // Extract the images from the request
   try {
-    console.log(req);
-
     const imageUrlPromises = [];
     if (!req.files?.file) {
       return res.status(400).json({ error: "No image provided for listing" });
