@@ -130,3 +130,43 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 > | `500`     | `application/json` | `{"error":"status 500, failed to upload image"}` |
 
 </details>
+
+<details>
+ <summary><code>POST</code> <code><b>/signup</b></code> <code>(Creates an account with a username and password)</code></summary>
+
+##### Parameters
+
+> | name              | type     | data type          | description                                                                  |
+> | --------------    | -------- | ------------------ | ------------------------------------------------------------------           |
+> | `username`        | required | string             | The username of the user                                                     |
+> | `password`        | required | string             | The user's password                                                          |
+
+##### Responses
+
+> | http code | content-type       | response                                         |
+> | --------- | ------------------ | ------------------------------------------------ |
+> | `200`     | `application/json` | `{"OK"}`                                         |
+> | `400`     | `application/json` | `{"Invalid username or password"}`               |
+> | `500`     | `application/json` | `{"An unknown error occurred"}`                  |
+
+</details>
+
+<details>
+ <summary><code>POST</code> <code><b>/login</b></code> <code>(Signs in a user using their username and password)</code></summary>
+
+##### Parameters
+
+> | name              | type     | data type          | description                                                                  |
+> | --------------    | -------- | ------------------ | ------------------------------------------------------------------           |
+> | `username`        | required | string             | The username of the user                                                     |
+> | `password`        | required | string             | The user's password                                                          |
+
+##### Responses
+
+> | http code | content-type       | response                                         |
+> | --------- | ------------------ | ------------------------------------------------ |
+> | `200`     | `application/json` | `{"OK"}`                                         |
+> | `400`     | `application/json` | `{"Incorrect username or password"}`             |
+> | `500`     | `application/json` | `{"An unknown error occurred"}`                  |
+
+</details>
