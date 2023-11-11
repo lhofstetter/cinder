@@ -69,40 +69,39 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 
 </details>
 
-
 <details>
  <summary><code>GET</code> <code><b>/listing/:listing_id</b></code> <code>(Gets the data for a particular listing id)</code></summary>
 
- ##### Parameters
+##### Parameters
 
-> | name           | type     | data type          | description                                                        |
-> | -------------- | -------- | ------------------ | ------------------------------------------------------------------ |
-> | `listing_id`   | required | number             | The id for the listing you want data for                           |
+> | name         | type     | data type | description                              |
+> | ------------ | -------- | --------- | ---------------------------------------- |
+> | `listing_id` | required | number    | The id for the listing you want data for |
 
 ##### Responses
 
-> | http code | content-type       | response                                         |
-> | --------- | ------------------ | ------------------------------------------------ |
-> | `200`     | `application/json` | `{"message": "OK"}`                              |
-> | `400`     | `application/json` | `{"No listing with that id exists"}`             |
-> | `500`     | `application/json` | `Server Error`                                   |
+> | http code | content-type       | response                             |
+> | --------- | ------------------ | ------------------------------------ |
+> | `200`     | `application/json` | `{"message": "OK"}`                  |
+> | `400`     | `application/json` | `{"No listing with that id exists"}` |
+> | `500`     | `application/json` | `Server Error`                       |
 
 </details>
 <details>
  <summary><code>DELETE</code> <code><b>/listing/:listing_id</b></code> <code>(Deletes a specified listing from the database)</code></summary>
 
- ##### Parameters
+##### Parameters
 
-> | name           | type     | data type          | description                                                        |
-> | -------------- | -------- | ------------------ | ------------------------------------------------------------------ |
-> | `listing_id`   | required | number             | The id for the listing you want to delete                          |
+> | name         | type     | data type | description                               |
+> | ------------ | -------- | --------- | ----------------------------------------- |
+> | `listing_id` | required | number    | The id for the listing you want to delete |
 
 ##### Responses
 
-> | http code | content-type       | response                                         |
-> | --------- | ------------------ | ------------------------------------------------ |
-> | `200`     | `application/json` | `{"message": "OK"}`                              |
-> | `500`     | `application/json` | `{"error": "some error"}`                        |
+> | http code | content-type       | response                  |
+> | --------- | ------------------ | ------------------------- |
+> | `200`     | `application/json` | `{"message": "OK"}`       |
+> | `500`     | `application/json` | `{"error": "some error"}` |
 
 </details>
 
@@ -111,16 +110,16 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 
 ##### Parameters
 
-> | name              | type     | data type          | description                                                                  |
-> | --------------    | -------- | ------------------ | ------------------------------------------------------------------           |
-> | `file`            | required | Buffer or Buffer[] | The binary of an image, can be more than one                                 |
-> | `listing_name`    | required | string             | The name of the listing                                                      |
-> | `price`           | optional | number             | The price of the listing                                                     |
-> | `description`     | required | string             | The description for the listing                                              |
-> | `category`        | required | string             | The category the listing is for (top, bottom, accessory, or shoes)           |
-> | `tags`            | required | string[] or string | The user generated tags for the listing                                      |
-> | `tags_to_remove`  | required | string             | The user provided tag(s) previously on the listing you are wanting to remove |
-> | `images_to_remove`| required | string[] or string | The image url(s) previously for the listing you are wanting to remove        |
+> | name               | type     | data type          | description                                                                  |
+> | ------------------ | -------- | ------------------ | ---------------------------------------------------------------------------- |
+> | `file`             | required | Buffer or Buffer[] | The binary of an image, can be more than one                                 |
+> | `listing_name`     | required | string             | The name of the listing                                                      |
+> | `price`            | optional | number             | The price of the listing                                                     |
+> | `description`      | required | string             | The description for the listing                                              |
+> | `category`         | required | string             | The category the listing is for (top, bottom, accessory, or shoes)           |
+> | `tags`             | required | string[] or string | The user generated tags for the listing                                      |
+> | `tags_to_remove`   | required | string             | The user provided tag(s) previously on the listing you are wanting to remove |
+> | `images_to_remove` | required | string[] or string | The image url(s) previously for the listing you are wanting to remove        |
 
 ##### Responses
 
@@ -129,6 +128,65 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 > | `200`     | `application/json` | `{"message": "OK"}`                              |
 > | `400`     | `application/json` | `{"error":"No image provided for listing"}`      |
 > | `500`     | `application/json` | `{"error":"status 500, failed to upload image"}` |
+
+</details>
+
+<details>
+ <summary><code>POST</code> <code><b>/signup</b></code> <code>(Creates an account with a username and password)</code></summary>
+
+##### Parameters
+
+> | name              | type     | data type          | description                                                                  |
+> | --------------    | -------- | ------------------ | ------------------------------------------------------------------           |
+> | `username`        | required | string             | The username of the user                                                     |
+> | `password`        | required | string             | The user's password                                                          |
+
+##### Responses
+
+> | http code | content-type       | response                                         |
+> | --------- | ------------------ | ------------------------------------------------ |
+> | `200`     | `application/json` | `{"OK"}`                                         |
+> | `400`     | `application/json` | `{"Invalid username or password"}`               |
+> | `500`     | `application/json` | `{"An unknown error occurred"}`                  |
+
+</details>
+
+<details>
+ <summary><code>POST</code> <code><b>/login</b></code> <code>(Signs in a user using their username and password)</code></summary>
+
+##### Parameters
+
+> | name              | type     | data type          | description                                                                  |
+> | --------------    | -------- | ------------------ | ------------------------------------------------------------------           |
+> | `username`        | required | string             | The username of the user                                                     |
+> | `password`        | required | string             | The user's password                                                          |
+
+##### Responses
+
+> | http code | content-type       | response                                         |
+> | --------- | ------------------ | ------------------------------------------------ |
+> | `200`     | `application/json` | `{"OK"}`                                         |
+> | `400`     | `application/json` | `{"Incorrect username or password"}`             |
+> | `500`     | `application/json` | `{"An unknown error occurred"}`                  |
+
+</details>
+
+# Component Documentation
+
+<details>
+ <summary><code>DetailsPost</code> <code>(Lets the user input details when they create a listing)</code></summary>
+
+##### Props
+
+</details>
+
+<details>
+ <summary><code>PreviewImage</code> <code>(Lets the user preview the image they are including in their listing)</code></summary>
+
+##### Props
+> | name              | description                                                                  |
+> | --------------    | ------------------------------------------------------------------           |
+> | `imageSrc`        | Source of the image                                                          |
 
 </details>
 
