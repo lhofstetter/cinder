@@ -26,7 +26,7 @@ const styles = {
     fontFamily: "Inter",
     fontSize: 24,
     borderBottomColor: "#DF85FF",
-    borderBottomWidth: 3,
+    borderBottomWidth: 2,
     width: 200,
     marginLeft: 25,
     marginTop: 20,
@@ -57,6 +57,7 @@ const styles = {
     height: 100,
     marginLeft: 150,
     borderRadius: 5,
+    borderWidth:2,
     paddingLeft: 10,
     top: -100,
   },
@@ -195,9 +196,9 @@ const CustomText = (props) => {
 
 function PreviewImage({ imageSrc }) {
   if (Platform.OS == "web") {
-    return <img src={imageSrc.image} style={styles.previewImageWeb} width={100} height={100} alt={"preview image"} />;
+    return <img src={imageSrc} style={styles.previewImageWeb} width={100} height={100} alt={"preview image"} />;
   } else {
-    return <Image source={{ uri: imageSrc.image }} width={100} height={100} style={styles.previewImageMobile} />;
+    return <Image source={{ uri: imageSrc }} width={100} height={100} style={styles.previewImageMobile} />;
   }
 }
 
@@ -220,7 +221,6 @@ export default function DetailsPost() {
 
   useEffect(() => {
     navigation.setOptions({headerRight: () => (
-
         <Text style={styles.previewMobileInvalid}>Preview</Text>      
     )});
     async function loadFont() {
@@ -235,11 +235,21 @@ export default function DetailsPost() {
   }, []);
 
   function handleFocus () {
+    setText("");
     setCurrentStyle(styles.titleFocus);
   }
 
   function handleUnfocus () {
     setCurrentStyle(styles.title);
+  }
+
+  function handleDescriptionFocus() {
+    setDescription("");
+    setDescriptionStyle(styles.postDescriptionFocus);
+  }
+
+  function handleDescriptionUnfocus() {
+    setDescriptionStyle(styles.postDescription);
   }
 
   function checkSelected() {
@@ -253,13 +263,14 @@ export default function DetailsPost() {
       setTypeOfSize(topSizes);
     }
   }
-
   return (
     <View>
       <TextInput onFocus={handleFocus} onEndEditing={handleUnfocus} onChangeText={setText} value={text} style={currentStyle}></TextInput>
-      <PreviewImage imageSrc={image} />
+      <PreviewImage imageSrc={image.image.uri} />
       <TextInput
         multiline
+        onFocus={handleDescriptionFocus}
+        onEndEditing={handleDescriptionUnfocus}
         onChangeText={setDescription}
         value={description}
         style={descriptionStyle}
@@ -279,6 +290,7 @@ export default function DetailsPost() {
                   selectedType:selectedType,
                   selectedSize:selectedSize,
                   image:image,
+                  tags:"",
                 });
             }}>
             <Text style={styles.previewMobile}>Preview</Text>
@@ -290,7 +302,6 @@ export default function DetailsPost() {
       <TextInput
         multiline
         onChangeText={(currentTags) => {
-          console.log(currentTags);
           setTags(currentTags);
           navigation.setOptions({headerRight: () => (
             <Pressable onPress={()=> {

@@ -118,7 +118,7 @@ export default function App() {
           tabBarShowLabel: false,
         })}>
           <Tab.Screen name="Swipe" component={Swipe} options={{ headerShown: false }} />
-          <Tab.Screen name="UploadRoute" component={UploadRoute} options={{ headerShown: false }} />
+          <Tab.Screen name="UploadRoute" component={UploadRoute} options={{ headerShown: false, unmountOnBlur: true }} />
         </Tab.Navigator>
       </NavigationContainer>
     </ActionSheetProvider>

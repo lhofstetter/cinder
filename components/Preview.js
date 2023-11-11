@@ -8,7 +8,9 @@ import {
   Pressable
 } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import { Buffer } from "buffer";
 import * as Font from "expo-font";
+import * as FileSystem from "expo-file-system";
 
 const styles = {
     postMobile: {
@@ -56,8 +58,6 @@ const styles = {
 };
 
 
-
-
 export default function PreviewPost() {
     const route = useRoute();
     const navigation = useNavigation();
@@ -65,10 +65,55 @@ export default function PreviewPost() {
 
     let details = route.params;
 
+    let preTags = [];
+    if (details.tags.indexOf(",") != -1) {
+        preTags = details.tags.split(",");
+    }  
+    
+    let tags = "";
+    
+    for (let i = 0; i < preTags.length; i++) {
+        while (preTags[i].indexOf(" ") != -1) {
+            preTags[i] = preTags[i].replace(" ", "");
+        }
+        tags += ("#" + preTags[i] + " ");
+    }
+    /**
+     * @todo: change so that image type adapts to different types of images, not just jpegs
+     * @param {*} imageUri 
+     */
+    const postImage = async (imageUri) => {
+       
+       // let fileContent = await FileSystem.readAsStringAsync(source.uri, {encoding: 'base64'});
+       // let buf = Buffer.from(fileContent, "base64");
+       let form = new FormData();
+       form.append("file", {
+            name: imageUri.fileName,
+            type: imageUri.type,
+            uri: imageUri.uri
+                //Platform.OS === 'android' ? imageUri.uri : imageUri.uri.replace('file://', ''),
+       }); 
+       form.append("listing_name", details.title);
+       form.append("description", details.description);
+       form.append("category", details.selectedType);
+       form.append("tags", tags.split(" "));
+
+       fetch("http://127.0.0.1:3000/listing", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            form,
+        }).then((data) => {
+            console.log(data);
+        })
+    }
+
     useEffect(() => {
         navigation.setOptions({headerRight: () => (
           <Pressable onPress={()=> {
-            
+            console.log(details);
+            postImage(details.image.image);
             navigation.navigate("Swipe");
           }}>
           <Text style={styles.postMobile}>Post</Text>
@@ -85,18 +130,10 @@ export default function PreviewPost() {
         loadFont();
       }, []);
     
-    let preTags = details.tags.split(",");
-    let tags = "";
-    
-    for (let i = 0; i < preTags.length; i++) {
-        while (preTags[i].indexOf(" ") != -1) {
-            preTags[i] = preTags[i].replace(" ", "");
-        }
-        tags += ("#" + preTags[i] + " ");
-    }
+   
     return (
         <View>
-            <Image source={{uri: details.image.image}} style={{width:500, height:500}}/>
+            <Image source={{uri: details.image.image.uri}} style={{width:500, height:500}}/>
             <View style={styles.postMobileTitles}>
                 <Text style={styles.postMobileTitle}>{details.title}</Text>
                 <Text style={styles.postMobileSubtitle}>Size {details.selectedSize} • {details.selectedType}</Text>

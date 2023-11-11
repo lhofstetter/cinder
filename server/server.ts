@@ -1,7 +1,6 @@
 import axios from "axios";
 import { listings, images, tags } from "./db/schema";
 import { db } from "./db";
-import { authHandler } from "./routers/auth";
 import express, { Request, Response } from "express";
 import cors from "cors";
 import fileUpload, { UploadedFile } from "express-fileupload";
@@ -20,10 +19,6 @@ if (CLIENT_ID === undefined) {
 const app = express();
 
 app.use(cors(), fileUpload());
-app.use(express.urlencoded()); // for application/x-www-form-urlencoded (forms)
-app.use(express.json()); // for application/json
-
-app.use("/auth", authHandler);
 
 // This route is temporary
 // Can be used to test POST /listing
@@ -224,6 +219,8 @@ app.get("/listing/:listing_id", validateListingId, async (req: Request, res: Res
 app.post("/listing", async (req: Request, res: Response) => {
   // Extract the images from the request
   try {
+    console.log(req);
+
     const imageUrlPromises = [];
     if (!req.files?.file) {
       return res.status(400).json({ error: "No image provided for listing" });

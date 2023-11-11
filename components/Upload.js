@@ -34,11 +34,12 @@ let styles = {
 
 function DisplayPhoto(imageData, width, height) {
   const navigation = useNavigation();
+  console.log(imageData.imageData);
   if (width != null && height != null) {
     if (Platform.OS == "web") {
       return (
         <img
-          src={imageData.imageData}
+          src={imageData.imageData.uri}
           style={{ borderRadius: 10 }}
           width={width}
           height={height}
@@ -55,7 +56,7 @@ function DisplayPhoto(imageData, width, height) {
     } else {
       return (
         <Image
-          source={{ uri: imageData.imageData }}
+          source={{ uri: imageData.imageData.uri }}
           style={[styles.uploadborder, { width: width, height: height }]}
           borderRadius={10}
           onLoad={() => {
@@ -72,7 +73,7 @@ function DisplayPhoto(imageData, width, height) {
     if (Platform.OS == "web") {
       return (
         <img
-          src={imageData.imageData}
+          src={imageData.imageData.uri}
           style={{ borderRadius: 10 }}
           width={400}
           height={600}
@@ -89,7 +90,7 @@ function DisplayPhoto(imageData, width, height) {
     } else {
       return (
         <Image
-          source={{ uri:imageData.imageData }}
+          source={{ uri:imageData.imageData.uri }}
           style={[{ display: "flex" }]}
           height={600}
           width={400}
@@ -125,7 +126,7 @@ export default function UploadItem() {
     });
 
     if (!result.canceled) {
-      setItemImage(result.assets[0].uri);
+      setItemImage(result.assets[0]);
     }
   };
 
@@ -137,7 +138,7 @@ export default function UploadItem() {
     });
 
     if (!result.canceled) {
-      setItemImage(result.assets[0].uri);
+      setItemImage(result.assets[0]);
     }
   };
 
