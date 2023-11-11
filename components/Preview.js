@@ -59,19 +59,6 @@ export default function PreviewPost() {
 
   let details = route.params;
 
-    let preTags = [];
-    if (details.tags.indexOf(",") != -1) {
-        preTags = details.tags.split(",");
-    }  
-    
-    let tags = "";
-    
-    for (let i = 0; i < preTags.length; i++) {
-        while (preTags[i].indexOf(" ") != -1) {
-            preTags[i] = preTags[i].replace(" ", "");
-        }
-        tags += ("#" + preTags[i] + " ");
-    }
     /**
      * @todo: change so that image type adapts to different types of images, not just jpegs
      * @param {*} imageUri 
@@ -133,15 +120,19 @@ export default function PreviewPost() {
     loadFont();
   }, []);
 
-  let preTags = details.tags.split(",");
-  let tags = "";
-
-  for (let i = 0; i < preTags.length; i++) {
-    while (preTags[i].indexOf(" ") != -1) {
-      preTags[i] = preTags[i].replace(" ", "");
+  let preTags = [];
+    if (details.tags.indexOf(",") != -1) {
+        preTags = details.tags.split(",");
+    }  
+    
+    let tags = "";
+    
+    for (let i = 0; i < preTags.length; i++) {
+        while (preTags[i].indexOf(" ") != -1) {
+            preTags[i] = preTags[i].replace(" ", "");
+        }
+        tags += ("#" + preTags[i] + " ");
     }
-    tags += "#" + preTags[i] + " ";
-  }
   return (
     <View>
       <Image source={{ uri: details.image.image }} style={{ width: 500, height: 500 }} />
