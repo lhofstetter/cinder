@@ -170,3 +170,23 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 > | `500`     | `application/json` | `{"An unknown error occurred"}`                  |
 
 </details>
+
+# Component Documentation
+
+<details>
+ <summary><code>DetailsPost</code> <code>(Lets the user input details when they create a listing)</code></summary>
+
+##### Props
+
+</details>
+
+<details>
+ <summary><code>PreviewImage</code> <code>(Lets the user preview the image they are including in their listing)</code></summary>
+
+##### Props
+> | name              | description                                                                  |
+> | --------------    | ------------------------------------------------------------------           |
+> | `imageSrc`        | Source of the image                                                          |
+
+</details>
+
