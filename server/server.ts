@@ -1,7 +1,6 @@
 import axios from "axios";
 import { listings, images, tags } from "./db/schema";
 import { db } from "./db";
-import { authHandler } from "./routers/auth";
 import express, { Request, Response } from "express";
 import cors from "cors";
 import fileUpload, { UploadedFile } from "express-fileupload";
@@ -20,10 +19,6 @@ if (CLIENT_ID === undefined) {
 const app = express();
 
 app.use(cors(), fileUpload());
-app.use(express.urlencoded()); // for application/x-www-form-urlencoded (forms)
-app.use(express.json()); // for application/json
-
-app.use("/auth", authHandler);
 
 // This route is temporary
 // Can be used to test POST /listing

@@ -136,7 +136,7 @@ export default function App() {
           })}
         >
           <Tab.Screen name="Swipe" component={Swipe} options={{ headerShown: false }} />
-          <Tab.Screen name="UploadRoute" component={UploadRoute} options={{ headerShown: false }} />
+          <Tab.Screen name="UploadRoute" component={UploadRoute} options={{ headerShown: false, unmountOnBlur: true }} />
           <Tab.Screen name="User" component={User} options={{ headerShown: false }} />
         </Tab.Navigator>
       </NavigationContainer>

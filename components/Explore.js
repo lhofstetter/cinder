@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { ImageBackground, Text, View, Image, Pressable, useWindowDimensions, Platform } from "react-native";
 import TinderCard from "react-tinder-card";
-import * as ImagePicker from "expo-image-picker";
+import * as ImagePicker from 'expo-image-picker';
 
 const logo = require("../assets/cindr.png");
 
@@ -135,7 +135,7 @@ let charactersState = db; // This fixes issues with updating characters state fo
 
 const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
   const [color, setColor] = useState([null, 1.0, "#fff", ""]);
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
 
   return (
     <Pressable

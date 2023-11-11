@@ -13,15 +13,17 @@ const styles = {
     width: 200,
     marginLeft: 25,
     marginTop: 20,
+    bottom:-7,
   },
   titleFocus: {
     fontFamily: "Inter",
     fontSize: 24,
     borderBottomColor: "#DF85FF",
-    borderBottomWidth: 3,
+    borderBottomWidth: 1,
     width: 200,
     marginLeft: 25,
     marginTop: 20,
+    bottom:-7,
   },
   postDescription: {
     backgroundColor: "#D9D9D9",
@@ -30,7 +32,7 @@ const styles = {
     marginLeft: 150,
     borderRadius: 5,
     paddingLeft: 10,
-    top: -100,
+    top: -130,
   },
   postDescriptionError: {
     backgroundColor: "#D9D9D9",
@@ -39,7 +41,7 @@ const styles = {
     marginLeft: 150,
     borderRadius: 5,
     paddingLeft: 10,
-    top: -100,
+    top: -140,
     borderColor: "#F71111",
   },
   postDescriptionFocus: {
@@ -49,8 +51,9 @@ const styles = {
     height: 100,
     marginLeft: 150,
     borderRadius: 5,
+    borderWidth:2,
     paddingLeft: 10,
-    top: -100,
+    top: -130,
   },
   previewImageWeb: {
     display: "flex",
@@ -63,11 +66,12 @@ const styles = {
     marginLeft: 25,
     borderRadius: 10,
     marginTop: 20,
+    top:-30,
   },
   categoryListContainer: {
     borderTopColor: "#C6C6C6",
     borderTopWidth: 1,
-    marginTop: -80,
+    marginTop:-100,
   },
   categoryList: {
     width: "40%",
@@ -102,9 +106,29 @@ const styles = {
   },
   previewMobileInvalid: {
     textAlign: "center",
-    fontSize: 18,
-    color: "#D9D9D9",
+    fontSize:18,
+    color:"#D9D9D9",
   },
+  priceFocus: {
+    borderWidth: 2,
+    borderRadius:5,
+    borderColor:"#DF85FF",
+    width: "20%",
+    height:"8%",
+    display:"flex",
+    marginLeft:"70%",
+    bottom:30,
+  },
+  priceUnfocus: {
+    borderWidth: 2,
+    borderRadius:5,
+    borderColor:"#C6C6C6",
+    width: "20%",
+    height:"8%",
+    display:"flex",
+    marginLeft:"70%",
+    bottom:30,
+  }
 };
 
 const categories = [
@@ -185,9 +209,9 @@ const CustomText = (props) => {
 
 function PreviewImage({ imageSrc }) {
   if (Platform.OS == "web") {
-    return <img src={imageSrc.image} style={styles.previewImageWeb} width={100} height={100} alt={"preview image"} />;
+    return <img src={imageSrc} style={styles.previewImageWeb} width={100} height={100} alt={"preview image"} />;
   } else {
-    return <Image source={{ uri: imageSrc.image }} width={100} height={100} style={styles.previewImageMobile} />;
+    return <Image source={{ uri: imageSrc }} width={100} height={100} style={styles.previewImageMobile} />;
   }
 }
 
@@ -200,8 +224,9 @@ export default function DetailsPost() {
   const [typeOfSize, setTypeOfSize] = useState(defaultSizes);
   const [selectedSize, setSelectedSize] = useState();
   const [currentStyle, setCurrentStyle] = useState(styles.title);
-
+  const [currentPrice, setCurrentPrice] = useState("$0.00");
   const [descriptionStyle, setDescriptionStyle] = useState(styles.postDescription);
+  const [priceBoxStyle, setPriceBoxStyle] = useState(styles.priceUnfocus);
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -209,7 +234,10 @@ export default function DetailsPost() {
   let image = route.params;
 
   useEffect(() => {
-    navigation.setOptions({ headerRight: () => <Text style={styles.previewMobileInvalid}>Preview</Text> });
+    navigation.setOptions({headerRight: () => (
+        <Text style={styles.previewMobileInvalid}>Preview</Text>      
+    )});
+
     async function loadFont() {
       await Font.loadAsync({
         Inter: require("../assets/fonts/static/Inter-Medium.ttf"),
@@ -221,13 +249,35 @@ export default function DetailsPost() {
     loadFont();
   }, []);
 
-  function handleFocus() {
+  function handleFocus () {
+    setText("");
     setCurrentStyle(styles.titleFocus);
   }
 
   function handleUnfocus() {
     setCurrentStyle(styles.title);
   }
+
+  function handleDescriptionFocus() {
+    setDescription("");
+    setDescriptionStyle(styles.postDescriptionFocus);
+  }
+
+  function handleDescriptionUnfocus() {
+    setDescriptionStyle(styles.postDescription);
+  }
+
+  function handleChange (text) {
+    setCurrentPrice(text.replace(/[^0-9.$]/g, ''))
+  }
+
+  function handlePriceFocus() {
+    setPriceBoxStyle(styles.priceFocus);
+  }
+  function handlePriceUnfocus() {
+    setPriceBoxStyle(styles.priceUnfocus);
+  }
+ 
 
   function checkSelected() {
     if (selectedType == "Bottoms") {
@@ -240,15 +290,18 @@ export default function DetailsPost() {
       setTypeOfSize(topSizes);
     }
   }
-
   return (
     <View>
+      <TextInput onFocus={handleFocus} onEndEditing={handleUnfocus} onChangeText={setText} value={text} style={currentStyle}></TextInput>
+      <TextInput onEndEditing={handlePriceUnfocus} onFocus={handlePriceFocus} onChangeText={(text) => handleChange(text)} value={currentPrice} style={priceBoxStyle} inputMode={"decimal"}></TextInput>
+      <PreviewImage imageSrc={image.image.uri}/>
       <TextInput
-        onFocus={handleFocus}
-        onEndEditing={handleUnfocus}
-        onChangeText={setText}
-        value={text}
-        style={currentStyle}
+        multiline
+        onFocus={handleDescriptionFocus}
+        onEndEditing={handleDescriptionUnfocus}
+        onChangeText={setDescription}
+        value={description}
+        style={descriptionStyle}
       ></TextInput>
       <PreviewImage imageSrc={image} />
       <TextInput multiline onChangeText={setDescription} value={description} style={descriptionStyle}></TextInput>
@@ -264,37 +317,28 @@ export default function DetailsPost() {
       </View>
       <View style={styles.sizeContainer}>
         <Text style={styles.categoryListLabel}>Size</Text>
-        <SelectList
-          boxStyles={styles.categoryList}
-          setSelected={(val) => setSelectedSize(val)}
-          data={typeOfSize}
-          save="value"
-          onSelect={() => {
-            navigation.setOptions({
-              headerRight: () => (
-                <Pressable
-                  onPress={() => {
-                    navigation.navigate("Preview", {
-                      title: text,
-                      description: description,
-                      selectedType: selectedType,
-                      selectedSize: selectedSize,
-                      image: image,
-                    });
-                  }}
-                >
-                  <Text style={styles.previewMobile}>Preview</Text>
-                </Pressable>
-              ),
-            });
-          }}
-        />
+        <SelectList boxStyles={styles.categoryList} setSelected={(val) => setSelectedSize(val)} data={typeOfSize} save="value" onSelect={() => {
+          navigation.setOptions({headerRight: () => (
+            <Pressable onPress={()=> {
+                navigation.navigate("Preview", {
+                  title:text,
+                  description:description,
+                  selectedType:selectedType,
+                  selectedSize:selectedSize,
+                  image:image,
+                  tags:"",
+                  price:currentPrice,
+                });
+            }}>
+            <Text style={styles.previewMobile}>Preview</Text>
+          </Pressable>
+          )})
+        }}/>
       </View>
       <Text style={styles.categoryListLabel}>Add Tags</Text>
       <TextInput
         multiline
         onChangeText={(currentTags) => {
-          console.log(currentTags);
           setTags(currentTags);
           navigation.setOptions({
             headerRight: () => (
