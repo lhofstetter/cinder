@@ -196,6 +196,7 @@ const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
         key={character.name}
         onSwipe={(dir) => swiped(dir, character.name)}
         onCardLeftScreen={() => outOfFrame(character.name)}
+        preventSwipe={['up', 'down']}
       >
         {Platform.OS == "web" ? (
           <View style={[styles.cardWeb, { backgroundColor: color[2] }]}>
