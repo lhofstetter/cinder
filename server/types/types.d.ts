@@ -5,7 +5,7 @@ declare interface ListingFormData {
   price?: string;
   description: string;
   category: Category;
-  tags?: string | string[];
+  tags?: string|string[];
 }
 
 declare interface ListingData {
@@ -21,10 +21,7 @@ declare interface ListingData {
 
 /// <reference types="lucia" />
 declare namespace Lucia {
-  type Auth = import("./server/lucia.js").Auth;
-  type DatabaseUserAttributes = {
-    username: string;
-    profile_pic?: string;
-  };
+  type Auth = import("../lucia.js").Auth;
+  type DatabaseUserAttributes = { username: string; profile_pic?: string; };
   type DatabaseSessionAttributes = {};
 }

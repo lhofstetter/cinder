@@ -38,4 +38,4 @@ yarn-error.*
 server/*.js
 server/routers/*.js
 server/db/*.js
-drizzle.config.js
+server/drizzle.config.js
