@@ -1,5 +1,33 @@
 import { sql, InferSelectModel } from "drizzle-orm";
-import { integer, text, sqliteTable, primaryKey } from "drizzle-orm/sqlite-core";
+import { integer, text, sqliteTable, primaryKey, blob } from "drizzle-orm/sqlite-core";
+
+export const user = sqliteTable("user", {
+  id: text("id").primaryKey(),
+  username: text("username").notNull(),
+  profile_pic: text("profile_pic"), // Optional: url to imgur link with profile pic
+  // other user attributes
+});
+
+export const session = sqliteTable("user_session", {
+  id: text("id").primaryKey(),
+  user_id: text("user_id")
+    .notNull()
+    .references(() => user.id),
+  active_expires: blob("active_expires", {
+    mode: "bigint",
+  }).notNull(),
+  idle_expires: blob("idle_expires", {
+    mode: "bigint",
+  }).notNull(),
+});
+
+export const key = sqliteTable("user_key", {
+  id: text("id").primaryKey(),
+  user_id: text("user_id")
+    .notNull()
+    .references(() => user.id),
+  hashed_password: text("hashed_password"),
+});
 
 export const listings = sqliteTable("listings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
