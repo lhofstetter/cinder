@@ -24,6 +24,7 @@ declare namespace Lucia {
   type Auth = import("./server/lucia.js").Auth;
   type DatabaseUserAttributes = {
     username: string;
+    profile_pic?: string;
   };
   type DatabaseSessionAttributes = {};
 }
