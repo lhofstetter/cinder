@@ -1,12 +1,16 @@
 import axios from "axios";
-import { listings, images, tags } from "./db/schema";
-import { db } from "./db";
+import { listings, images, tags } from "./db/schema.js";
+import { db } from "./db/index.js";
+import { authHandler } from "./routers/auth.js";
 import express, { Request, Response } from "express";
 import cors from "cors";
 import fileUpload, { UploadedFile } from "express-fileupload";
 import { eq, and } from "drizzle-orm";
 import dotenv from "dotenv";
 import * as path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const envFilePath = path.resolve(__dirname, "../.env");
 dotenv.config({ path: envFilePath });
 
@@ -19,6 +23,9 @@ if (CLIENT_ID === undefined) {
 const app = express();
 
 app.use(cors(), fileUpload());
+app.use(express.json());
+app.use(express.urlencoded());
+app.use("/auth", authHandler);
 
 // This route is temporary
 // Can be used to test POST /listing
@@ -93,7 +100,7 @@ app.get("/recommended", async (req: Request, res: Response) => {
 app.put("/listing/:listing_id", validateListingId, async (req: Request, res: Response) => {
   try {
     let { listing_id: listing_id_string } = req.params;
-    const listing_id = parseInt(listing_id_string);
+    const listing_id = parseInt(listing_id_string as string);
 
     const imageUrlPromises = [];
     if (!req.files?.file) {
@@ -147,7 +154,7 @@ app.put("/listing/:listing_id", validateListingId, async (req: Request, res: Res
  */
 app.delete("/listing/:listing_id", validateListingId, async (req: Request, res: Response) => {
   let { listing_id: listing_id_string } = req.params;
-  const listing_id = parseInt(listing_id_string);
+  const listing_id = parseInt(listing_id_string as string);
   try {
     const deleteQueue = [];
     deleteQueue.push(db.delete(images).where(eq(images.listing_id, listing_id)));
@@ -170,7 +177,7 @@ app.delete("/listing/:listing_id", validateListingId, async (req: Request, res: 
  */
 app.get("/listing/:listing_id", validateListingId, async (req: Request, res: Response) => {
   let { listing_id: listing_id_string } = req.params;
-  const listing_id = parseInt(listing_id_string);
+  const listing_id = parseInt(listing_id_string as string);
   try {
     // Get the listing's data from the DB
     const listingDataFromDb = await db.select().from(listings).where(eq(listings.id, listing_id));
@@ -236,7 +243,7 @@ app.post("/listing", async (req: Request, res: Response) => {
     const listingFormData: ListingFormData = req.body;
 
     // Update DB
-    const [{ inserted_id }] = await db
+    const [{ inserted_id }]: any = await db
       .insert(listings)
       .values({
         listing_name: listingFormData.listing_name,
