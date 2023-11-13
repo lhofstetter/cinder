@@ -1,6 +1,7 @@
 {
   "name": "cinder",
   "version": "1.0.0",
+  "type": "module",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -33,6 +34,7 @@
     "@types/express": "^4.17.20",
     "@types/express-fileupload": "^1.4.3",
     "@types/multer": "^1.4.10",
+    "@types/node": "^20.9.0",
     "axios": "^1.6.0",
     "better-sqlite3": "^9.0.0",
     "cors": "^2.8.5",
@@ -68,7 +70,8 @@
     "drizzle-kit": "^0.19.13",
     "husky": "^8.0.3",
     "lint-staged": "^15.0.2",
-    "prettier": "3.0.3"
+    "prettier": "3.0.3",
+    "tsx": "^4.1.1"
   },
   "private": true
 }

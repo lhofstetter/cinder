@@ -4,7 +4,6 @@ import { integer, text, sqliteTable, primaryKey } from "drizzle-orm/sqlite-core"
 export const listings = sqliteTable("listings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   listing_name: text("listing_name").notNull(),
-  //listing_owner: integer("owner").notNull(), 
   description: text("description").notNull(),
   price: integer("price"),
   category: text("category").notNull(),
@@ -14,7 +13,7 @@ export const listings = sqliteTable("listings", {
 export const accounts = sqliteTable("accounts", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   username: text("username").notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`,),
+  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
 });
 
 export const images = sqliteTable("images", {
