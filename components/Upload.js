@@ -34,7 +34,6 @@ let styles = {
 
 function DisplayPhoto(imageData, width, height) {
   const navigation = useNavigation();
-  console.log(imageData.imageData);
   if (width != null && height != null) {
     if (Platform.OS == "web") {
       return (

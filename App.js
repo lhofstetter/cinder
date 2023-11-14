@@ -4,7 +4,7 @@ import Explore from "./components/Explore.js";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Button, View, Text, Platform, Pressable, Image } from "react-native";
+import { Platform, Image, Alert } from "react-native";
 import { SafeAreaView } from "react-native";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import DetailsPost from "./components/SetPost.js";
@@ -88,12 +88,10 @@ function Preview() {
 const UploadStack = createNativeStackNavigator();
 
 function UploadRoute() {
-  const navigation = useNavigation();
-
   return (
     <UploadStack.Navigator>
-      <UploadStack.Screen name="Upload" component={Upload} />
-      <UploadStack.Screen name="New Listing" component={Details} options={{ headerBackVisible: false }} />
+      <UploadStack.Screen name="Upload" component={Upload}/>
+      <UploadStack.Screen name="New Listing" component={Details} options={{ headerBackVisible: false, gestureEnabled: false }}/>
       <UploadStack.Screen name="Preview" component={Preview} options={{ headerBackVisible: false }} />
     </UploadStack.Navigator>
   );
@@ -135,9 +133,38 @@ export default function App() {
             tabBarShowLabel: false,
           })}
         >
-          <Tab.Screen name="Swipe" component={Swipe} options={{ headerShown: false }} />
+          <Tab.Screen name="Swipe" component={Swipe} options={{ headerShown: false }} listeners={({ navigation, route }) => ({
+              tabPress: (e) => {
+                if (navigation.getState().routes[1].state != undefined && navigation.getState().routes[1].state.index >= 1) {
+                  e.preventDefault();
+                  Alert.alert('Discard Post?', 'You\'ll lose all progress on this post if you leave! Are you sure you want to?', [
+                    { text: "Don't leave", style: 'cancel', onPress: () => {} },
+                    {
+                      text: 'Leave',
+                      style: 'destructive',
+                      onPress: () => {console.log(e); navigation.navigate("Swipe", {})},
+                    },
+                  ])
+                }
+              }
+            })}/>
           <Tab.Screen name="UploadRoute" component={UploadRoute} options={{ headerShown: false, unmountOnBlur: true }} />
-          <Tab.Screen name="User" component={User} options={{ headerShown: false }} />
+          <Tab.Screen name="User" component={User} options={{ headerShown: false }} listeners={({ navigation, route }) => ({
+              tabPress: (e) => {
+                console.log(navigation.getState().routes, navigation.getState().routes[navigation.getState().index])
+                if (navigation.getState().routes[1].state != undefined && navigation.getState().routes[1].state.index >= 1) {
+                  e.preventDefault();
+                  Alert.alert('Discard Post?', 'You\'ll lose all progress on this post if you leave! Are you sure you want to?', [
+                    { text: "Don't leave", style: 'cancel', onPress: () => {} },
+                    {
+                      text: 'Leave',
+                      style: 'destructive',
+                      onPress: () => {console.log(e); navigation.navigate("User", {})},
+                    },
+                  ])
+                }
+              }
+            })}/>
         </Tab.Navigator>
       </NavigationContainer>
     </ActionSheetProvider>

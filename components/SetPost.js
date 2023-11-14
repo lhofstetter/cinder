@@ -4,6 +4,7 @@ import * as Font from "expo-font";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { SelectList } from "react-native-dropdown-select-list";
 
+
 const styles = {
   title: {
     fontFamily: "Inter",
@@ -71,7 +72,7 @@ const styles = {
   categoryListContainer: {
     borderTopColor: "#C6C6C6",
     borderTopWidth: 1,
-    marginTop:-100,
+    marginTop:-215,
   },
   categoryList: {
     width: "40%",
@@ -250,7 +251,9 @@ export default function DetailsPost() {
   }, []);
 
   function handleFocus () {
-    setText("");
+    if (text == "Write a title") {
+      setText("");
+    }
     setCurrentStyle(styles.titleFocus);
   }
 
@@ -259,7 +262,9 @@ export default function DetailsPost() {
   }
 
   function handleDescriptionFocus() {
-    setDescription("");
+    if (description == "Type out your description!") {
+      setDescription("");
+    }
     setDescriptionStyle(styles.postDescriptionFocus);
   }
 
@@ -304,7 +309,6 @@ export default function DetailsPost() {
         style={descriptionStyle}
       ></TextInput>
       <PreviewImage imageSrc={image} />
-      <TextInput multiline onChangeText={setDescription} value={description} style={descriptionStyle}></TextInput>
       <View style={styles.categoryListContainer}>
         <Text style={styles.categoryListLabel}>Clothing Type</Text>
         <SelectList
@@ -365,3 +369,5 @@ export default function DetailsPost() {
     </View>
   );
 }
+
+export {PreviewImage};
