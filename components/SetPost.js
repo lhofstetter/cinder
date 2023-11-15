@@ -5,7 +5,6 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import { SelectList } from "react-native-dropdown-select-list";
 import { editStyles } from "../styles";
 
-
 const styles = {
   title: {
     fontFamily: "Inter",
@@ -203,10 +202,10 @@ export default function DetailsPost() {
   const [selectedType, setSelectedType] = useState("");
   const [typeOfSize, setTypeOfSize] = useState(defaultSizes);
   const [selectedSize, setSelectedSize] = useState();
-  const [currentStyle, setCurrentStyle] = useState(styles.title);
+  const [currentStyle, setCurrentStyle] = useState([styles.title, {fontFamily: 'Inter'}]);
   const [currentPrice, setCurrentPrice] = useState("$0.00");
-  const [descriptionStyle, setDescriptionStyle] = useState(styles.postDescription);
-  const [priceBoxStyle, setPriceBoxStyle] = useState(styles.priceUnfocus);
+  const [descriptionStyle, setDescriptionStyle] = useState([styles.postDescription, {fontFamily: 'Inter'}]);
+  const [priceBoxStyle, setPriceBoxStyle] = useState([styles.priceUnfocus, {fontFamily: 'Inter'}]);
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -214,41 +213,33 @@ export default function DetailsPost() {
   let image = route.params;
 
   useEffect(() => {
-    navigation.setOptions({headerRight: () => (
-        <Text style={styles.previewMobileInvalid}>Preview</Text>      
-    )});
-
-    async function loadFont() {
-      await Font.loadAsync({
-        Inter: require("../assets/fonts/static/Inter-Medium.ttf"),
-      });
-
-      setFontLoaded(true);
+    if (typeOfSize == defaultSizes){
+      navigation.setOptions({headerRight: () => (
+          <Text style={styles.previewMobileInvalid}>Preview</Text>      
+      )});
     }
-
-    loadFont();
   }, []);
 
   function handleFocus () {
     if (text == "Write a title") {
       setText("");
     }
-    setCurrentStyle(styles.titleFocus);
+    setCurrentStyle([styles.titleFocus, {fontFamily: 'Inter'}]);
   }
 
   function handleUnfocus() {
-    setCurrentStyle(styles.title);
+    setCurrentStyle([styles.title, {fontFamily: 'Inter'}]);
   }
 
   function handleDescriptionFocus() {
     if (description == "Type out your description!") {
       setDescription("");
     }
-    setDescriptionStyle(styles.postDescriptionFocus);
+    setDescriptionStyle([styles.postDescriptionFocus, {fontFamily: 'Inter'}]);
   }
 
   function handleDescriptionUnfocus() {
-    setDescriptionStyle(styles.postDescription);
+    setDescriptionStyle([styles.postDescription, {fontFamily: 'Inter'}]);
   }
 
   function handleChange (text) {
@@ -256,10 +247,10 @@ export default function DetailsPost() {
   }
 
   function handlePriceFocus() {
-    setPriceBoxStyle(styles.priceFocus);
+    setPriceBoxStyle([styles.priceFocus, {fontFamily: 'Inter'}]);
   }
   function handlePriceUnfocus() {
-    setPriceBoxStyle(styles.priceUnfocus);
+    setPriceBoxStyle([styles.priceUnfocus, {fontFamily: 'Inter'}]);
   }
  
 
@@ -276,7 +267,7 @@ export default function DetailsPost() {
   }
 
   return (
-    <View>
+     <View>
       <TextInput onFocus={handleFocus} onEndEditing={handleUnfocus} onChangeText={setText} value={text} style={currentStyle}></TextInput>
       <TextInput onEndEditing={handlePriceUnfocus} onFocus={handlePriceFocus} onChangeText={(text) => handleChange(text)} value={currentPrice} style={priceBoxStyle} inputMode={"decimal"}></TextInput>
       <PreviewImage imageSrc={image.image.uri} style={editStyles.previewImageMobile}/>
@@ -296,11 +287,12 @@ export default function DetailsPost() {
           setSelected={(val) => setSelectedType(val)}
           data={categories}
           save="value"
+          fontFamily={"Inter"}
         />
       </View>
       <View style={styles.sizeContainer}>
-        <Text style={styles.categoryListLabel}>Size</Text>
-        <SelectList boxStyles={styles.categoryList} setSelected={(val) => setSelectedSize(val)} data={typeOfSize} save="value" onSelect={() => {
+        <Text style={[styles.categoryListLabel, {fontFamily: "Inter"}]}>Size</Text>
+        <SelectList fontFamily={"Inter"} boxStyles={styles.categoryList} setSelected={(val) => setSelectedSize(val)} data={typeOfSize} save="value" onSelect={() => {
           navigation.setOptions({headerRight: () => (
             <Pressable onPress={()=> {
                 navigation.navigate("Preview", {
@@ -313,12 +305,12 @@ export default function DetailsPost() {
                   price:currentPrice,
                 });
             }}>
-            <Text style={styles.previewMobile}>Preview</Text>
+            <Text style={[styles.previewMobile, {fontFamily: "Inter"}]}>Preview</Text>
           </Pressable>
           )})
         }}/>
       </View>
-      <Text style={styles.categoryListLabel}>Add Tags</Text>
+      <Text style={[styles.categoryListLabel, {fontFamily: "Inter"}]}>Add Tags</Text>
       <TextInput
         multiline
         onChangeText={(currentTags) => {
@@ -337,7 +329,7 @@ export default function DetailsPost() {
                   });
                 }}
               >
-                <Text style={styles.previewMobile}>Preview</Text>
+                <Text style={[styles.previewMobile, {fontFamily: "Inter"}]}>Preview</Text>
               </Pressable>
             ),
           });

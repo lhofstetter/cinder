@@ -1,4 +1,7 @@
 const postStyles = {
+    default: {
+      fontFamily: 'Inter',
+    },
     postMobile: {
       textAlign: "center",
       fontSize: 18,
@@ -6,8 +9,8 @@ const postStyles = {
     },
     postBackButton: {
       marginTop:1,
-      width:10,
-      height:10,
+      width:29,
+      height:20,
     },
     postMobileTitles: {
       paddingTop: "3%",
