@@ -151,7 +151,6 @@ export default function App() {
           <Tab.Screen name="UploadRoute" component={UploadRoute} options={{ headerShown: false, unmountOnBlur: true }} />
           <Tab.Screen name="User" component={User} options={{ headerShown: false }} listeners={({ navigation, route }) => ({
               tabPress: (e) => {
-                console.log(navigation.getState().routes, navigation.getState().routes[navigation.getState().index])
                 if (navigation.getState().routes[1].state != undefined && navigation.getState().routes[1].state.index >= 1) {
                   e.preventDefault();
                   Alert.alert('Discard Post?', 'You\'ll lose all progress on this post if you leave! Are you sure you want to?', [

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { ImageBackground, Text, View, Image, Pressable, Platform } from "react-native";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
@@ -31,6 +30,8 @@ let styles = {
     fontWeight: "bold",
   },
 };
+
+const blankUpload = require("../assets/blankupload.png");
 
 function DisplayPhoto(imageData, width, height) {
   const navigation = useNavigation();
@@ -105,6 +106,42 @@ function DisplayPhoto(imageData, width, height) {
       );
     }
   }
+}
+
+function UploadDisplay({ initialImg }) {
+  const [itemImage, setItemImage] = useState(initialImg);
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+      selectionLimit: 5,
+    });
+
+    if (!result.canceled) {
+      setItemImage(result.assets[0]);
+    }
+  };
+
+  const takeImage = async () => {
+    requestPermission();
+    result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setItemImage(result.assets);
+    }
+  };
+
+  return (
+    <View style={styles.uploadcontainer}>
+      {initialImg == undefined ? <Image source={{uri: initialImg}}/> : <Image source={blankUpload}/>}
+    </View>
+  );
+  
 }
 
 export default function UploadItem() {

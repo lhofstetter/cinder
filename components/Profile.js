@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, Image, ScrollView } from "react-native";
+import { PreviewImage } from "./SetPost";
 
 const samplepfp = require("../assets/samplepfp.png");
 const star = require("../assets/star.png");
@@ -21,7 +22,7 @@ const c11 = require("../assets/clothing11.png");
 const images = [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c1, c2, c4, c7, c9, c10];
 
 export default function Profile() {
-  const [user, setUser] = React.useState({
+  const [user, setUser] = useState({
     name: "Bobby B.",
     picture: samplepfp,
     year: "2024",
@@ -30,6 +31,25 @@ export default function Profile() {
     bio: "help me give my awesome clothes a new home! looking for over-sized sweaters",
     listings: images,
   });
+
+  const [listings, setListings] = useState();
+
+  const retrieveListings = async () => {
+    let posts = [];
+  
+    for (let i = 0; i < user.listings.length; i++) {
+      await fetch("http://localhost:3000/listing/" + user.listings[i]).then((data) => {
+        posts.push(data);
+      });
+    }
+
+    setListings(posts);
+  }
+
+  useEffect(() => {
+    retrieveListings();
+  }, []);
+  
 
   // stars round up no half stars right now
   let stars = [];
