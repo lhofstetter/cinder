@@ -118,7 +118,7 @@ const postStyles = {
     categoryListContainer: {
       borderTopColor: "#C6C6C6",
       borderTopWidth: 1,
-      marginTop:-215,
+      marginTop:-100,
     },
     categoryList: {
       width: "40%",
@@ -175,7 +175,112 @@ const postStyles = {
       display:"flex",
       marginLeft:"70%",
       bottom:30,
+    }
+  };
+
+  const uploadStyles = {
+    container: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    uploadcontainer: {
+      borderWidth: 1,
+      marginTop: "6%",
+      borderStyle: "solid",
+      borderColor: "#dbd8ce",
+      borderRadius: 5,
+      width: 400,
+      height: 600,
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 0,
+    },
+    uploadborder: {
+      display: "flex",
+    },
+    listingText: {
+      fontSize: 24,
+      fontWeight: "bold",
     },
   };
 
-  export { postStyles, editStyles };
+  const exploreStyles = {
+    container: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "100%",
+    },
+    webHeader: {
+      marginBottom: 30,
+      marginTop: 30,
+    },
+    mobileHeader: {
+      marginTop: 20,
+      marginBottom: 30,
+    },
+    cardContainer: {
+      width: "90%",
+      maxWidth: 400,
+      height: 300,
+      marginBottom: 100,
+    },
+    cardWeb: {
+      position: "absolute",
+      width: "100%",
+      maxWidth: 400,
+      height: 400,
+      borderRadius: 20,
+      resizeMode: "cover",
+      zIndex: -100,
+    },
+    cardMobile: {
+      position: "absolute",
+      width: "100%",
+      maxWidth: 600,
+      height: 650,
+      borderRadius: 20,
+      resizeMode: "cover",
+      zIndex: -100,
+    },
+    cardImageMobile: {
+      width: "100%",
+      height: "100%",
+      overflow: "hidden",
+      borderRadius: 20,
+    },
+    cardImageWeb: {
+      width: "100%",
+      height: "100%",
+      overflow: "hidden",
+      borderRadius: 20,
+    },
+    cardTitle: {
+      position: "absolute",
+      bottom: 0,
+      margin: 10,
+      color: "#fff",
+    },
+    buttons: {
+      margin: 20,
+      zIndex: -100,
+    },
+    infoText: {
+      height: 28,
+      paddingTop: 30,
+      justifyContent: "center",
+      display: "flex",
+      zIndex: -100,
+    },
+    likeOrDislikeText: {
+      textAlign: "center",
+      color: "#fff",
+      fontSize: 30,
+      marginTop: 175,
+      position: "relative",
+      zIndex: 100,
+    },
+  };
+
+  export { postStyles, editStyles, uploadStyles, exploreStyles };

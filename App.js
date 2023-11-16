@@ -92,7 +92,7 @@ function UploadRoute() {
   return (
     <UploadStack.Navigator screenOptions={{headerTitleStyle: {fontFamily: "Inter"}}}>
       <UploadStack.Screen name="Upload" component={Upload}/>
-      <UploadStack.Screen name="New Listing" component={Details} options={{ headerBackVisible: false, gestureEnabled: false }}/>
+      <UploadStack.Screen name="New Listing" component={Details} options={{ headerBackVisible: false, gestureEnabled: false}}/>
       <UploadStack.Screen name="Preview" component={Preview} options={{ headerBackVisible: false }} />
     </UploadStack.Navigator>
   );
@@ -156,7 +156,7 @@ export default function App() {
                     {
                       text: 'Leave',
                       style: 'destructive',
-                      onPress: () => {console.log(e); navigation.navigate("Swipe", {})},
+                      onPress: () => {navigation.navigate("Swipe", {})},
                     },
                   ])
                 }
@@ -172,7 +172,7 @@ export default function App() {
                     {
                       text: 'Leave',
                       style: 'destructive',
-                      onPress: () => {console.log(e); navigation.navigate("User", {})},
+                      onPress: () => {navigation.navigate("User", {})},
                     },
                   ])
                 }

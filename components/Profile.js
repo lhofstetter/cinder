@@ -21,6 +21,19 @@ const c11 = require("../assets/clothing11.png");
 
 const images = [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c1, c2, c4, c7, c9, c10];
 
+const styles = {
+  star: {
+    width: 18,
+    height: 18,
+    margin: 1.5,
+  },
+  listing: {
+    height: 115,
+    width: 115,
+    margin: 2,
+  }
+}
+
 export default function Profile() {
   const [user, setUser] = useState({
     name: "Bobby B.",

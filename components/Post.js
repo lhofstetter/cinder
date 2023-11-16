@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, Image, Pressable } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import * as Font from "expo-font";
 import { postStyles } from "../styles.js";
 
 const backArrow = require('../assets/backarrow.png');

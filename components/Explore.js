@@ -2,86 +2,10 @@ import React, { useState, useMemo } from "react";
 import { ImageBackground, Text, View, Image, Pressable, useWindowDimensions, Platform } from "react-native";
 import TinderCard from "react-tinder-card";
 import * as ImagePicker from 'expo-image-picker';
+import { exploreStyles } from "../styles";
 
 const logo = require("../assets/cindr.png");
 
-let styles = {
-  container: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-  },
-  webHeader: {
-    marginBottom: 30,
-    marginTop: 30,
-  },
-  mobileHeader: {
-    marginTop: 20,
-    marginBottom: 30,
-  },
-  cardContainer: {
-    width: "90%",
-    maxWidth: 400,
-    height: 300,
-    marginBottom: 100,
-  },
-  cardWeb: {
-    position: "absolute",
-    width: "100%",
-    maxWidth: 400,
-    height: 400,
-    borderRadius: 20,
-    resizeMode: "cover",
-    zIndex: -100,
-  },
-  cardMobile: {
-    position: "absolute",
-    width: "100%",
-    maxWidth: 600,
-    height: 650,
-    borderRadius: 20,
-    resizeMode: "cover",
-    zIndex: -100,
-  },
-  cardImageMobile: {
-    width: "100%",
-    height: "100%",
-    overflow: "hidden",
-    borderRadius: 20,
-  },
-  cardImageWeb: {
-    width: "100%",
-    height: "100%",
-    overflow: "hidden",
-    borderRadius: 20,
-  },
-  cardTitle: {
-    position: "absolute",
-    bottom: 0,
-    margin: 10,
-    color: "#fff",
-  },
-  buttons: {
-    margin: 20,
-    zIndex: -100,
-  },
-  infoText: {
-    height: 28,
-    paddingTop: 30,
-    justifyContent: "center",
-    display: "flex",
-    zIndex: -100,
-  },
-  likeOrDislikeText: {
-    textAlign: "center",
-    color: "#fff",
-    fontSize: 30,
-    marginTop: 175,
-    position: "relative",
-    zIndex: 100,
-  },
-};
 /*
     P(L) = P(M) * P(C) * P(T)
     where P(L) = Probability of user liking clothing,
@@ -199,17 +123,17 @@ const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
         preventSwipe={['up', 'down']}
       >
         {Platform.OS == "web" ? (
-          <View style={[styles.cardWeb, { backgroundColor: color[2] }]}>
-            <ImageBackground style={[styles.cardImageWeb, { opacity: color[1] }]} source={character.img}>
-              <Text style={styles.cardTitle}>{character.name}</Text>
-              <Text style={styles.likeOrDislikeText}>{color[3]}</Text>
+          <View style={[exploreStyles.cardWeb, { backgroundColor: color[2] }]}>
+            <ImageBackground style={[exploreStyles.cardImageWeb, { opacity: color[1] }]} source={character.img}>
+              <Text style={exploreStyles.cardTitle}>{character.name}</Text>
+              <Text style={exploreStyles.likeOrDislikeText}>{color[3]}</Text>
             </ImageBackground>
           </View>
         ) : (
-          <View style={[styles.cardMobile, { backgroundColor: color[2] }]}>
-            <ImageBackground style={[styles.cardImageMobile, { opacity: color[1] }]} source={character.img}>
-              <Text style={styles.cardTitle}>{character.name}</Text>
-              <Text style={styles.likeOrDislikeText}>{color[3]}</Text>
+          <View style={[exploreStyles.cardMobile, { backgroundColor: color[2] }]}>
+            <ImageBackground style={[exploreStyles.cardImageMobile, { opacity: color[1] }]} source={character.img}>
+              <Text style={exploreStyles.cardTitle}>{character.name}</Text>
+              <Text style={exploreStyles.likeOrDislikeText}>{color[3]}</Text>
             </ImageBackground>
           </View>
         )}
@@ -251,13 +175,13 @@ const Advanced = () => {
     }
   };
   return (
-    <View style={styles.container}>
+    <View style={exploreStyles.container}>
       {Platform.OS == "web" ? (
-        <img src={logo} style={styles.webHeader} alt={"logo"} />
+        <img src={logo} style={exploreStyles.webHeader} alt={"logo"} />
       ) : (
-        <Image source={logo} style={styles.mobileHeader} />
+        <Image source={logo} style={exploreStyles.mobileHeader} />
       )}
-      <View style={styles.cardContainer}>
+      <View style={exploreStyles.cardContainer}>
         {characters.map((character, index) => (
           <SwipeableCard
             key={character.name}

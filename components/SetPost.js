@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, Image, Platform, TextInput, Pressable, RefreshControl } from "react-native";
-import * as Font from "expo-font";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { SelectList } from "react-native-dropdown-select-list";
 import { editStyles } from "../styles";
@@ -198,14 +197,13 @@ export default function DetailsPost() {
   const [text, setText] = useState("Write a title");
   const [description, setDescription] = useState("Type out your description!");
   const [tags, setTags] = useState("");
-  const [fontLoaded, setFontLoaded] = useState(false);
   const [selectedType, setSelectedType] = useState("");
   const [typeOfSize, setTypeOfSize] = useState(defaultSizes);
   const [selectedSize, setSelectedSize] = useState();
-  const [currentStyle, setCurrentStyle] = useState([styles.title, {fontFamily: 'Inter'}]);
+  const [currentStyle, setCurrentStyle] = useState([editStyles.title, {fontFamily: 'Inter'}]);
   const [currentPrice, setCurrentPrice] = useState("$0.00");
-  const [descriptionStyle, setDescriptionStyle] = useState([styles.postDescription, {fontFamily: 'Inter'}]);
-  const [priceBoxStyle, setPriceBoxStyle] = useState([styles.priceUnfocus, {fontFamily: 'Inter'}]);
+  const [descriptionStyle, setDescriptionStyle] = useState([editStyles.postDescription, {fontFamily: 'Inter'}]);
+  const [priceBoxStyle, setPriceBoxStyle] = useState([editStyles.priceUnfocus, {fontFamily: 'Inter'}]);
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -213,33 +211,49 @@ export default function DetailsPost() {
   let image = route.params;
 
   useEffect(() => {
-    if (typeOfSize == defaultSizes){
+    if (selectedType == "" || description == "Type out your description!" || description == "" || selectedSize == undefined || text == "Write a title" || text == ""){
       navigation.setOptions({headerRight: () => (
-          <Text style={styles.previewMobileInvalid}>Preview</Text>      
+          <Text style={editStyles.previewMobileInvalid}>Continue</Text>      
       )});
+    } else {
+      navigation.setOptions({headerRight: () => (
+        <Pressable onPress={()=> {
+            navigation.navigate("Preview", {
+              title:text,
+              description:description,
+              selectedType:selectedType,
+              selectedSize:selectedSize,
+              image:image,
+              tags:"",
+              price:currentPrice,
+            });
+        }}>
+        <Text style={[editStyles.previewMobile, {fontFamily: "Inter"}]}>Continue</Text>
+      </Pressable>
+      )})
     }
-  }, []);
+  }, [text, selectedType, selectedSize, description]);
 
   function handleFocus () {
     if (text == "Write a title") {
       setText("");
     }
-    setCurrentStyle([styles.titleFocus, {fontFamily: 'Inter'}]);
+    setCurrentStyle([editStyles.titleFocus, {fontFamily: 'Inter'}]);
   }
 
   function handleUnfocus() {
-    setCurrentStyle([styles.title, {fontFamily: 'Inter'}]);
+    setCurrentStyle([editStyles.title, {fontFamily: 'Inter'}]);
   }
 
   function handleDescriptionFocus() {
     if (description == "Type out your description!") {
       setDescription("");
     }
-    setDescriptionStyle([styles.postDescriptionFocus, {fontFamily: 'Inter'}]);
+    setDescriptionStyle([editStyles.postDescriptionFocus, {fontFamily: 'Inter'}]);
   }
 
   function handleDescriptionUnfocus() {
-    setDescriptionStyle([styles.postDescription, {fontFamily: 'Inter'}]);
+    setDescriptionStyle([editStyles.postDescription, {fontFamily: 'Inter'}]);
   }
 
   function handleChange (text) {
@@ -247,10 +261,10 @@ export default function DetailsPost() {
   }
 
   function handlePriceFocus() {
-    setPriceBoxStyle([styles.priceFocus, {fontFamily: 'Inter'}]);
+    setPriceBoxStyle([editStyles.priceFocus, {fontFamily: 'Inter'}]);
   }
   function handlePriceUnfocus() {
-    setPriceBoxStyle([styles.priceUnfocus, {fontFamily: 'Inter'}]);
+    setPriceBoxStyle([editStyles.priceUnfocus, {fontFamily: 'Inter'}]);
   }
  
 
@@ -279,10 +293,10 @@ export default function DetailsPost() {
         value={description}
         style={descriptionStyle}
       ></TextInput>
-      <View style={styles.categoryListContainer}>
-        <Text style={styles.categoryListLabel}>Clothing Type</Text>
+      <View style={editStyles.categoryListContainer}>
+        <Text style={editStyles.categoryListLabel}>Clothing Type</Text>
         <SelectList
-          boxStyles={styles.categoryList}
+          boxStyles={editStyles.categoryList}
           onSelect={checkSelected}
           setSelected={(val) => setSelectedType(val)}
           data={categories}
@@ -290,27 +304,11 @@ export default function DetailsPost() {
           fontFamily={"Inter"}
         />
       </View>
-      <View style={styles.sizeContainer}>
-        <Text style={[styles.categoryListLabel, {fontFamily: "Inter"}]}>Size</Text>
-        <SelectList fontFamily={"Inter"} boxStyles={styles.categoryList} setSelected={(val) => setSelectedSize(val)} data={typeOfSize} save="value" onSelect={() => {
-          navigation.setOptions({headerRight: () => (
-            <Pressable onPress={()=> {
-                navigation.navigate("Preview", {
-                  title:text,
-                  description:description,
-                  selectedType:selectedType,
-                  selectedSize:selectedSize,
-                  image:image,
-                  tags:"",
-                  price:currentPrice,
-                });
-            }}>
-            <Text style={[styles.previewMobile, {fontFamily: "Inter"}]}>Preview</Text>
-          </Pressable>
-          )})
-        }}/>
+      <View style={editStyles.sizeContainer}>
+        <Text style={[editStyles.categoryListLabel, {fontFamily: "Inter"}]}>Size</Text>
+        <SelectList fontFamily={"Inter"} boxStyles={editStyles.categoryList} setSelected={(val) => setSelectedSize(val)} data={typeOfSize} save="value"/>
       </View>
-      <Text style={[styles.categoryListLabel, {fontFamily: "Inter"}]}>Add Tags</Text>
+      <Text style={[editStyles.categoryListLabel, {fontFamily: "Inter"}]}>Add Tags</Text>
       <TextInput
         multiline
         onChangeText={(currentTags) => {
@@ -329,13 +327,13 @@ export default function DetailsPost() {
                   });
                 }}
               >
-                <Text style={[styles.previewMobile, {fontFamily: "Inter"}]}>Preview</Text>
+                <Text style={[editStyles.previewMobile, {fontFamily: "Inter"}]}>Preview</Text>
               </Pressable>
             ),
           });
         }}
         value={tags}
-        style={styles.tagsContainer}
+        style={editStyles.tagsContainer}
       ></TextInput>
     </View>
   );
