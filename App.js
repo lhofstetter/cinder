@@ -4,12 +4,13 @@ import Explore from "./components/Explore.js";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Platform, Image, Alert } from "react-native";
+import { Platform, Image, Alert, Text } from "react-native";
 import { SafeAreaView } from "react-native";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import DetailsPost from "./components/SetPost.js";
 import PreviewPost from "./components/Preview.js";
 import Profile from "./components/Profile.js";
+import * as Font from "expo-font";
 
 const homeFocused = require("./assets/home.png");
 const homeUnfocused = require("./assets/home_unfocused.png");
@@ -89,9 +90,9 @@ const UploadStack = createNativeStackNavigator();
 
 function UploadRoute() {
   return (
-    <UploadStack.Navigator>
+    <UploadStack.Navigator screenOptions={{headerTitleStyle: {fontFamily: "Inter"}}}>
       <UploadStack.Screen name="Upload" component={Upload}/>
-      <UploadStack.Screen name="New Listing" component={Details} options={{ headerBackVisible: false, gestureEnabled: false }}/>
+      <UploadStack.Screen name="New Listing" component={Details} options={{ headerBackVisible: false, gestureEnabled: false}}/>
       <UploadStack.Screen name="Preview" component={Preview} options={{ headerBackVisible: false }} />
     </UploadStack.Navigator>
   );
@@ -100,6 +101,19 @@ function UploadRoute() {
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const [fontLoaded, setFontLoaded] = React.useState(false);
+
+  async function loadFont() {
+    await Font.loadAsync({
+      "Inter": require("./assets/fonts/static/Inter-Regular.ttf"),
+    });
+
+    setFontLoaded(true);
+  }
+
+  React.useEffect(() => {
+    loadFont();
+  }, []);
   return (
     <ActionSheetProvider>
       <NavigationContainer>
@@ -142,7 +156,7 @@ export default function App() {
                     {
                       text: 'Leave',
                       style: 'destructive',
-                      onPress: () => {console.log(e); navigation.navigate("Swipe", {})},
+                      onPress: () => {navigation.navigate("Swipe", {})},
                     },
                   ])
                 }
@@ -158,7 +172,7 @@ export default function App() {
                     {
                       text: 'Leave',
                       style: 'destructive',
-                      onPress: () => {console.log(e); navigation.navigate("User", {})},
+                      onPress: () => {navigation.navigate("User", {})},
                     },
                   ])
                 }

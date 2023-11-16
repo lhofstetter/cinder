@@ -3,33 +3,7 @@ import { ImageBackground, Text, View, Image, Pressable, Platform } from "react-n
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-
-let styles = {
-  container: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  uploadcontainer: {
-    borderWidth: 1,
-    marginTop: "6%",
-    borderStyle: "solid",
-    borderColor: "#dbd8ce",
-    borderRadius: 5,
-    width: 400,
-    height: 600,
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: 0,
-  },
-  uploadborder: {
-    display: "flex",
-  },
-  listingText: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-};
+import { uploadStyles } from "../styles";
 
 const blankUpload = require("../assets/blankupload.png");
 
@@ -57,7 +31,7 @@ function DisplayPhoto(imageData, width, height) {
       return (
         <Image
           source={{ uri: imageData.imageData.uri }}
-          style={[styles.uploadborder, { width: width, height: height }]}
+          style={[uploadStyles.uploadborder, { width: width, height: height }]}
           borderRadius={10}
           onLoad={() => {
             setTimeout(() => {
@@ -137,7 +111,7 @@ function UploadDisplay({ initialImg }) {
   };
 
   return (
-    <View style={styles.uploadcontainer}>
+    <View style={uploadStyles.uploadcontainer}>
       {initialImg == undefined ? <Image source={{uri: initialImg}}/> : <Image source={blankUpload}/>}
     </View>
   );
@@ -189,7 +163,7 @@ export default function UploadItem() {
           <ImageBackground
             {...props}
             source={require("../assets/Upload_Icon.png")}
-            style={[styles.uploadborder, { width: 100, height: 100 }]}
+            style={[uploadStyles.uploadborder, { width: 100, height: 100 }]}
           >
             {Platform.OS == "web" ? (
               <input
@@ -213,7 +187,7 @@ export default function UploadItem() {
         <ImageBackground
           {...props}
           source={require("../assets/Upload_Icon.png")}
-          style={[styles.uploadborder, { width: 100, height: 100 }]}
+          style={[uploadStyles.uploadborder, { width: 100, height: 100 }]}
         >
           <Text></Text>
         </ImageBackground>
@@ -222,8 +196,8 @@ export default function UploadItem() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.uploadcontainer}>
+    <View style={uploadStyles.container}>
+      <View style={uploadStyles.uploadcontainer}>
         <Pressable
           onPress={() => {
             const options = ["Choose Photo from Library", "Take Photo", "Cancel"];

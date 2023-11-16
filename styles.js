@@ -1,4 +1,7 @@
 const postStyles = {
+    default: {
+      fontFamily: 'Inter',
+    },
     postMobile: {
       textAlign: "center",
       fontSize: 18,
@@ -6,8 +9,8 @@ const postStyles = {
     },
     postBackButton: {
       marginTop:1,
-      width:10,
-      height:10,
+      width:29,
+      height:20,
     },
     postMobileTitles: {
       paddingTop: "3%",
@@ -115,7 +118,7 @@ const postStyles = {
     categoryListContainer: {
       borderTopColor: "#C6C6C6",
       borderTopWidth: 1,
-      marginTop:-215,
+      marginTop:-100,
     },
     categoryList: {
       width: "40%",
@@ -172,7 +175,171 @@ const postStyles = {
       display:"flex",
       marginLeft:"70%",
       bottom:30,
+    }
+  };
+
+  const uploadStyles = {
+    container: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    uploadcontainer: {
+      borderWidth: 1,
+      marginTop: "6%",
+      borderStyle: "solid",
+      borderColor: "#dbd8ce",
+      borderRadius: 5,
+      width: 400,
+      height: 600,
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: 0,
+    },
+    uploadborder: {
+      display: "flex",
+    },
+    listingText: {
+      fontSize: 24,
+      fontWeight: "bold",
     },
   };
 
-  export { postStyles, editStyles };
+  const exploreStyles = {
+    container: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "100%",
+    },
+    webHeader: {
+      marginBottom: 30,
+      marginTop: 30,
+    },
+    mobileHeader: {
+      marginTop: 20,
+      marginBottom: 30,
+    },
+    cardContainer: {
+      width: "90%",
+      maxWidth: 400,
+      height: 300,
+      marginBottom: 100,
+    },
+    cardWeb: {
+      position: "absolute",
+      width: "100%",
+      maxWidth: 400,
+      height: 400,
+      borderRadius: 20,
+      resizeMode: "cover",
+      zIndex: -100,
+    },
+    cardMobile: {
+      position: "absolute",
+      width: "100%",
+      maxWidth: 600,
+      height: 650,
+      borderRadius: 20,
+      resizeMode: "cover",
+      zIndex: -100,
+    },
+    cardImageMobile: {
+      width: "100%",
+      height: "100%",
+      overflow: "hidden",
+      borderRadius: 20,
+    },
+    cardImageWeb: {
+      width: "100%",
+      height: "100%",
+      overflow: "hidden",
+      borderRadius: 20,
+    },
+    cardTitle: {
+      position: "absolute",
+      bottom: 0,
+      margin: 10,
+      color: "#fff",
+    },
+    buttons: {
+      margin: 20,
+      zIndex: -100,
+    },
+    infoText: {
+      height: 28,
+      paddingTop: 30,
+      justifyContent: "center",
+      display: "flex",
+      zIndex: -100,
+    },
+    likeOrDislikeText: {
+      textAlign: "center",
+      color: "#fff",
+      fontSize: 30,
+      marginTop: 175,
+      position: "relative",
+      zIndex: 100,
+    },
+  };
+
+  const profileStyles = {
+    star: {
+      width: 18,
+      height: 18,
+      margin: 1.5,
+    },
+    listing: {
+      height: 115,
+      width: 115,
+      margin: 2,
+    },
+    scrollContainer: {
+      display: "flex",
+      width: "100%",
+      padding: "3%",
+    },
+    userProfilePic: {
+      width: 100,
+      height: 100,
+    },
+    userContainerMinusBio: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      marginTop: 4,
+    },
+    usernameContainer: {
+      display: "flex",
+      justifyContent: "space-around",
+      height: 90,
+      marginLeft: 10,
+      marginBottom: 10,
+    },
+    username: {
+      fontWeight: "bold",
+      fontSize: 24,
+    },
+    starContainer: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    numOfRatings: {
+      marginTop: 2,
+      fontSize: 16,
+    },
+    userBio: {
+      marginTop: 20,
+      fontSize: 16,
+    },
+    listingsContainer: {
+      display: "flex",
+      flexWrap: "wrap",
+      flexDirection: "row",
+      justifyContent: "center",
+      marginTop: 20,
+    },
+  };
+
+  export { postStyles, editStyles, uploadStyles, exploreStyles, profileStyles };

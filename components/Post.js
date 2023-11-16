@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, Image, Pressable } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import * as Font from "expo-font";
 import { postStyles } from "../styles.js";
 
 const backArrow = require('../assets/backarrow.png');
@@ -16,7 +15,6 @@ const backArrow = require('../assets/backarrow.png');
 export default function Post({ navigateRight }) {
     const route = useRoute();
     const navigation = useNavigation();
-    const [fontLoaded, setFontLoaded] = useState(false);
 
     let postDetails = route.params;
 
@@ -32,22 +30,13 @@ export default function Post({ navigateRight }) {
                 <Image width={75} height={75} style={postStyles.postBackButton} source={backArrow}/>
                 </Pressable>
             )});
-
-        async function loadFont() {
-          await Font.loadAsync({
-            Inter: require("../assets/fonts/static/Inter-Medium.ttf"),
-          });
-    
-          setFontLoaded(true);
-        }
-      loadFont();
     }, []);
 
     return (
         <View>
           <Image source={{ uri: postDetails.image.image.uri }} style={{ width: 500, height: 500 }} />
           <View style={postStyles.postMobileTitles}>
-            <Text style={postStyles.postMobileTitle}>{postDetails.title}</Text>
+            <Text style={[postStyles.postMobileTitle, {fontFamily:'Inter'}]}>{postDetails.title}</Text>
             <Text style={postStyles.postMobileSubtitle}>
               Size {postDetails.selectedSize} • {postDetails.selectedType}
             </Text>

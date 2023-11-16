@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Text, View, Image, ScrollView } from "react-native";
 import { PreviewImage } from "./SetPost";
+import { profileStyles } from "../styles";
 
 const samplepfp = require("../assets/samplepfp.png");
 const star = require("../assets/star.png");
@@ -60,11 +61,7 @@ export default function Profile() {
     stars[i] = (
       <Image
         source={src}
-        style={{
-          width: 18,
-          height: 18,
-          margin: 1.5,
-        }}
+        style={profileStyles.star}
       ></Image>
     );
   }
@@ -73,11 +70,7 @@ export default function Profile() {
   const displayListings = user.listings.map((image) => {
     return (
       <Image
-        style={{
-          height: 115,
-          width: 115,
-          margin: 2,
-        }}
+        style={profileStyles.listing}
         source={image}
       ></Image>
     );
@@ -86,11 +79,7 @@ export default function Profile() {
   return (
     //container
     <ScrollView
-      style={{
-        display: "flex",
-        width: "100%",
-        padding: "3%",
-      }}
+      style={profileStyles.scrollContainer}
     >
       <View
         style={{
@@ -98,53 +87,28 @@ export default function Profile() {
         }}
       >
         <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: 4,
-          }}
+          style={profileStyles.userContainerMinusBio}
         >
-          {/* <img src={user.picture}></img> */}
           <Image
-            style={{
-              width: 100,
-              height: 100,
-            }}
+            style={profileStyles.userProfilePic}
             source={user.picture}
           ></Image>
           <View
-            style={{
-              display: "flex",
-              justifyContent: "space-around",
-              height: 90,
-              marginLeft: 10,
-              marginBottom: 10,
-            }}
+            style={profileStyles.usernameContainer}
           >
             <Text
-              style={{
-                fontWeight: "bold",
-                fontSize: 24,
-              }}
+              style={profileStyles.username}
             >
               {" "}
               {user.name}{" "}
             </Text>
             <Text> Class of {user.year} </Text>
             <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-              }}
+              style={profileStyles.starContainer}
             >
               {stars}
               <Text
-                style={{
-                  marginTop: 2,
-                  fontSize: 16,
-                }}
+                style={profileStyles.numOfRatings}
               >
                 {" "}
                 ({user.ratings}){" "}
@@ -153,23 +117,14 @@ export default function Profile() {
           </View>
         </View>
         <Text
-          style={{
-            marginTop: 20,
-            fontSize: 16,
-          }}
+          style={profileStyles.userBio}
         >
           {user.bio}
         </Text>
       </View>
 
       <View
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          flexDirection: "row",
-          justifyContent: "center",
-          marginTop: 20,
-        }}
+        style={profileStyles.listingsContainer}
       >
         {/* imgs */}
 
