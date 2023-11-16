@@ -283,4 +283,63 @@ const postStyles = {
     },
   };
 
-  export { postStyles, editStyles, uploadStyles, exploreStyles };
+  const profileStyles = {
+    star: {
+      width: 18,
+      height: 18,
+      margin: 1.5,
+    },
+    listing: {
+      height: 115,
+      width: 115,
+      margin: 2,
+    },
+    scrollContainer: {
+      display: "flex",
+      width: "100%",
+      padding: "3%",
+    },
+    userProfilePic: {
+      width: 100,
+      height: 100,
+    },
+    userContainerMinusBio: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      marginTop: 4,
+    },
+    usernameContainer: {
+      display: "flex",
+      justifyContent: "space-around",
+      height: 90,
+      marginLeft: 10,
+      marginBottom: 10,
+    },
+    username: {
+      fontWeight: "bold",
+      fontSize: 24,
+    },
+    starContainer: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    numOfRatings: {
+      marginTop: 2,
+      fontSize: 16,
+    },
+    userBio: {
+      marginTop: 20,
+      fontSize: 16,
+    },
+    listingsContainer: {
+      display: "flex",
+      flexWrap: "wrap",
+      flexDirection: "row",
+      justifyContent: "center",
+      marginTop: 20,
+    },
+  };
+
+  export { postStyles, editStyles, uploadStyles, exploreStyles, profileStyles };
