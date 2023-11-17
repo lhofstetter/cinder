@@ -6,7 +6,10 @@ import fileUpload, { UploadedFile } from "express-fileupload";
 import { db } from "./db/index.js";
 import { images, listings, tags } from "./db/schema.js";
 import { authHandler } from "./routers/auth.js";
+import { matchHandler } from "./routers/match.js";
 import { getUrlForImage } from "./utils/imageUpload.js";
+import { validateListingId } from "./utils/listingValidation.js";
+import { auth } from "./lucia.js";
 
 const app = express();
 
@@ -14,6 +17,7 @@ app.use(cors(), fileUpload());
 app.use(express.json());
 app.use(express.urlencoded());
 app.use("/auth", authHandler);
+app.use("/match", matchHandler);
 
 // This route is temporary
 // Can be used to test POST /listing
@@ -226,51 +230,58 @@ app.get("/listing/:listing_id", validateListingId, async (req: Request, res: Res
 app.post("/listing", async (req: Request, res: Response) => {
   // Extract the images from the request
   try {
-    const imageUrlPromises = [];
-    if (!req.files?.file) {
-      return res.status(400).json({ error: "No image provided for listing" });
-    }
-    if (Array.isArray(req.files?.file)) {
-      for (const file of req.files?.file as UploadedFile[]) {
+    const authRequest = auth.handleRequest(req, res);
+    const session = await authRequest.validate();
+    if (session) {
+      const imageUrlPromises = [];
+      if (!req.files?.file) {
+        return res.status(400).json({ error: "No image provided for listing" });
+      }
+      if (Array.isArray(req.files?.file)) {
+        for (const file of req.files?.file as UploadedFile[]) {
+          imageUrlPromises.push(getUrlForImage(file?.data, file?.name));
+        }
+      } else {
+        const file = req.files?.file as UploadedFile;
         imageUrlPromises.push(getUrlForImage(file?.data, file?.name));
       }
-    } else {
-      const file = req.files?.file as UploadedFile;
-      imageUrlPromises.push(getUrlForImage(file?.data, file?.name));
-    }
-    // Await reply with url links to each image
-    const imageUrls: string[] = await Promise.all(imageUrlPromises);
-    const listingFormData: ListingFormData = req.body;
+      // Await reply with url links to each image
+      const imageUrls: string[] = await Promise.all(imageUrlPromises);
+      const listingFormData: ListingFormData = req.body;
 
-    // Update DB
-    const [{ inserted_id }]: any = await db
-      .insert(listings)
-      .values({
-        listing_name: listingFormData.listing_name,
-        category: listingFormData.category,
-        description: listingFormData.description,
-      })
-      .returning({ inserted_id: listings.id });
+      const owner_id = session.user.userId;
+      // Update DB
+      const [{ inserted_id }]: any = await db
+        .insert(listings)
+        .values({
+          listing_name: listingFormData.listing_name,
+          owner_id,
+          category: listingFormData.category,
+          description: listingFormData.description,
+        })
+        .returning({ inserted_id: listings.id });
 
-    // Add images to images table
-    for (const url of imageUrls) {
-      await db.insert(images).values({ listing_id: inserted_id, source: url });
-    }
-
-    // Add tags to the tags table
-    const { tags: userProvidedTags } = listingFormData;
-    if (Array.isArray(userProvidedTags)) {
-      for (const tag of userProvidedTags) {
-        await db.insert(tags).values({ listing_id: inserted_id, tag_name: tag });
+      // Add images to images table
+      for (const url of imageUrls) {
+        await db.insert(images).values({ listing_id: inserted_id, source: url });
       }
-    } else if (typeof userProvidedTags === "string") {
-      await db.insert(tags).values({
-        listing_id: inserted_id,
-        tag_name: userProvidedTags,
-      });
-    }
 
-    return res.status(200).json({ message: "OK" });
+      // Add tags to the tags table
+      const { tags: userProvidedTags } = listingFormData;
+      if (Array.isArray(userProvidedTags)) {
+        for (const tag of userProvidedTags) {
+          await db.insert(tags).values({ listing_id: inserted_id, tag_name: tag });
+        }
+      } else if (typeof userProvidedTags === "string") {
+        await db.insert(tags).values({
+          listing_id: inserted_id,
+          tag_name: userProvidedTags,
+        });
+      }
+
+      return res.status(200).json({ message: "OK" });
+    }
+    return res.status(401).json("No session cookie found. Please sign in");
   } catch (error) {
     console.log(error);
     return res.status((error as any)?.status ?? 500).json({
@@ -280,21 +291,3 @@ app.post("/listing", async (req: Request, res: Response) => {
 });
 
 app.listen(3000, () => console.log("Server started on port 3000"));
-
-function validateListingId(req: Request, res: Response, next: () => void) {
-  const { listing_id: unsafe_listing_id } = req.params;
-
-  if (!unsafe_listing_id) {
-    return res.status(400).json({ error: "Please provide a listing_id" });
-  }
-
-  const listing_id = parseInt(unsafe_listing_id);
-
-  if (isNaN(listing_id)) {
-    return res.status(400).json({ error: "Please provide a valid numeric listing_id" });
-  }
-
-  // Store the validated listing_id in the request object for later use
-  req.params.listing_id = String(listing_id);
-  next();
-}

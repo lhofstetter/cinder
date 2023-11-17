@@ -2,12 +2,11 @@
   "name": "cinder-server",
   "version": "1.0.0",
   "type": "module",
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "server.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo run:android",
-    "db:push": "bunx drizzle-kit push:sqlite",
-    "db:studio": "bunx drizzle-kit studio",
+    "start": "tsc --build && node server.js",
+    "db:push": "npx drizzle-kit push:sqlite",
+    "db:studio": "npx drizzle-kit studio",
     "lint-staged": {
       "**/*": "prettier --write --ignore-unknown"
     }
