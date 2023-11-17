@@ -360,7 +360,7 @@ app.get("/user/:user_id", validateUserId, async (req: Request, res: Response) =>
 });
 
 function validateUserId(req: Request, res: Response, next: () => void) {
-  const { listing_id: unsafe_user_id } = req.params;
+  const { user_id: unsafe_user_id } = req.params;
 
   if (!unsafe_user_id) {
     return res.status(400).json({ error: "Please provide a user_id" });
