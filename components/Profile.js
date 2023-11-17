@@ -3,6 +3,7 @@ import { Text, View, Image, ScrollView } from "react-native";
 import { PreviewImage } from "./SetPost";
 import { profileStyles } from "../styles";
 
+
 const samplepfp = require("../assets/samplepfp.png");
 const star = require("../assets/star.png");
 const emptyStar = require("../assets/star_unfilled.png");

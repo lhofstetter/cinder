@@ -12,6 +12,8 @@ import PreviewPost from "./components/Preview.js";
 import Profile from "./components/Profile.js";
 import Matches from "./components/Matches.js";
 import * as Font from "expo-font";
+import LoginScreen from "./components/LoginScreen.js";
+import AccountCreate from "./components/AccountCreate.js";
 
 const homeFocused = require("./assets/home.png");
 const homeUnfocused = require("./assets/home_unfocused.png");
@@ -37,6 +39,26 @@ function User() {
     </SafeAreaView>
   ) : (
     <Profile />
+  );
+}
+
+function Login(){
+  return Platform.OS == "ios" ? (
+    <SafeAreaView>
+      <LoginScreen />
+    </SafeAreaView>
+  ) : (
+    <LoginScreen />
+  );
+}
+
+function Account(){
+  return Platform.OS == "ios" ? (
+    <SafeAreaView>
+      <AccountCreate />
+    </SafeAreaView>
+  ) : (
+    <AccountCreate />
   );
 }
 
@@ -162,7 +184,7 @@ export default function App() {
                 }
               }
             })}/>
-          <Tab.Screen name="UploadRoute" component={UploadRoute} options={{ headerShown: false, unmountOnBlur: true }} />
+          <Tab.Screen name="UploadRoute" component={Upload} options={{ headerShown: false, unmountOnBlur: true }} />
           <Tab.Screen name="User" component={User} options={{ headerShown: false }} listeners={({ navigation, route }) => ({
               tabPress: (e) => {
                 if (navigation.getState().routes[1].state != undefined && navigation.getState().routes[1].state.index >= 1) {
