@@ -2,9 +2,11 @@ import { sql, InferSelectModel } from "drizzle-orm";
 import { integer, text, sqliteTable, primaryKey, blob } from "drizzle-orm/sqlite-core";
 
 export const user = sqliteTable("user", {
-  id: text("id").primaryKey(),
+  id: integer("id").primaryKey(),
   username: text("username").notNull(),
-  // other user attributes
+  phone_number: integer("phone").notNull(),
+  year: integer("year").notNull(),
+  profile_pic: text("profile_pic").notNull(),
 });
 
 export const session = sqliteTable("user_session", {
