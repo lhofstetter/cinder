@@ -4,8 +4,9 @@ import { integer, text, sqliteTable, primaryKey, blob } from "drizzle-orm/sqlite
 export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
   username: text("username").notNull(),
-  profile_pic: text("profile_pic"), // Optional: url to imgur link with profile pic
   // other user attributes
+  profile_pic: text("profile_pic").notNull(), // Optional: url to imgur link with profile pic
+  phone_number: text("phone_number").notNull(),
 });
 
 export const session = sqliteTable("user_session", {
@@ -33,15 +34,8 @@ export const listings = sqliteTable("listings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   listing_name: text("listing_name").notNull(),
   description: text("description").notNull(),
-  price: integer("price"),
   category: text("category").notNull(),
   created_at: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
-});
-
-export const accounts = sqliteTable("accounts", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  username: text("username").notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
 });
 
 export const images = sqliteTable("images", {

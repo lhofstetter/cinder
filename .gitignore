@@ -37,5 +37,6 @@ yarn-error.*
 
 server/*.js
 server/routers/*.js
+server/utils/*.js
 server/db/*.js
 server/drizzle.config.js

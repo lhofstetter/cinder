@@ -1,11 +1,18 @@
 import express from "express";
 import { auth } from "../lucia.js";
 import { LuciaError } from "lucia";
+import { UploadedFile } from "express-fileupload";
+import { getUrlForImage } from "../utils/imageUpload.js";
 
 export const authHandler = express.Router();
 
 authHandler.post("/signup", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, phone_number } = req.body;
+  let image_url: undefined | string;
+  if (req.files?.file) {
+    const file = req.files?.file as UploadedFile;
+    image_url = await getUrlForImage(file.data, file.name);
+  }
   // basic check
   if (typeof username !== "string" || username.length < 4 || username.length > 31) {
     return res.status(400).send("Invalid username");
@@ -22,6 +29,10 @@ authHandler.post("/signup", async (req, res) => {
       },
       attributes: {
         username,
+        phone_number,
+        profile_pic:
+          image_url ??
+          "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
       },
     });
     const session = await auth.createSession({
