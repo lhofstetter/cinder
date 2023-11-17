@@ -1,5 +1,5 @@
 import axios from "axios";
-import { listings, images, tags } from "./db/schema";
+import { listings, images, tags, user } from "./db/schema";
 import { db } from "./db";
 import { authHandler } from "./routers/auth";
 import express, { Request, Response } from "express";
@@ -320,5 +320,59 @@ function validateListingId(req: Request, res: Response, next: () => void) {
 
   // Store the validated listing_id in the request object for later use
   req.params.listing_id = String(listing_id);
+  next();
+}
+
+
+/**
+ * Gets the data for a particular user_id
+ *
+ * @route GET /user/:user_id
+ * @param {number} user_id - The id for the user you want data for
+ * @returns {UserData}
+ */
+app.get("/user/:user_id", validateUserId, async (req: Request, res: Response) => {
+  let { user_id: user_id_string } = req.params;
+  const user_id = parseInt(user_id_string);
+  try {
+    // Get the user's data from the DB
+    const userDataFromDb = await db.select().from(user).where(eq(user.id, user_id));
+    const userFromDb = userDataFromDb["0"];
+    if (userFromDb === undefined) {
+      return res.status(400).json({ error: "No profile with that id exists" });
+    }
+    // Get the source for the profile picture from the DB
+    const userImageData = await db
+      .select({ profile_pic: user.profile_pic })
+      .from(user)
+      .where(eq(user.id, user_id));
+    const userImages: string[] = userImageData.map((user) => user.profile_pic);
+
+    const responseData = {
+      ...userFromDb,
+      image_links: userImages,
+    };
+    return res.status(200).json(responseData);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: String(error) });
+  }
+});
+
+function validateUserId(req: Request, res: Response, next: () => void) {
+  const { listing_id: unsafe_user_id } = req.params;
+
+  if (!unsafe_user_id) {
+    return res.status(400).json({ error: "Please provide a user_id" });
+  }
+
+  const user_id = parseInt(unsafe_user_id);
+
+  if (isNaN(user_id)) {
+    return res.status(400).json({ error: "Please provide a valid numeric user_id" });
+  }
+
+  // Store the validated user_id in the request object for later use
+  req.params.user_id = String(user_id);
   next();
 }
