@@ -6,7 +6,6 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "extends": "expo/tsconfig.base",
   "ts-node": {
     "esm": true, // «———— enabling ESM for ts-node
   }

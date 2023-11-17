@@ -15,6 +15,7 @@ export const auth = lucia({
     return {
       username: data.username,
       profile_pic: data.profile_pic,
+      phone_number: data.phone_number,
     };
   },
 });
