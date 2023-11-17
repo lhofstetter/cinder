@@ -34,6 +34,7 @@
     "express-fileupload": "^1.4.1",
     "lucia": "^2.7.3",
     "multer": "^1.4.5-lts.1",
+    "sharp": "^0.32.6",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },
