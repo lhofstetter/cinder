@@ -1,6 +1,23 @@
 import { sql, InferSelectModel } from "drizzle-orm";
 import { integer, text, sqliteTable, primaryKey, blob } from "drizzle-orm/sqlite-core";
 
+export const likes = sqliteTable(
+  "likes",
+  {
+    account_id: text("account_id")
+      .notNull()
+      .references(() => user.id),
+    listing_id: integer("listing_id")
+      .notNull()
+      .references(() => listings.id),
+    listing_owner_id: text("listing_owner_id")
+      .notNull()
+      .references(() => user.id),
+    like: integer("like", { mode: "boolean" }).notNull(),
+  },
+  (table) => ({ pk: primaryKey(table.account_id, table.listing_id) }),
+);
+
 export const user = sqliteTable("user", {
   id: text("id").primaryKey(),
   username: text("username").notNull(),
@@ -33,6 +50,9 @@ export const key = sqliteTable("user_key", {
 export const listings = sqliteTable("listings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   listing_name: text("listing_name").notNull(),
+  owner_id: text("owner_id")
+    .notNull()
+    .references(() => user.id),
   description: text("description").notNull(),
   category: text("category").notNull(),
   created_at: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
