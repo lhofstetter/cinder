@@ -276,10 +276,12 @@ const postStyles = {
     likeOrDislikeText: {
       textAlign: "center",
       color: "#fff",
-      fontSize: 30,
-      marginTop: 175,
-      position: "relative",
+      fontSize: 50,
+      position: "absolute",
       zIndex: 100,
+      flex:1,
+      marginTop:"75%",
+      marginLeft:"35%",
     },
   };
 

@@ -10,6 +10,7 @@ import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import DetailsPost from "./components/SetPost.js";
 import PreviewPost from "./components/Preview.js";
 import Profile from "./components/Profile.js";
+import Matches from "./components/Matches.js";
 import * as Font from "expo-font";
 
 const homeFocused = require("./assets/home.png");
@@ -18,17 +19,6 @@ const uploadFocused = require("./assets/upload.png");
 const uploadUnfocused = require("./assets/upload_unfocused.png");
 const profileFocused = require("./assets/profile.png");
 const profileUnfocused = require("./assets/profile_unfocused.png");
-
-const styles = {
-  buttonMobile: {
-    position: "flex",
-    bottom: "-55%",
-  },
-  buttonText: {
-    textAlign: "center",
-    fontSize: 24,
-  },
-};
 
 function Swipe({ navigation }) {
   return Platform.OS == "ios" ? (
@@ -95,6 +85,16 @@ function UploadRoute() {
       <UploadStack.Screen name="New Listing" component={Details} options={{ headerBackVisible: false, gestureEnabled: false}}/>
       <UploadStack.Screen name="Preview" component={Preview} options={{ headerBackVisible: false }} />
     </UploadStack.Navigator>
+  );
+}
+
+const MatchStack = createNativeStackNavigator();
+
+function MatchRoute() {
+  return (
+    <MatchStack.Navigator screenOptions={{headerTitleStyle: {fontFamily: "Inter"}}}>
+      <MatchStack.Screen name="Matches" component={Matches}/>
+    </MatchStack.Navigator>
   );
 }
 

@@ -141,10 +141,11 @@ export default function UploadItem() {
   };
 
   const takeImage = async () => {
-    requestPermission();
-    result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
+    requestPermission().then(async () => {
+      result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+      });
     });
 
     if (!result.canceled) {

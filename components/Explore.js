@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ImageBackground, Text, View, Image, Pressable, useWindowDimensions, Platform } from "react-native";
 import TinderCard from "react-tinder-card";
 import * as ImagePicker from 'expo-image-picker';
 import { exploreStyles } from "../styles";
+import { useRoute, useNavigation } from "@react-navigation/native";
 
 const logo = require("../assets/cindr.png");
 
@@ -29,14 +30,6 @@ const logo = require("../assets/cindr.png");
 
 const db = [
   {
-    name: "Dark Jeans, barely worn",
-    categories: ["jeans", "dark", "cotton"],
-    tags: ["like new"],
-    price: 12,
-    swapCompatible: true,
-    img: require("../assets/download.jpeg"),
-  },
-  {
     name: "Erlich Bachman",
     img: require("../assets/pic2.jpeg"),
   },
@@ -49,8 +42,12 @@ const db = [
     img: require("../assets/pic4.jpeg"),
   },
   {
-    name: "Dinesh Chugtai",
-    img: require("../assets/pic5.jpeg"),
+    name: "Dark Jeans, barely worn",
+    categories: ["jeans", "dark", "cotton"],
+    tags: ["like new"],
+    price: 12,
+    swapCompatible: true,
+    img: require("../assets/download.png"),
   },
 ];
 
@@ -131,9 +128,9 @@ const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
           </View>
         ) : (
           <View style={[exploreStyles.cardMobile, { backgroundColor: color[2] }]}>
+            <Text style={exploreStyles.likeOrDislikeText}>{color[3]}</Text>
             <ImageBackground style={[exploreStyles.cardImageMobile, { opacity: color[1] }]} source={character.img}>
               <Text style={exploreStyles.cardTitle}>{character.name}</Text>
-              <Text style={exploreStyles.likeOrDislikeText}>{color[3]}</Text>
             </ImageBackground>
           </View>
         )}
