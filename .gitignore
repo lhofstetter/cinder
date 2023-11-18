@@ -35,8 +35,8 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-server/*.js
-server/routers/*.js
-server/utils/*.js
-server/db/*.js
-server/drizzle.config.js
+cinder-server/*.js
+cinder-server/routers/*.js
+cinder-server/utils/*.js
+cinder-server/db/*.js
+cinder-server/drizzle.config.js
