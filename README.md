@@ -22,7 +22,9 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 > | -------------- | -------- | ------------------ | ------------------------------------------------------------------ |
 > | `file`         | required | Buffer or Buffer[] | The binary of an image, can be more than one                       |
 > | `listing_name` | required | string             | The name of the listing                                            |
-> | `price`        | optional | number             | The price of the listing                                           |
+> | `size`         | optional | string             | The size of the cloting item                                       |
+> | `waist`        | optional | number             | The length of the waist (only for bottoms)                         |
+> | `insteam`      | optional | number             | The length of the inseam (only for bottoms)                        |
 > | `description`  | required | string             | The description for the listing                                    |
 > | `category`     | required | string             | The category the listing is for (top, bottom, accessory, or shoes) |
 > | `tags`         | required | string[] or string | The user generated tags for the listing                            |
@@ -136,18 +138,18 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 
 ##### Parameters
 
-> | name              | type     | data type          | description                                                                  |
-> | --------------    | -------- | ------------------ | ------------------------------------------------------------------           |
-> | `username`        | required | string             | The username of the user                                                     |
-> | `password`        | required | string             | The user's password                                                          |
+> | name       | type     | data type | description              |
+> | ---------- | -------- | --------- | ------------------------ |
+> | `username` | required | string    | The username of the user |
+> | `password` | required | string    | The user's password      |
 
 ##### Responses
 
-> | http code | content-type       | response                                         |
-> | --------- | ------------------ | ------------------------------------------------ |
-> | `200`     | `application/json` | `{"OK"}`                                         |
-> | `400`     | `application/json` | `{"Invalid username or password"}`               |
-> | `500`     | `application/json` | `{"An unknown error occurred"}`                  |
+> | http code | content-type       | response                           |
+> | --------- | ------------------ | ---------------------------------- |
+> | `200`     | `application/json` | `{"OK"}`                           |
+> | `400`     | `application/json` | `{"Invalid username or password"}` |
+> | `500`     | `application/json` | `{"An unknown error occurred"}`    |
 
 </details>
 
@@ -156,18 +158,18 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 
 ##### Parameters
 
-> | name              | type     | data type          | description                                                                  |
-> | --------------    | -------- | ------------------ | ------------------------------------------------------------------           |
-> | `username`        | required | string             | The username of the user                                                     |
-> | `password`        | required | string             | The user's password                                                          |
+> | name       | type     | data type | description              |
+> | ---------- | -------- | --------- | ------------------------ |
+> | `username` | required | string    | The username of the user |
+> | `password` | required | string    | The user's password      |
 
 ##### Responses
 
-> | http code | content-type       | response                                         |
-> | --------- | ------------------ | ------------------------------------------------ |
-> | `200`     | `application/json` | `{"OK"}`                                         |
-> | `400`     | `application/json` | `{"Incorrect username or password"}`             |
-> | `500`     | `application/json` | `{"An unknown error occurred"}`                  |
+> | http code | content-type       | response                             |
+> | --------- | ------------------ | ------------------------------------ |
+> | `200`     | `application/json` | `{"OK"}`                             |
+> | `400`     | `application/json` | `{"Incorrect username or password"}` |
+> | `500`     | `application/json` | `{"An unknown error occurred"}`      |
 
 </details>
 
@@ -184,9 +186,9 @@ Once the repository is cloned on your computer, you can use 'npm install --force
  <summary><code>PreviewImage</code> <code>(Lets the user preview the image they are including in their listing)</code></summary>
 
 ##### Props
-> | name              | description                                                                  |
-> | --------------    | ------------------------------------------------------------------           |
-> | `imageSrc`        | Source of the image                                                          |
+
+> | name       | description         |
+> | ---------- | ------------------- |
+> | `imageSrc` | Source of the image |
 
 </details>
-

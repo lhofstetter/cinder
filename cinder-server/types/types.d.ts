@@ -1,17 +1,25 @@
 declare type Category = "top" | "bottom" | "accessory" | "shoes";
 
+declare type Size = "XXS" | "XS" | "S" | "M" | "L" | "XL" | "2XL" | "2XL";
+
 declare interface ListingFormData {
   listing_name: string;
   price?: string;
   description: string;
   category: Category;
   tags?: string | string[];
+  size?: Size;
+  waist?: number; // EX: 30
+  inseam?: number; // EX: 29
 }
 
 declare interface ListingData {
   id: number;
   listing_name: string;
   description: string;
+  size?: Size;
+  waist?: number; // EX: 30
+  inseam?: number; // EX: 29
   category: Category;
   created_at: string;
   tags?: string[];
