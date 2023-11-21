@@ -60,7 +60,7 @@ const postStyles = {
       width: 200,
       marginLeft: 25,
       marginTop: 20,
-      bottom:-7,
+      marginBottom:30,
     },
     titleFocus: {
       fontFamily: "Inter",
@@ -70,7 +70,7 @@ const postStyles = {
       width: 200,
       marginLeft: 25,
       marginTop: 20,
-      bottom:-7,
+      marginBottom:30,
     },
     postDescription: {
       backgroundColor: "#D9D9D9",
@@ -226,6 +226,17 @@ const postStyles = {
       height: 300,
       marginBottom: 100,
     },
+    emptyCardContainer: {
+      borderWidth: 1,
+      marginTop: "6%",
+      borderStyle: "solid",
+      borderColor: "#dbd8ce",
+      borderRadius: 5,
+      width: 400,
+      height: 600,
+      alignItems: "center",
+      justifyContent: "center",
+    },
     cardWeb: {
       position: "absolute",
       width: "100%",
@@ -261,6 +272,14 @@ const postStyles = {
       bottom: 0,
       margin: 10,
       color: "#fff",
+    },
+    emptyCardTitle: {
+      margin: 10,
+      fontSize:20,
+      color: "#000000",
+      textAlign:"center",
+      marginLeft:20,
+      marginRight:20,
     },
     buttons: {
       margin: 20,

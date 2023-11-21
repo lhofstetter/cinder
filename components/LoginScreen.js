@@ -1,20 +1,35 @@
 import React from "react";
 import { Text, View, StyleSheet, TextInput, Pressable, Image} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from 'expo-linear-gradient';
+import * as SecureStore from 'expo-secure-store';
 
 const logo = require("../assets/white_text_logo.png")
 
 export default function LoginScreen(){
+    const [username, setUsername] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const navigation = useNavigation();
 
-    const [username, setUsername] = React.useState("")
-    const [password, setPassword] = React.useState("")
-
-    const login = function(){
-        return ""
-    }
+    const login = async function() {
+        let body = new FormData();
+        body.append("username", username);
+        body.append("password", password);
+        await fetch("https://cinder-server2.fly.dev/auth/login", {method: "POST", 
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            body
+        }).then(async () => {
+            await SecureStore.setItemAsync("username", username);
+            await SecureStore.setItemAsync("password", password);
+            navigation.navigate("App Path");
+        }, (e) => {
+            console.log(e);
+        });
+    };
 
     return(
-      
             <LinearGradient
         colors={['#BE1CF7', '#FFFFFF']}
         style={styles.background}
@@ -47,7 +62,9 @@ export default function LoginScreen(){
             </View>
             <View style={styles.textContainer}>
                 <Text>Don't have an account? </Text>
-                <Text style={styles.signUpText}>Sign Up. </Text>
+                <Pressable onPress={() => {navigation.navigate("Sign Up")}}>
+                    <Text style={styles.signUpText}>Sign Up.</Text>
+                </Pressable>
             </View>
             </LinearGradient>
     )
@@ -72,7 +89,7 @@ const styles = StyleSheet.create({
     titleText: {
         fontSize: 50,
         fontWeight: "600",
-        letterSpacing: "-1px",
+        letterSpacing: -1,
         color: "white",
         marginBottom: 20
     },
@@ -86,8 +103,6 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: "#F1C8FF",
         borderRadius: 12
-        
-       
     },
 
     loginButton: {

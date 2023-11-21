@@ -7,61 +7,14 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 
 const logo = require("../assets/cindr.png");
 
-/*
-    P(L) = P(M) * P(C) * P(T)
-    where P(L) = Probability of user liking clothing,
-    P(M) = Probability of it being in the users price range
-    P(C) = Probability of it being a category the user has liked in the past,
-    P(T) = Probability of it being tagged with similar tags the user has liked
-    
-
-    item
-    {
-        "listing_name": String,
-        "id": (32-bit Unique) AlphaNumeric String
-        "price": Number,
-        "categories": Array of Strings, each containing a category name
-        "tags": Array of Strings, each containing a tag name
-        "swap-compatible": Boolean
-    }
-
-    user
-*/
-
-const db = [
-  {
-    name: "Erlich Bachman",
-    img: require("../assets/pic2.jpeg"),
-  },
-  {
-    name: "Monica Hall",
-    img: require("../assets/pic3.jpeg"),
-  },
-  {
-    name: "Jared Dunn",
-    img: require("../assets/pic4.jpeg"),
-  },
-  {
-    name: "Dark Jeans, barely worn",
-    categories: ["jeans", "dark", "cotton"],
-    tags: ["like new"],
-    price: 12,
-    swapCompatible: true,
-    img: require("../assets/download.png"),
-  },
-];
-
 const alreadyRemoved = [];
-let charactersState = db; // This fixes issues with updating characters state forcing it to use the current state and not the state that was active when the card was created.
 
-const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
+const SwipeableCard = ({ character, index, swiped, outOfFrame }) => {
   const [color, setColor] = useState([null, 1.0, "#fff", ""]);
   const { width, height } = useWindowDimensions();
 
   return (
     <Pressable
-      key={character.name}
-      ref={childRef}
       onTouchStart={(event) => {
         setColor([[event.nativeEvent.pageX, event.nativeEvent.pageY], 1.0, "#fff", ""]);
       }}
@@ -113,24 +66,22 @@ const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
       }}
     >
       <TinderCard
-        ref={childRef}
-        key={character.name}
-        onSwipe={(dir) => swiped(dir, character.name)}
-        onCardLeftScreen={() => outOfFrame(character.name)}
+        onSwipe={(dir) => swiped(dir, character.listing_name.replace(" ", "_"))}
+        onCardLeftScreen={() => outOfFrame(character.listing_name)}
         preventSwipe={['up', 'down']}
       >
         {Platform.OS == "web" ? (
           <View style={[exploreStyles.cardWeb, { backgroundColor: color[2] }]}>
-            <ImageBackground style={[exploreStyles.cardImageWeb, { opacity: color[1] }]} source={character.img}>
-              <Text style={exploreStyles.cardTitle}>{character.name}</Text>
+            <ImageBackground style={[exploreStyles.cardImageWeb, { opacity: color[1] }]} source={character.image_links[0]}>
+              <Text style={exploreStyles.cardTitle}>{character.listing_name}</Text>
               <Text style={exploreStyles.likeOrDislikeText}>{color[3]}</Text>
             </ImageBackground>
           </View>
         ) : (
           <View style={[exploreStyles.cardMobile, { backgroundColor: color[2] }]}>
             <Text style={exploreStyles.likeOrDislikeText}>{color[3]}</Text>
-            <ImageBackground style={[exploreStyles.cardImageMobile, { opacity: color[1] }]} source={character.img}>
-              <Text style={exploreStyles.cardTitle}>{character.name}</Text>
+            <ImageBackground style={[exploreStyles.cardImageMobile, { opacity: color[1] }]} source={{uri:character.image_links[0]}}>
+              <Text style={exploreStyles.cardTitle}>{character.listing_name}</Text>
             </ImageBackground>
           </View>
         )}
@@ -140,17 +91,29 @@ const SwipeableCard = ({ character, index, childRef, swiped, outOfFrame }) => {
 };
 
 const Advanced = () => {
-  const [characters, setCharacters] = useState(db);
+  const [characters, setCharacters] = useState([]);
   const [lastDirection, setLastDirection] = useState();
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
+  const [begin, setBegin] = useState(33);
+  
+  useEffect(() => {
+    const getListings = async () => {
+      let temp = characters;
+      for (let i = begin; i <= begin + 5; i++) {
+        let data = await fetch ("https://cinder-server2.fly.dev/listing/" + String(i)).then((data) => data.json()).then((formatted) => {
+          return formatted;
+        });
+        if ("error" in data) {
+          return;
+        }
+        temp.unshift(data);
+      }
+      setCharacters(temp);
+      setBegin(begin + 1);
+    };
+    getListings();
+  }, []);
 
-  const childRefs = useMemo(
-    () =>
-      Array(db.length)
-        .fill(0)
-        .map((i) => React.createRef()),
-    [],
-  );
 
   const swiped = (direction, nameToDelete) => {
     setLastDirection(direction);
@@ -158,38 +121,25 @@ const Advanced = () => {
   };
 
   const outOfFrame = (name) => {
-    charactersState = charactersState.filter((character) => character.name !== name);
-    setCharacters(charactersState);
+    let temp = characters;
+    temp = temp.filter((character) => character.listing_name !== name);
+    setCharacters(temp);
   };
 
-  const swipe = (dir) => {
-    const cardsLeft = characters.filter((person) => !alreadyRemoved.includes(person.name));
-    if (cardsLeft.length) {
-      const toBeRemoved = cardsLeft[cardsLeft.length - 1].name; // Find the card object to be removed
-      const index = db.map((person) => person.name).indexOf(toBeRemoved); // Find the index of which to make the reference to
-      alreadyRemoved.push(toBeRemoved); // Make sure the next card gets removed next time if this card do not have time to exit the screen
-      childRefs[index].current.swipe(dir); // Swipe the card!
-    }
-  };
   return (
     <View style={exploreStyles.container}>
-      {Platform.OS == "web" ? (
-        <img src={logo} style={exploreStyles.webHeader} alt={"logo"} />
-      ) : (
-        <Image source={logo} style={exploreStyles.mobileHeader} />
-      )}
-      <View style={exploreStyles.cardContainer}>
+      <Image source={logo} style={exploreStyles.mobileHeader} />
+    {characters.length === 0 ? <View style={exploreStyles.emptyCardContainer}><Text style={[exploreStyles.emptyCardTitle, {fontFamily: 'Inter'}]}>No more listings are available right now. Please try again later.</Text></View> : <View style={exploreStyles.cardContainer}>
         {characters.map((character, index) => (
           <SwipeableCard
-            key={character.name}
             character={character}
             index={index}
-            childRef={childRefs[index]}
+            key={index}
             swiped={swiped}
             outOfFrame={outOfFrame}
           />
         ))}
-      </View>
+      </View>}
     </View>
   );
 };

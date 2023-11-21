@@ -2,44 +2,49 @@ import React from "react";
 import * as Crypto from "expo-crypto";
 import axios from "axios";
 import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import * as SecureStore from 'expo-secure-store';
 
 const arrow = require("../assets/back_arrow.png")
 
-
-
 export default function AccountCreate(){
+    const [username, setUsername] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const [confirmPassword, setConfirmPassword] = React.useState("");
+    const [phoneNumber, setPhoneNumber] = React.useState("");
     
-    const [username, setUsername] = React.useState("")
-    const [password, setPassword] = React.useState("")
-    const [confirmPassword, setConfirmPassword] = React.useState("")
-    const [phoneNumber, setPhoneNumber] = React.useState("")
+    const navigation = useNavigation();
 
     const handleSignUp = async function (){
-
-
         if (password !== confirmPassword){
             Alert.alert("Error", "Confirmed password does not match.")
         }
-        const res = await axios.post("http://localhost:3000/auth/signup", {
+        const res = await axios.post("https://cinder-server2.fly.dev/auth/signup", {
             username,
             password: await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password),
             phone_number: phoneNumber,
         });
-        if (res !== AxiosError) {
+        if (res !== axios.AxiosError) {
             const data = res.data;
             switch (data) {
                 case "OK":
-                    Alert.alert("Bro", "you are supper chilling")
+                    await SecureStore.setItemAsync("username", username);
+                    await SecureStore.setItemAsync("password", password);
+                    navigation.navigate("Swipe");
+                    break;
                 case "Invlaid username":
-                    Alert.alert("Inavlid Username", "Username must be between 5 and 30 characters.")
+                    Alert.alert("Inavlid Username", "Username must be between 5 and 30 characters.");
+                    break;
                 case "Invalid password":
-                    Alert.alert("Invalid Password", "Password must more than 6 characters.")
+                    Alert.alert("Invalid Password", "Password must more than 6 characters.");
+                    break;
                     // must be > 6 chars and < 255
                 case "Username already taken":
-                    Alert.alert("Username Taken", "Please enter a different username. ")
-                case "An unknown error occurred":
-                    Alert.alert("Error", "An unknown problem occured, please try again later.")
-
+                    Alert.alert("Username Taken", "Please enter a different username. ");
+                    break;
+                default:
+                    Alert.alert("Error", "An unknown problem occured, please try again later.");
+                    break;
             }
 
         }
@@ -50,10 +55,15 @@ export default function AccountCreate(){
 
 
             <View style={styles.bar}>
+            <Pressable onPress={() => {
+                navigation.goBack();
+            }}>
                 <Image
                     style={styles.arrow}
                     source={arrow}
                  />
+            </Pressable>
+                
                 <Text style={styles.title}>
                     Profile
                 </Text>
@@ -72,7 +82,7 @@ export default function AccountCreate(){
                     />
                 </View>
                 <View style={styles.field}>
-                    <Text stlye={styles.inputLabel}>
+                    <Text style={styles.inputLabel}>
                         Password
                     </Text>
                     <TextInput 
@@ -82,7 +92,7 @@ export default function AccountCreate(){
                     />
                 </View>
                 <View style={styles.field}>
-                    <Text stlye={styles.inputLabel}>
+                    <Text style={styles.inputLabel}>
                         Confirm Password
                     </Text>
                     <TextInput 
@@ -92,7 +102,7 @@ export default function AccountCreate(){
                     />
                 </View>
                 <View style={styles.field}>
-                    <Text stlye={styles.inputLabel}>
+                    <Text style={styles.inputLabel}>
                         Phone Number
                     </Text>
                     <TextInput 
@@ -172,7 +182,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#D9D9D9',
         width: 200,
         height: 32,
-        borderRadius: 8
+        borderRadius: 8,
+        paddingLeft:"2%",
     },
 
     saveButton: {

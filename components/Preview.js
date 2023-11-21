@@ -27,7 +27,7 @@ export default function PreviewPost() {
       form.append("description", details.description);
       form.append("category", details.selectedType);
       form.append("tags", tags.split(" "));
-      return fetch("http://127.0.0.1:3000/listing", {
+      return fetch("https://cinder-server2.fly.dev/listing", {
           method: "POST",
           headers: {
               'Content-Type': 'multipart/form-data',

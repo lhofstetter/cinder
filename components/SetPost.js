@@ -76,7 +76,6 @@ export default function DetailsPost() {
   const [currentStyle, setCurrentStyle] = useState([editStyles.title, {fontFamily: 'Inter'}]);
   const [currentPrice, setCurrentPrice] = useState("$0.00");
   const [descriptionStyle, setDescriptionStyle] = useState([editStyles.postDescription, {fontFamily: 'Inter'}]);
-  const [priceBoxStyle, setPriceBoxStyle] = useState([editStyles.priceUnfocus, {fontFamily: 'Inter'}]);
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -90,7 +89,7 @@ export default function DetailsPost() {
       )});
     } else {
       navigation.setOptions({headerRight: () => (
-        <Pressable onPress={()=> {
+        <Pressable onPress={() => {
             navigation.navigate("Preview", {
               title:text,
               description:description,
@@ -98,7 +97,6 @@ export default function DetailsPost() {
               selectedSize:selectedSize,
               image:image,
               tags:"",
-              price:currentPrice,
             });
         }}>
         <Text style={[editStyles.previewMobile, {fontFamily: "Inter"}]}>Continue</Text>
@@ -129,18 +127,6 @@ export default function DetailsPost() {
     setDescriptionStyle([editStyles.postDescription, {fontFamily: 'Inter'}]);
   }
 
-  function handleChange (text) {
-    setCurrentPrice(text.replace(/[^0-9.$]/g, ''))
-  }
-
-  function handlePriceFocus() {
-    setPriceBoxStyle([editStyles.priceFocus, {fontFamily: 'Inter'}]);
-  }
-  function handlePriceUnfocus() {
-    setPriceBoxStyle([editStyles.priceUnfocus, {fontFamily: 'Inter'}]);
-  }
- 
-
   function checkSelected() {
     if (selectedType == "Bottoms") {
       setTypeOfSize(bottomSizes);
@@ -156,7 +142,6 @@ export default function DetailsPost() {
   return (
      <View>
       <TextInput onFocus={handleFocus} onEndEditing={handleUnfocus} onChangeText={setText} value={text} style={currentStyle}></TextInput>
-      <TextInput onEndEditing={handlePriceUnfocus} onFocus={handlePriceFocus} onChangeText={(text) => handleChange(text)} value={currentPrice} style={priceBoxStyle} inputMode={"decimal"}></TextInput>
       <PreviewImage imageSrc={image.image.uri} style={editStyles.previewImageMobile}/>
       <TextInput
         multiline
