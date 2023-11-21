@@ -34,8 +34,12 @@ app.get("/", (req, res) => {
         <label> Descrption <input type="text" name="description" />
         </label>
         <label>
-            Price
-            <input type="number" name="price" />
+            Waist
+            <input type="number" name="waist" />
+        </label>
+        <label>
+            Inseam
+            <input type="number" name="inseam" />
         </label>
         <label>
           Enter tags
@@ -43,6 +47,20 @@ app.get("/", (req, res) => {
           <input type="text" name="tags" value="tags3"/>
           <input type="text" name="tags" value="tags4"/>
         </label>
+        <fieldset>
+          <legend>Select the size of the piece:</legend>
+          <div>
+            <input type="radio" id="S" name="size" value="S" />
+            <label for="S">S</label>
+
+            <input type="radio" id="M" name="size" value="M" />
+            <label for="M">M</label>
+
+            <input type="radio" id="L" name="size" value="L" />
+            <label for="L">L</label>
+          </div>
+          <div>
+        </fieldset>
         <fieldset>
           <legend>Select the category of clothes:</legend>
           <div>
@@ -81,8 +99,6 @@ app.get("/recommended", async (req: Request, res: Response) => {
  *     listing
  * @param {string} reqBody.listing_name - The name of the listing
  * @param {string} reqBody.description - The description for the listing
- * @param {undefined|number} reqBody.price - The price for the listing
- *     (optional)
  * @param {Category} reqBody.category - The category of the listing (top,
  *     bottom, shoes, or accessory)
  * @param {undefined|string|string[]} reqBody.tags - The user provided tag(s)
@@ -217,6 +233,9 @@ app.get("/listing/:listing_id", validateListingId, async (req: Request, res: Res
  * @param {Buffer|Buffer[]} reqBody.file - The binary of the image(s) of the
  *     listing
  * @param {string} reqBody.listing_name - The name of the listing
+ * @param {number} reqBody.waist - The length of the waist of bottoms
+ * @param {number} reqBody.inseam - The length of the inseam of bottoms
+ * @param {Size} reqBody.size - The size of a clothing item
  * @param {string} reqBody.description - The description for the listing
  * @param {undefined|number} reqBody.price - The price for the listing
  *     (optional)
@@ -230,6 +249,7 @@ app.get("/listing/:listing_id", validateListingId, async (req: Request, res: Res
 app.post("/listing", async (req: Request, res: Response) => {
   // Extract the images from the request
   try {
+    console.log(req.body);
     const authRequest = auth.handleRequest(req, res);
     const session = await authRequest.validate();
     if (session) {
@@ -249,6 +269,25 @@ app.post("/listing", async (req: Request, res: Response) => {
       const imageUrls: string[] = await Promise.all(imageUrlPromises);
       const listingFormData: ListingFormData = req.body;
 
+      // Validate info for sizing
+      if (listingFormData.category === "top") {
+        if (listingFormData.size === undefined) {
+          return res.status(400).json({ message: "Please include a size for tops" });
+        } else if (!SIZE_OPTIONS.includes(listingFormData.size)) {
+          return res.status(400).json({
+            message: "Please include a valid size for tops, accepted values inlcude XXS, XS, S, M, L, XL, 2XL, and 3XL",
+          });
+        }
+      }
+
+      if (listingFormData.category !== "bottom") {
+        if (+listingFormData.waist > 0 || +listingFormData.inseam > 0) {
+          return res.status(400).json({ message: "Only bottoms can have a waist or an inseam" });
+        }
+        listingFormData.waist = undefined;
+        listingFormData.inseam = undefined;
+      }
+
       const owner_id = session.user.userId;
       // Update DB
       const [{ inserted_id }]: any = await db
@@ -258,6 +297,9 @@ app.post("/listing", async (req: Request, res: Response) => {
           owner_id,
           category: listingFormData.category,
           description: listingFormData.description,
+          inseam: listingFormData.inseam ? Number(listingFormData.inseam) : undefined,
+          waist: listingFormData.waist ? Number(listingFormData.waist) : undefined,
+          size: listingFormData.size ? (listingFormData.size as any) : undefined,
         })
         .returning({ inserted_id: listings.id });
 

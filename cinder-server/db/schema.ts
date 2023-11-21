@@ -54,6 +54,9 @@ export const listings = sqliteTable("listings", {
     .notNull()
     .references(() => user.id),
   description: text("description").notNull(),
+  size: text("size", { enum: ["XXS", "XS", "S", "M", "L", "XL", "2XL", "3XL"] }),
+  waist: integer("waist"),
+  inseam: integer("inseam"),
   category: text("category").notNull(),
   created_at: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
 });
