@@ -23,8 +23,8 @@ const uploadFocused = require("./assets/upload.png");
 const uploadUnfocused = require("./assets/upload_unfocused.png");
 const profileFocused = require("./assets/profile.png");
 const profileUnfocused = require("./assets/profile_unfocused.png");
-const matchFocused = require("./assets/focused_match.png");
-const matchUnfocused = require("./assets/unfocused_match.png");
+const likesFocused = require("./assets/likes_unfocused.png");
+const likesUnfocused = require("./assets/likes.png");
 
 function Swipe() {
   return Platform.OS == "ios" ? (
@@ -156,7 +156,14 @@ function TabNavigator() {
                 image = focused ? uploadFocused : uploadUnfocused;
 
                 return Platform.OS == "web" ? <img src={image} /> : <Image source={image} />;
-              } else if (route.name === "User") {
+              } 
+              else if (route.name === "MatchRoute") {
+                iconName = focused ? "likesFocused" : "likesUnfocused";
+                image = focused ? likesFocused : likesUnfocused;
+
+                return <Image source={image} />;
+              }
+              else if (route.name === "User") {
                 iconName = focused ? "profileFocus" : "profileUnfocused";
                 image = focused ? profileFocused : profileUnfocused;
 
@@ -167,6 +174,7 @@ function TabNavigator() {
 
                 return <Image source={image}/>
               }
+              
             },
             tabBarActiveTintColor: "black",
             tabBarInactiveTintColor: "gray",
@@ -188,22 +196,8 @@ function TabNavigator() {
                 }
               }
             })}/>
-          <Tab.Screen name="UploadRoute" component={UploadRoute} options={{ headerShown: false, unmountOnBlur: true }} />
-          <Tab.Screen name="Match" component={MatchRoute} options={{ headerShown: false }} listeners={({ navigation, route }) => ({
-              tabPress: (e) => {
-                if (navigation.getState().routes[1].state != undefined && navigation.getState().routes[1].state.index >= 1) {
-                  e.preventDefault();
-                  Alert.alert('Discard Post?', 'You\'ll lose all progress on this post if you leave! Are you sure you want to?', [
-                    { text: "Don't leave", style: 'cancel', onPress: () => {} },
-                    {
-                      text: 'Leave',
-                      style: 'destructive',
-                      onPress: () => {navigation.navigate("Swipe", {})},
-                    },
-                  ])
-                }
-              }
-            })}/>
+          <Tab.Screen name="UploadRoute" component={Upload} options={{ headerShown: false, unmountOnBlur: true }} />
+          <Tab.Screen name="MatchRoute" component={MatchRoute} options={{ headerShown: false, unmountOnBlur: true }} />
           <Tab.Screen name="User" component={User} options={{ headerShown: false }} listeners={({ navigation, route }) => ({
               tabPress: (e) => {
                 if (navigation.getState().routes[1].state != undefined && navigation.getState().routes[1].state.index >= 1) {
