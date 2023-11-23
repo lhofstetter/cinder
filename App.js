@@ -239,13 +239,12 @@ export default function App() {
     setFontLoaded(true);
   }
 
-  async function getLoginInfo() { 
-    let username = await SecureStore.getItemAsync("username");
-    let password = await SecureStore.getItemAsync("password");
+  async function getLoginInfo() {
+    let cookie = await SecureStore.getItemAsync("cookie");
     
-    setLogin({"username": username, "password": password});
-    tempLogin = {"username": username, "password": password};
-    if (tempLogin.username != null) {
+    setLogin({"cookie": cookie});
+    tempLogin = {"cookie": cookie};
+    if (tempLogin.cookie != null) {
       initialRoute = "App Path";
     } else {
       initialRoute = "Login Path";
