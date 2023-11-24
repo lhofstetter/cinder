@@ -1,8 +1,11 @@
 import React from "react";
 import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert} from "react-native";
+import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SecureStore from 'expo-secure-store';
+import * as Crypto from "expo-crypto";
+import axios from "axios";
 import * as Crypto from "expo-crypto";
 import axios from "axios";
 
@@ -24,9 +27,25 @@ export default function LoginScreen(){
             },
         }).then(async (res) => {
             await SecureStore.setItemAsync("cookie", String(res.headers["set-cookie"][0]));
-
             navigation.navigate("App Path");
         }, (e) => {
+            const error = e.response.data;
+            switch (error) {
+                case "Invalid username":
+                    Alert.alert("Invalid Username", "Sorry! A valid username is between 5 and 30 characters.");
+                    break;
+                case "Invalid password":
+                    Alert.alert("Invalid Password", "Sorry! A valid password is more than 6 characters.");
+                    break;
+                    // must be > 6 chars and < 255
+                case "Incorrect username or password":
+                    Alert.alert("Incorrect username or password", "Go ahead and check your spelling, then try again. If it still doesn't work, make sure you've made an account!");
+                    break;
+                default:
+                    Alert.alert("Error", "An unknown problem occurred. Please try again.");
+                    break;
+            }
+            
             const error = e.response.data;
             switch (error) {
                 case "Invalid username":
