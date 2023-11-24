@@ -14,26 +14,30 @@ export default function AccountCreate(){
     const [phoneNumber, setPhoneNumber] = React.useState("");
     
     const navigation = useNavigation();
+    let passwd;
 
     const handleSignUp = async function (){
         if (password !== confirmPassword){
-            Alert.alert("Error", "Confirmed password does not match.")
+            Alert.alert("Error", "Confirmed password does not match.");
+            return;
         }
-        const res = await axios.post("https://cinder-server2.fly.dev/auth/signup", {
-            username,
-            password: await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password),
-            phone_number: phoneNumber,
-        });
-        if (res !== axios.AxiosError) {
-            const data = res.data;
-            switch (data) {
-                case "OK":
-                    await SecureStore.setItemAsync("username", username);
-                    await SecureStore.setItemAsync("password", password);
-                    navigation.navigate("Swipe");
-                    break;
-                case "Invlaid username":
-                    Alert.alert("Inavlid Username", "Username must be between 5 and 30 characters.");
+        passwd = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
+        await axios.post("https://cinder-server2.fly.dev/auth/signup/", {
+            username: String(username),
+            password:String(passwd),
+            phone_number:String(phoneNumber),
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        }).then(async (res) => {
+            await SecureStore.setItemAsync("cookie", String(res.headers["set-cookie"][0]));
+            navigation.navigate("App Path");
+        }, (e) => {
+            const error = e.response.data;
+            switch (error) {
+                case "Invalid username":
+                    Alert.alert("Invalid Username", "Username must be between 5 and 30 characters.");
                     break;
                 case "Invalid password":
                     Alert.alert("Invalid Password", "Password must more than 6 characters.");
@@ -46,8 +50,7 @@ export default function AccountCreate(){
                     Alert.alert("Error", "An unknown problem occured, please try again later.");
                     break;
             }
-
-        }
+        });
     }
 
     return(

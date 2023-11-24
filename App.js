@@ -224,8 +224,6 @@ function TabNavigator() {
 }
 
 const AppStack = createNativeStackNavigator();
-let tempLogin = null;
-let initialRoute = null;
 
 export default function App() {
   const [fontLoaded, setFontLoaded] = React.useState(false);
@@ -239,17 +237,17 @@ export default function App() {
     setFontLoaded(true);
   }
 
-  async function getLoginInfo() { 
-    let username = await SecureStore.getItemAsync("username");
-    let password = await SecureStore.getItemAsync("password");
-    
-    setLogin({"username": username, "password": password});
-    tempLogin = {"username": username, "password": password};
-    if (tempLogin.username != null) {
-      initialRoute = "App Path";
-    } else {
-      initialRoute = "Login Path";
+  async function getLoginInfo() {
+    let cookie = await SecureStore.getItemAsync("cookie");
+    if (cookie != null) {
+      let exp_date = new Date(cookie.split(";")[2].split("=")[1]).getTime();
+      if (exp_date - (new Date()).getTime() > 0) {
+        setLogin("App Path");
+        return;
+      }
     }
+    SecureStore.deleteItemAsync("cookie");
+    setLogin("Login Path");
   }
 
   React.useEffect(() => {
@@ -257,12 +255,12 @@ export default function App() {
     loadFont();
   }, []);
 
-  if (tempLogin == null) {
+  if (login == null || fontLoaded == false) {
     return (<View></View>);
   } else {
     return (<ActionSheetProvider>
       <NavigationContainer>
-        <AppStack.Navigator initialRouteName={initialRoute}>
+        <AppStack.Navigator initialRouteName={login}>
           <AppStack.Screen name="Login Path" component={LoginRoute} options={{headerShown:false}}/>
           <AppStack.Screen name="App Path" component={TabNavigator} options={{ headerShown:false, gestureEnabled: false}}/>
         </AppStack.Navigator>

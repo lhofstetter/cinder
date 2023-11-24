@@ -3,7 +3,7 @@ import { ImageBackground, Text, View, Image, Pressable, useWindowDimensions, Pla
 import TinderCard from "react-tinder-card";
 import * as ImagePicker from 'expo-image-picker';
 import { exploreStyles } from "../styles";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import * as SecureStore from 'expo-secure-store';
 
 const logo = require("../assets/cindr.png");
 
@@ -66,7 +66,7 @@ const SwipeableCard = ({ character, index, swiped, outOfFrame }) => {
       }}
     >
       <TinderCard
-        onSwipe={(dir) => swiped(dir, character.listing_name.replace(" ", "_"))}
+        onSwipe={(dir) => swiped(dir, character.listing_name.replace(" ", "_"), character.id)}
         onCardLeftScreen={() => outOfFrame(character.listing_name)}
         preventSwipe={['up', 'down']}
       >
@@ -94,7 +94,8 @@ const Advanced = () => {
   const [characters, setCharacters] = useState([]);
   const [lastDirection, setLastDirection] = useState();
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
-  const [begin, setBegin] = useState(33);
+  const [begin, setBegin] = useState(1);
+  
   
   useEffect(() => {
     const getListings = async () => {
@@ -104,19 +105,43 @@ const Advanced = () => {
           return formatted;
         });
         if ("error" in data) {
-          return;
+          continue;
         }
+        data['id'] = i;
         temp.unshift(data);
       }
       setCharacters(temp);
       setBegin(begin + 1);
     };
     getListings();
-  }, []);
+  }, [characters]);
 
 
-  const swiped = (direction, nameToDelete) => {
+  const swiped = async (direction, nameToDelete, id) => {
     setLastDirection(direction);
+    let cookie = await SecureStore.getItemAsync("cookie");
+    let auth = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
+
+    if (direction == 'right') {
+      await fetch("https://cinder-server2.fly.dev/match/like/" + String(id), {
+        method: "POST", 
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'auth_session=' + auth,
+          'Origin': 'https://cinder-server2.fly.dev/./'
+        }
+      })
+    } else {
+      await fetch("https://cinder-server2.fly.dev/match/dislike/" + String(id), {
+        method: "POST", 
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'auth_session=' + auth,
+          'Origin': 'https://cinder-server2.fly.dev/./'
+        }
+      })
+    }
+    
     alreadyRemoved.push(nameToDelete);
   };
 
