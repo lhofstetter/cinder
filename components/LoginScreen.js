@@ -1,11 +1,8 @@
 import React from "react";
 import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert} from "react-native";
-import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SecureStore from 'expo-secure-store';
-import * as Crypto from "expo-crypto";
-import axios from "axios";
 import * as Crypto from "expo-crypto";
 import axios from "axios";
 

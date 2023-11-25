@@ -94,27 +94,28 @@ const Advanced = () => {
   const [characters, setCharacters] = useState([]);
   const [lastDirection, setLastDirection] = useState();
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
-  const [begin, setBegin] = useState(1);
+  const [begin, setBegin] = useState(5);
   
   
   useEffect(() => {
     const getListings = async () => {
       let temp = characters;
-      for (let i = begin; i <= begin + 5; i++) {
-        let data = await fetch ("https://cinder-server2.fly.dev/listing/" + String(i)).then((data) => data.json()).then((formatted) => {
-          return formatted;
+      let i = begin;
+      while (temp.length < 5 && i - begin < 15) {
+        await fetch("https://cinder-server2.fly.dev/listing/" + String(i)).then((data) => {
+          console.log(data);
+          if (data.ok) {
+            data['id'] = i;
+            temp.unshift(data);
+          }
+          i++;
         });
-        if ("error" in data) {
-          continue;
-        }
-        data['id'] = i;
-        temp.unshift(data);
       }
       setCharacters(temp);
       setBegin(begin + 1);
     };
     getListings();
-  }, [characters]);
+  }, []);
 
 
   const swiped = async (direction, nameToDelete, id) => {
