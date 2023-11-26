@@ -41,7 +41,6 @@ export default function Matches() {
 }
 
 const styles = StyleSheet.create({
-
     container: {
 
     },

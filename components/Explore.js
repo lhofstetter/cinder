@@ -1,9 +1,10 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { ImageBackground, Text, View, Image, Pressable, useWindowDimensions, Platform } from "react-native";
+import { ImageBackground, Text, View, Image, Pressable, useWindowDimensions, Platform, ActivityIndicator } from "react-native";
 import TinderCard from "react-tinder-card";
 import * as ImagePicker from 'expo-image-picker';
 import { exploreStyles } from "../styles";
 import * as SecureStore from 'expo-secure-store';
+import { useNavigation } from "@react-navigation/native";
 
 const logo = require("../assets/cindr.png");
 
@@ -49,6 +50,8 @@ const SwipeableCard = ({ character, index, swiped, outOfFrame }) => {
             let xRatio;
 
             xRatio = 1 / (event.nativeEvent.pageX / (width / 8));
+            if (xRatio == Infinity) // fixes a bug where somehow the above calculation tends toward infinity
+              xRatio = 1.0;
             setColor([color[0], 1.0 - xRatio, "#FF0000", "Nay"]);
           } else {
             setColor([color[0], 1.0, "#fff", ""]);
@@ -94,17 +97,20 @@ const Advanced = () => {
   const [characters, setCharacters] = useState([]);
   const [lastDirection, setLastDirection] = useState();
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
-  const [begin, setBegin] = useState(5);
-  
+  const [begin, setBegin] = useState(0);
+  const [refresh, setRefresh] = useState(1);
+  const [actualRefresh, setActualRefresh] = useState(true);
+
+  const navigation = useNavigation();
   
   useEffect(() => {
     const getListings = async () => {
       let temp = characters;
       let i = begin;
       while (temp.length < 5 && i - begin < 15) {
-        await fetch("https://cinder-server2.fly.dev/listing/" + String(i)).then((data) => {
-          console.log(data);
+        await fetch("https://cinder-server2.fly.dev/listing/" + String(i)).then(async (data) => {
           if (data.ok) {
+            data = await data.json();
             data['id'] = i;
             temp.unshift(data);
           }
@@ -112,9 +118,12 @@ const Advanced = () => {
         });
       }
       setCharacters(temp);
-      setBegin(begin + 1);
+      setBegin(i);
+      setActualRefresh(false);
     };
-    getListings();
+
+    if (actualRefresh)
+      getListings();
   }, []);
 
 
@@ -131,7 +140,7 @@ const Advanced = () => {
           'Cookie': 'auth_session=' + auth,
           'Origin': 'https://cinder-server2.fly.dev/./'
         }
-      })
+      });
     } else {
       await fetch("https://cinder-server2.fly.dev/match/dislike/" + String(id), {
         method: "POST", 
@@ -140,22 +149,28 @@ const Advanced = () => {
           'Cookie': 'auth_session=' + auth,
           'Origin': 'https://cinder-server2.fly.dev/./'
         }
-      })
+      });
     }
-    
-    alreadyRemoved.push(nameToDelete);
+
+   if (refresh % 5 == 0) {
+    setRefresh(refresh + 1);
+    setActualRefresh(true);
+   } else {
+    setRefresh(refresh + 1);
+   }
   };
 
-  const outOfFrame = (name) => {
+  const outOfFrame = (id) => {
     let temp = characters;
-    temp = temp.filter((character) => character.listing_name !== name);
+    temp = temp.filter((character) => character.id !== id);
+    alreadyRemoved.push(id);
     setCharacters(temp);
   };
 
   return (
     <View style={exploreStyles.container}>
       <Image source={logo} style={exploreStyles.mobileHeader} />
-    {characters.length === 0 ? <View style={exploreStyles.emptyCardContainer}><Text style={[exploreStyles.emptyCardTitle, {fontFamily: 'Inter'}]}>No more listings are available right now. Please try again later.</Text></View> : <View style={exploreStyles.cardContainer}>
+    { characters.length === alreadyRemoved.length ? ( actualRefresh ? <View style={exploreStyles.loading}><ActivityIndicator size="large"/><Text style={exploreStyles.loadingText}>Hang on, we're getting some drip ready for you!</Text></View> : (<View style={exploreStyles.emptyCardContainer}><Text style={[exploreStyles.emptyCardTitle, {fontFamily: 'Inter'}]}>No more listings are available right now. Please try again later.</Text></View>)) : <View style={exploreStyles.cardContainer}>
         {characters.map((character, index) => (
           <SwipeableCard
             character={character}

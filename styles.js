@@ -302,6 +302,13 @@ const postStyles = {
       marginTop:"75%",
       marginLeft:"35%",
     },
+    loading: {
+      marginTop:"70%",
+    },
+    loadingText: {
+      marginTop:"5%",
+      fontFamily: 'Inter',
+    }
   };
 
   const profileStyles = {

@@ -102,6 +102,7 @@ function Preview() {
   );
 }
 
+
 const LoginStack = createNativeStackNavigator();
 
 function LoginRoute() {
@@ -138,6 +139,27 @@ function MatchRoute() {
 const Tab = createBottomTabNavigator();
 
 function TabNavigator() {
+  const [badge, setBadge] = React.useState(undefined);
+
+  React.useEffect(() => {
+    let temp = undefined;
+    let count = 0;
+    const getMatches = async () => {
+      for (let i = 1; i < 3; i++) {
+        await fetch("https://cinder-server2.fly.dev/listing/" + String(i)).then(async (data) => {
+          data = await data.json();
+          console.log(data);
+          if (data.error == undefined) {
+            count++;
+          }
+        });
+      }
+      temp = count;
+      setBadge(temp);
+    }
+    getMatches();
+  }, []);
+
   return (
     <Tab.Navigator
           initialRouteName="Swipe"
@@ -173,8 +195,7 @@ function TabNavigator() {
                 image = focused ? matchFocused : matchUnfocused;
 
                 return <Image source={image}/>
-              }
-              
+              }         
             },
             tabBarActiveTintColor: "black",
             tabBarInactiveTintColor: "gray",
@@ -196,8 +217,12 @@ function TabNavigator() {
                 }
               }
             })}/>
-          <Tab.Screen name="UploadRoute" component={Upload} options={{ headerShown: false, unmountOnBlur: true }} />
-          <Tab.Screen name="MatchRoute" component={MatchRoute} options={{ headerShown: false, unmountOnBlur: true }} />
+          <Tab.Screen name="UploadRoute" component={UploadRoute} options={{ headerShown: false, unmountOnBlur: true }} />
+          <Tab.Screen name="MatchRoute" component={MatchRoute} options={{ headerShown: false, unmountOnBlur: true, tabBarBadge:badge}} listeners={({ navigation, route }) => ({
+            tabPress: (e) => {
+              setBadge(undefined);
+            }
+          })}/>
           <Tab.Screen name="User" component={User} options={{ headerShown: false }} listeners={({ navigation, route }) => ({
               tabPress: (e) => {
                 if (navigation.getState().routes[1].state != undefined && navigation.getState().routes[1].state.index >= 1) {
