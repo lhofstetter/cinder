@@ -299,10 +299,9 @@ app.get("/user/:user_id", validateUserId, async (req: Request, res: Response) =>
       .select({ profile_pic: user.profile_pic })
       .from(user)
       .where(eq(user.id, user_id_string));
-    const userImages: string[] = userImageData.map((user) => user.profile_pic);
     const responseData = {
       ...userFromDb,
-      image_links: userImages,
+      profile_pic: userImages[0].profile_pic,
     };
     return res.status(200).json(responseData);
   } catch (error) {
@@ -310,8 +309,6 @@ app.get("/user/:user_id", validateUserId, async (req: Request, res: Response) =>
     return res.status(500).json({ error: String(error) });
   }
 });
-
-app.get("/")
 
 function validateUserId(req: Request, res: Response, next: () => void) {
   const { user_id: unsafe_user_id } = req.params;
