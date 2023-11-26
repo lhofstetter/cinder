@@ -1,16 +1,17 @@
 import cors from "cors";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray, or } from "drizzle-orm";
 import express, { Request, Response } from "express";
 import fileUpload, { UploadedFile } from "express-fileupload";
 
 import { db } from "./db/index.js";
 import { images, listings, tags } from "./db/schema.js";
+import { auth } from "./lucia.js";
 import { authHandler } from "./routers/auth.js";
 import { matchHandler } from "./routers/match.js";
 import { getUrlForImage } from "./utils/imageUpload.js";
 import { validateListingId } from "./utils/listingValidation.js";
-import { auth } from "./lucia.js";
 
+const SIZE_OPTIONS = ["XXS", "XS", "S", "M", "L", "XL", "2XL", "3XL"];
 const app = express();
 
 app.use(cors(), fileUpload());
@@ -89,6 +90,194 @@ app.get("/recommended", async (req: Request, res: Response) => {
   const listingsFromDb = await db.select().from(listings);
   res.json(listingsFromDb);
 });
+
+/**
+ * Returns listings matching your specified filters
+ *
+ * @route POST /filtered-listings
+ * @param {ListingsFilterData} req.body
+ */
+app.post("/filtered-listings", async (req: Request, res: Response) => {
+  try {
+    const filterData: ListingsFilterData = req.body;
+    if (
+      !Array.isArray(filterData.tags) ||
+      !Array.isArray(filterData.waist_sizes) ||
+      !Array.isArray(filterData.inseam_lengths) ||
+      !Array.isArray(filterData.sizes) ||
+      !Array.isArray(filterData.categories)
+    ) {
+      return res.status(400).json({
+        error:
+          "Please provide valid values for all fields: tags, waist_sizes, inseam_lengths, sizes, and categories. " +
+          "If you wish to not specify one or more of these fields for your search, just assign an empty array to that" +
+          " field's value'",
+      });
+    }
+
+    // If no filters are selected, retrun all listing data
+    if (
+      filterData.sizes.length === 0 &&
+      filterData.waist_sizes.length === 0 &&
+      filterData.inseam_lengths.length === 0 &&
+      filterData.categories.length === 0 &&
+      filterData.tags.length === 0
+    ) {
+      const allListingIdsQuery = await db.select({ listing_id: listings.id }).from(listings);
+      const allListingIds = allListingIdsQuery.map((entry) => entry.listing_id);
+      const listingInfoPromises = [];
+      for (const listing_id of allListingIds) {
+        listingInfoPromises.push(getListingData(listing_id));
+      }
+      const allListings: ListingData[] = await Promise.all(listingInfoPromises);
+      return res.json(allListings);
+    }
+
+    const matchingListingIds = [];
+
+    let listingsTableOrSubQuery: any = listings;
+    let listingsIdsWithTag: number[] = [];
+    if (filterData.tags.length > 0) {
+      const listingsWithTagQuery = await db
+        .selectDistinct({ listing_id: tags.listing_id })
+        .from(tags)
+        .where(inArray(tags.tag_name, filterData.tags));
+      listingsIdsWithTag = listingsWithTagQuery.map((entry) => entry.listing_id);
+      if (listingsIdsWithTag.length > 0) {
+        listingsTableOrSubQuery = db.select().from(listings).where(inArray(listings.id, listingsIdsWithTag)).as("sq");
+      }
+    }
+
+    const nonBottomCategories = filterData.categories.filter((category) => category !== "bottom");
+
+    if (filterData.sizes.length > 0) {
+      const matchingSizedListings = await db
+        .select({ listing_id: listingsTableOrSubQuery.id })
+        .from(listingsTableOrSubQuery)
+        .where(
+          and(
+            inArray(listingsTableOrSubQuery.size, filterData.sizes),
+            inArray(listingsTableOrSubQuery.category, nonBottomCategories),
+          ),
+        );
+      matchingListingIds.push(...matchingSizedListings.map((entry) => entry.listing_id));
+    } else if (nonBottomCategories.length > 0) {
+      const matchingNonSizeSpecificListings = await db
+        .select({ listing_id: listingsTableOrSubQuery.id })
+        .from(listingsTableOrSubQuery)
+        .where(inArray(listingsTableOrSubQuery.category, nonBottomCategories));
+      matchingListingIds.push(...matchingNonSizeSpecificListings.map((entry) => entry.listing_id));
+    }
+    if (filterData.categories.includes("bottom")) {
+      const matchingBottoms = await queryBottoms(filterData, listingsIdsWithTag);
+      matchingListingIds.push(...matchingBottoms.map((entry) => entry.listing_id));
+    }
+
+    const listingInfoPromises = [];
+    for (const listing_id of matchingListingIds) {
+      listingInfoPromises.push(getListingData(listing_id));
+    }
+    const matchingListings: ListingData[] = await Promise.all(listingInfoPromises);
+    return res.json(matchingListings);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: String(error) });
+  }
+});
+
+async function getListingData(listing_id: number) {
+  const listingDataFromDb = await db.select().from(listings).where(eq(listings.id, listing_id));
+  const listingFromDb = listingDataFromDb["0"];
+  if (listingFromDb === undefined) {
+    throw new Error("No listing with that ID exists");
+  }
+  const listingTagData = await db.select({ tag_name: tags.tag_name }).from(tags).where(eq(tags.listing_id, listing_id));
+  const listingTags: string[] = listingTagData.map((tagData) => tagData.tag_name);
+
+  const listingImageData = await db
+    .select({ source: images.source })
+    .from(images)
+    .where(eq(images.listing_id, listing_id));
+  const listingImages: string[] = listingImageData.map((imageData) => imageData.source);
+
+  return {
+    ...listingFromDb,
+    tags: listingTags,
+    image_links: listingImages,
+  };
+}
+
+async function queryBottoms(filterData: ListingsFilterData, listingsIdsWithTag: number[]) {
+  const listingsTableOrSubQuery =
+    filterData.tags.length > 0
+      ? db
+          .select()
+          .from(listings)
+          .where(and(inArray(listings.id, listingsIdsWithTag), eq(listings.category, "bottom")))
+          .as("sq")
+      : db.select().from(listings).where(eq(listings.category, "bottom")).as("bottoms");
+  if (filterData.waist_sizes.length > 0 && filterData.inseam_lengths.length > 0 && filterData.sizes.length > 0) {
+    return await db
+      .select({ listing_id: listingsTableOrSubQuery.id })
+      .from(listingsTableOrSubQuery)
+      .where(
+        or(
+          or(
+            inArray(listingsTableOrSubQuery.waist, filterData.waist_sizes),
+            inArray(listingsTableOrSubQuery.inseam, filterData.inseam_lengths),
+          ),
+          inArray(listingsTableOrSubQuery.size, filterData.sizes),
+        ),
+      );
+  } else if (filterData.waist_sizes.length > 0 && filterData.sizes.length > 0) {
+    return await db
+      .select({ listing_id: listingsTableOrSubQuery.id })
+      .from(listingsTableOrSubQuery)
+      .where(
+        or(
+          inArray(listingsTableOrSubQuery.waist, filterData.waist_sizes),
+          inArray(listingsTableOrSubQuery.size, filterData.sizes),
+        ),
+      );
+  } else if (filterData.inseam_lengths.length > 0 && filterData.sizes.length > 0) {
+    return await db
+      .select({ listing_id: listingsTableOrSubQuery.id })
+      .from(listingsTableOrSubQuery)
+      .where(
+        or(
+          inArray(listingsTableOrSubQuery.inseam, filterData.inseam_lengths),
+          inArray(listingsTableOrSubQuery.size, filterData.sizes),
+        ),
+      );
+  } else if (filterData.inseam_lengths.length > 0 && filterData.waist_sizes.length > 0) {
+    return await db
+      .select({ listing_id: listingsTableOrSubQuery.id })
+      .from(listingsTableOrSubQuery)
+      .where(
+        or(
+          inArray(listingsTableOrSubQuery.inseam, filterData.inseam_lengths),
+          inArray(listingsTableOrSubQuery.waist, filterData.waist_sizes),
+        ),
+      );
+  } else if (filterData.inseam_lengths.length > 0) {
+    return await db
+      .select({ listing_id: listingsTableOrSubQuery.id })
+      .from(listingsTableOrSubQuery)
+      .where(inArray(listingsTableOrSubQuery.inseam, filterData.inseam_lengths));
+  } else if (filterData.waist_sizes.length > 0) {
+    return await db
+      .select({ listing_id: listingsTableOrSubQuery.id })
+      .from(listingsTableOrSubQuery)
+      .where(inArray(listingsTableOrSubQuery.waist, filterData.waist_sizes));
+  } else if (filterData.sizes.length > 0) {
+    return await db
+      .select({ listing_id: listingsTableOrSubQuery.id })
+      .from(listingsTableOrSubQuery)
+      .where(inArray(listingsTableOrSubQuery.size, filterData.sizes));
+  } else {
+    return await db.select({ listing_id: listingsTableOrSubQuery.id }).from(listingsTableOrSubQuery);
+  }
+}
 
 /**
  * Updates a listing for an item of clothing to be published on cinder
@@ -249,7 +438,6 @@ app.get("/listing/:listing_id", validateListingId, async (req: Request, res: Res
 app.post("/listing", async (req: Request, res: Response) => {
   // Extract the images from the request
   try {
-    console.log(req.body);
     const authRequest = auth.handleRequest(req, res);
     const session = await authRequest.validate();
     if (session) {
