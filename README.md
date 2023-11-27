@@ -14,6 +14,43 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 # API Endpoint Documentation
 
 <details>
+ <summary><code>POST</code> <code><b>/filtered-listings</b></code> <code>(Returns all listing data matching your provided search criteria)</code></summary>
+
+##### Instructions
+
+If you wish to get all listings, just pass an empty array for all parameters. Note once you provide at least one value
+that is not an empty array for a search you will need to be explicit in what you are searching for. Example: if you want
+any listing with a size medium you will need to pass a request with a body like:
+`json
+{ "sizes": ["M"], "categories": ["top", "bottom", "accessory", "shoes"], "tags": [], "inseam_lengths": [], "waist_sizes": [] }
+`
+If you were to instead do:
+`json
+{ "sizes": ["M"], "categories": [], "tags": [], "inseam_lengths": [], "waist_sizes": [] }
+`
+The endpoint would return nothing since you selected 0 categories.
+
+##### Parameters
+
+> | name             | type     | data type | description                                               |
+> | ---------------- | -------- | --------- | --------------------------------------------------------- |
+> | `sizes`          | required | string[]  | The sizes you want the returned listings to have          |
+> | `waist_sizes`    | required | number[]  | The waist sizes you want the returned listsing to have    |
+> | `inseam_lengths` | required | number[]  | The inseam lengths you want the returned listings to have |
+> | `categories`     | required | string[]  | The categories of listings you want to have returned      |
+> | `tags`           | required | string[]  | The tags you want the listings returned to have           |
+
+##### Responses
+
+> | http code | content-type       | response                                                                                                                                                                                                                                                                                                 |
+> | --------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | `200`     | `application/json` | `[{ "id": 1, "listing_name": "Rust", "owner_id": "o3lh4vrvdw85o6b", "description": "bang", "size": "M", "waist": null, "inseam": null, "category": "top", "created_at": "2023-11-21T03:17:52.000Z", "tags": ["tags1", "tags2", "tags3", "tags4"], "image_links": ["https://i.imgur.com/hCjlYSf.jpeg"] }] |
+> | `400`     | `application/json` | `{ "error": "Please provide valid values for all fields: tags, waist_sizes, inseam_lengths, sizes, and categories. If you wish to not specify one or more of these fields for your search, just assign an empty array to that field's value'" }`                                                         |
+> | `500`     | `application/json` | `{"error": "An unknown error occurred"}`                                                                                                                                                                                                                                                                 |
+
+</details>
+
+<details>
  <summary><code>POST</code> <code><b>/listing</b></code> <code>(Creates a listing of an item of clothing somone wishes to sell or swap on Cinder)</code></summary>
 
 ##### Parameters
