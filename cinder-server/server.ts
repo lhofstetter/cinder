@@ -4,7 +4,7 @@ import express, { Request, Response } from "express";
 import fileUpload, { UploadedFile } from "express-fileupload";
 
 import { db } from "./db/index.js";
-import { images, listings, tags } from "./db/schema.js";
+import { images, listings, tags, user } from "./db/schema.js";
 import { auth } from "./lucia.js";
 import { authHandler } from "./routers/auth.js";
 import { matchHandler } from "./routers/match.js";
@@ -519,5 +519,54 @@ app.post("/listing", async (req: Request, res: Response) => {
     });
   }
 });
+
+/**
+ * Gets the data for a particular user_id
+ *
+ * @route GET /user/:user_id
+ * @param {number} user_id - The id for the user you want data for
+ * @returns {UserData}
+ */
+app.get("/user/:user_id", validateUserId, async (req: Request, res: Response) => {
+  let { user_id: user_id_string } = req.params;
+
+  try {
+    // Get the user's data from the DB
+    const userDataFromDb = await db.select().from(user).where(eq(user.id, user_id_string));
+    const userFromDb = userDataFromDb["0"];
+    if (userFromDb === undefined) {
+      return res.status(400).json({ error: "No profile with that id exists" });
+    }
+    // Get the source for the profile picture from the DB
+    const userImageData = await db
+      .select({ profile_pic: user.profile_pic })
+      .from(user)
+      .where(eq(user.id, user_id_string));
+    const responseData = {
+      ...userFromDb,
+      profile_pic: userImageData[0].profile_pic,
+    };
+    return res.status(200).json(responseData);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: String(error) });
+  }
+});
+
+function validateUserId(req: Request, res: Response, next: () => void) {
+  const { user_id: unsafe_user_id } = req.params;
+  if (!unsafe_user_id) {
+    return res.status(400).json({ error: "Please provide a user_id" });
+  }
+
+  const user_id = parseInt(unsafe_user_id);
+
+  if (isNaN(user_id)) {
+    return res.status(400).json({ error: "Please provide a valid numeric user_id" });
+  }
+  // Store the validated user_id in the request object for later use
+  req.params.user_id = String(user_id);
+  next();
+}
 
 app.listen(3000, () => console.log("Server started on port 3000"));
