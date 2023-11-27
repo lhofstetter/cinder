@@ -4,7 +4,6 @@ declare type Size = "XXS" | "XS" | "S" | "M" | "L" | "XL" | "2XL" | "2XL";
 
 declare interface ListingFormData {
   listing_name: string;
-  price?: string;
   description: string;
   category: Category;
   tags?: string | string[];
@@ -35,4 +34,12 @@ declare namespace Lucia {
     phone_number: string;
   };
   type DatabaseSessionAttributes = {};
+}
+
+declare interface ListingsFilterData {
+  sizes: Size[];
+  waist_sizes: number[];
+  inseam_lengths: number[];
+  categories: Category[];
+  tags: string[];
 }
