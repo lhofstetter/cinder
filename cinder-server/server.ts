@@ -1,5 +1,5 @@
 import cors from "cors";
-import { and, eq, inArray, or } from "drizzle-orm";
+import { and, eq, inArray, not, or } from "drizzle-orm";
 import express, { Request, Response } from "express";
 import fileUpload, { UploadedFile } from "express-fileupload";
 
@@ -138,6 +138,13 @@ app.get("/recommended", async (req: Request, res: Response) => {
  */
 app.post("/filtered-listings", async (req: Request, res: Response) => {
   try {
+    const authRequest = auth.handleRequest(req, res);
+    const session = await authRequest.validate(); // or `authRequest.validateBearerToken()`
+    if (!session) {
+      return res.sendStatus(401);
+    }
+
+    const user_id: string = session.user.userId;
     const filterData: ListingsFilterData = req.body;
     if (
       !Array.isArray(filterData.tags) ||
@@ -162,7 +169,10 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
       filterData.categories.length === 0 &&
       filterData.tags.length === 0
     ) {
-      const allListingIdsQuery = await db.select({ listing_id: listings.id }).from(listings);
+      const allListingIdsQuery = await db
+        .select({ listing_id: listings.id })
+        .from(listings)
+        .where(not(eq(listings.owner_id, user_id)));
       const allListingIds = allListingIdsQuery.map((entry) => entry.listing_id);
       const listingInfoPromises = [];
       for (const listing_id of allListingIds) {
@@ -174,7 +184,10 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
 
     const matchingListingIds = [];
 
-    let listingsTableOrSubQuery: any = listings;
+    let listingsTableOrSubQuery: any = db
+      .select()
+      .from(listings)
+      .where(not(eq(listings.owner_id, user_id)));
     let listingsIdsWithTag: number[] = [];
     if (filterData.tags.length > 0) {
       const listingsWithTagQuery = await db
@@ -183,7 +196,11 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
         .where(inArray(tags.tag_name, filterData.tags));
       listingsIdsWithTag = listingsWithTagQuery.map((entry) => entry.listing_id);
       if (listingsIdsWithTag.length > 0) {
-        listingsTableOrSubQuery = db.select().from(listings).where(inArray(listings.id, listingsIdsWithTag)).as("sq");
+        listingsTableOrSubQuery = db
+          .select()
+          .from(listings)
+          .where(and(inArray(listings.id, listingsIdsWithTag), not(eq(listings.owner_id, user_id))))
+          .as("sq");
       }
     }
 
@@ -208,7 +225,7 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
       matchingListingIds.push(...matchingNonSizeSpecificListings.map((entry) => entry.listing_id));
     }
     if (filterData.categories.includes("bottom")) {
-      const matchingBottoms = await queryBottoms(filterData, listingsIdsWithTag);
+      const matchingBottoms = await queryBottoms(filterData, listingsIdsWithTag, user_id);
       matchingListingIds.push(...matchingBottoms.map((entry) => entry.listing_id));
     }
 
@@ -224,15 +241,24 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
   }
 });
 
-async function queryBottoms(filterData: ListingsFilterData, listingsIdsWithTag: number[]) {
+async function queryBottoms(filterData: ListingsFilterData, listingsIdsWithTag: number[], user_id: string) {
   const listingsTableOrSubQuery =
     filterData.tags.length > 0
       ? db
           .select()
           .from(listings)
-          .where(and(inArray(listings.id, listingsIdsWithTag), eq(listings.category, "bottom")))
+          .where(
+            and(
+              and(inArray(listings.id, listingsIdsWithTag), eq(listings.category, "bottom")),
+              not(eq(listings.owner_id, user_id)),
+            ),
+          )
           .as("sq")
-      : db.select().from(listings).where(eq(listings.category, "bottom")).as("bottoms");
+      : db
+          .select()
+          .from(listings)
+          .where(and(eq(listings.category, "bottom"), not(eq(listings.owner_id, user_id))))
+          .as("bottoms");
   if (filterData.waist_sizes.length > 0 && filterData.inseam_lengths.length > 0 && filterData.sizes.length > 0) {
     return await db
       .select({ listing_id: listingsTableOrSubQuery.id })

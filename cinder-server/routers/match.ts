@@ -116,6 +116,9 @@ matchHandler.post("/like/:listing_id", validateListingId, async (req, res) => {
         .select({ listing_owner_id: listings.owner_id })
         .from(listings)
         .where(eq(listings.id, listing_id));
+      if (listing_owner_id === account_id) {
+        return res.status(400).json({ message: "You can't like your own listing!" });
+      }
       await db.insert(likes).values({ account_id, listing_id, listing_owner_id, like: true });
       const matches = await getMatches(account_id, listing_owner_id);
       if (matches.length > 0) {
@@ -144,6 +147,9 @@ matchHandler.post("/dislike/:listing_id", validateListingId, async (req, res) =>
         .select({ listing_owner_id: listings.owner_id })
         .from(listings)
         .where(eq(listings.id, listing_id));
+      if (listing_owner_id === account_id) {
+        return res.status(400).json({ message: "You can't dislike your own listing!" });
+      }
       await db.insert(likes).values({ account_id, listing_id, listing_owner_id, like: false });
       return res.json({ message: "Dislike logged successfully" });
     } else {
