@@ -3,13 +3,15 @@ import { and, eq, inArray, or } from "drizzle-orm";
 import express, { Request, Response } from "express";
 import fileUpload, { UploadedFile } from "express-fileupload";
 
-import { db } from "./db/index.js";
-import { images, listings, tags, user } from "./db/schema.js";
-import { auth } from "./lucia.js";
-import { authHandler } from "./routers/auth.js";
-import { matchHandler } from "./routers/match.js";
-import { getUrlForImage } from "./utils/imageUpload.js";
-import { validateListingId } from "./utils/listingValidation.js";
+import { db } from "./db/index.ts";
+import { images, listings, tags } from "./db/schema.ts";
+import { auth } from "./lucia.ts";
+import { authHandler } from "./routers/auth.ts";
+import { matchHandler } from "./routers/match.ts";
+import { getUrlForImage } from "./utils/imageUpload.ts";
+import { validateListingId } from "./utils/listingValidation.ts";
+import { getListingData } from "./utils/getListing.ts";
+import { getAccountInfo } from "./utils/getAccountInfo.ts";
 
 const SIZE_OPTIONS = ["XXS", "XS", "S", "M", "L", "XL", "2XL", "3XL"];
 const app = express();
@@ -25,7 +27,8 @@ app.use("/match", matchHandler);
 // Will delete once creating a listing is implemented on frontend
 app.get("/", (req, res) => {
   res.send(`
-    <h2>Create a listing</h2> <form action="/listing" enctype="multipart/form-data" method="post" >
+    <h2>Create a listing</h2>
+    <form action="/listing" enctype="multipart/form-data" method="post" >
       <div style="display: flex; flex-direction: column;">Select a file: 
         <input type="file" name="file" multiple="multiple" />
         <div>
@@ -81,6 +84,42 @@ app.get("/", (req, res) => {
         </fieldset>
       </div>
       <input type="submit" value="Upload" />
+    </form>
+
+  <h2> Sign up </h2>
+    <form action="/auth/signup" enctype="multipart/form-data" method="post" >
+      <div style="display: flex; flex-direction: column;">Select a profile picture: 
+        <input type="file" name="file" />
+        username:
+        <input type="text" name="username" />
+        password:
+        <input type="password" name="password" />
+        phone number:
+        <input type="text" name="phone_number" />
+        class year:
+        <input type="number" name="class_year" />
+        bio:
+        <input type="text" name="bio" />
+        <input type="submit" value="sign up" />
+      </div>
+    </form>
+  <h2> Login </h2>
+    <form action="/auth/login" enctype="multipart/form-data" method="post" >
+        username:
+        <input type="text" name="username" />
+        password:
+        <input type="password" name="password" />
+        <input type="submit" value="login" />
+    </form>
+  <h2> Like </h2>
+    <form action="/match/like/6" enctype="multipart/form-data" method="post" >
+        <input type="submit" value="like listing 6" />
+    </form>
+    <form action="/match/like/5" enctype="multipart/form-data" method="post" >
+        <input type="submit" value="like listing 5" />
+    </form>
+    <form action="/match/like/7" enctype="multipart/form-data" method="post" >
+        <input type="submit" value="like listing 7" />
     </form>
 
   `);
@@ -184,28 +223,6 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
     return res.status(500).json({ error: String(error) });
   }
 });
-
-async function getListingData(listing_id: number) {
-  const listingDataFromDb = await db.select().from(listings).where(eq(listings.id, listing_id));
-  const listingFromDb = listingDataFromDb["0"];
-  if (listingFromDb === undefined) {
-    throw new Error("No listing with that ID exists");
-  }
-  const listingTagData = await db.select({ tag_name: tags.tag_name }).from(tags).where(eq(tags.listing_id, listing_id));
-  const listingTags: string[] = listingTagData.map((tagData) => tagData.tag_name);
-
-  const listingImageData = await db
-    .select({ source: images.source })
-    .from(images)
-    .where(eq(images.listing_id, listing_id));
-  const listingImages: string[] = listingImageData.map((imageData) => imageData.source);
-
-  return {
-    ...listingFromDb,
-    tags: listingTags,
-    image_links: listingImages,
-  };
-}
 
 async function queryBottoms(filterData: ListingsFilterData, listingsIdsWithTag: number[]) {
   const listingsTableOrSubQuery =
@@ -524,49 +541,18 @@ app.post("/listing", async (req: Request, res: Response) => {
  * Gets the data for a particular user_id
  *
  * @route GET /user/:user_id
- * @param {number} user_id - The id for the user you want data for
- * @returns {UserData}
+ * @param {string} user_id - The id for the user you want data for
+ * @returns {}
  */
-app.get("/user/:user_id", validateUserId, async (req: Request, res: Response) => {
-  let { user_id: user_id_string } = req.params;
+app.get("/account/:account_id", async (req: Request, res: Response) => {
+  let { account_id } = req.params;
 
   try {
-    // Get the user's data from the DB
-    const userDataFromDb = await db.select().from(user).where(eq(user.id, user_id_string));
-    const userFromDb = userDataFromDb["0"];
-    if (userFromDb === undefined) {
-      return res.status(400).json({ error: "No profile with that id exists" });
-    }
-    // Get the source for the profile picture from the DB
-    const userImageData = await db
-      .select({ profile_pic: user.profile_pic })
-      .from(user)
-      .where(eq(user.id, user_id_string));
-    const responseData = {
-      ...userFromDb,
-      profile_pic: userImageData[0].profile_pic,
-    };
-    return res.status(200).json(responseData);
+    return res.json(await getAccountInfo(account_id));
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: String(error) });
   }
 });
-
-function validateUserId(req: Request, res: Response, next: () => void) {
-  const { user_id: unsafe_user_id } = req.params;
-  if (!unsafe_user_id) {
-    return res.status(400).json({ error: "Please provide a user_id" });
-  }
-
-  const user_id = parseInt(unsafe_user_id);
-
-  if (isNaN(user_id)) {
-    return res.status(400).json({ error: "Please provide a valid numeric user_id" });
-  }
-  // Store the validated user_id in the request object for later use
-  req.params.user_id = String(user_id);
-  next();
-}
 
 app.listen(3000, () => console.log("Server started on port 3000"));
