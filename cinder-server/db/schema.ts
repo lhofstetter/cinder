@@ -24,6 +24,8 @@ export const user = sqliteTable("user", {
   // other user attributes
   profile_pic: text("profile_pic").notNull(), // Optional: url to imgur link with profile pic
   phone_number: text("phone_number").notNull(),
+  class_year: integer("class_year").notNull().default(2024),
+  bio: text("bio"),
 });
 
 export const session = sqliteTable("user_session", {

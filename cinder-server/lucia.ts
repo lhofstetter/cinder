@@ -1,6 +1,6 @@
 import { lucia } from "lucia";
 import { express } from "lucia/middleware";
-import { client } from "./db/index.js";
+import { client } from "./db/index.ts";
 import { libsql } from "@lucia-auth/adapter-sqlite";
 
 export const auth = lucia({
@@ -16,6 +16,8 @@ export const auth = lucia({
       username: data.username,
       profile_pic: data.profile_pic,
       phone_number: data.phone_number,
+      class_year: data.class_year,
+      bio: data.bio,
     };
   },
 });

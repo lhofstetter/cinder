@@ -32,6 +32,8 @@ declare namespace Lucia {
     username: string;
     profile_pic: string;
     phone_number: string;
+    class_year: number;
+    bio: string;
   };
   type DatabaseSessionAttributes = {};
 }
