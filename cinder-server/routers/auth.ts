@@ -1,13 +1,14 @@
 import express from "express";
-import { auth } from "../lucia.js";
+import { auth } from "../lucia.ts";
 import { LuciaError } from "lucia";
 import { UploadedFile } from "express-fileupload";
-import { getUrlForImage } from "../utils/imageUpload.js";
+import { getUrlForImage } from "../utils/imageUpload.ts";
 
 export const authHandler = express.Router();
 
 authHandler.post("/signup", async (req, res) => {
-  const { username, password, phone_number } = req.body;
+  console.log(req.body);
+  const { username, password, phone_number, class_year, bio } = req.body;
   let image_url: undefined | string;
   if (req.files?.file) {
     const file = req.files?.file as UploadedFile;
@@ -30,6 +31,8 @@ authHandler.post("/signup", async (req, res) => {
       attributes: {
         username,
         phone_number,
+        class_year,
+        bio,
         profile_pic:
           image_url ??
           "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
