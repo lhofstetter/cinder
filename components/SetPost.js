@@ -74,13 +74,13 @@ export default function DetailsPost() {
   const [typeOfSize, setTypeOfSize] = useState(defaultSizes);
   const [selectedSize, setSelectedSize] = useState();
   const [currentStyle, setCurrentStyle] = useState([editStyles.title, {fontFamily: 'Inter'}]);
-  const [currentPrice, setCurrentPrice] = useState("$0.00");
   const [descriptionStyle, setDescriptionStyle] = useState([editStyles.postDescription, {fontFamily: 'Inter'}]);
 
   const navigation = useNavigation();
   const route = useRoute();
 
   let image = route.params;
+  console.log(image);
 
   useEffect(() => {
     if (selectedType == "" || description == "Type out your description!" || description == "" || selectedSize == undefined || text == "Write a title" || text == ""){
@@ -142,7 +142,7 @@ export default function DetailsPost() {
   return (
      <View>
       <TextInput onFocus={handleFocus} onEndEditing={handleUnfocus} onChangeText={setText} value={text} style={currentStyle}></TextInput>
-      <PreviewImage imageSrc={image.image.uri} style={editStyles.previewImageMobile}/>
+      <PreviewImage imageSrc={image.images[0].uri} style={editStyles.previewImageMobile}/>
       <TextInput
         multiline
         onFocus={handleDescriptionFocus}

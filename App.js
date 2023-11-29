@@ -148,7 +148,6 @@ function TabNavigator() {
       for (let i = 1; i < 3; i++) {
         await fetch("https://cinder-server2.fly.dev/listing/" + String(i)).then(async (data) => {
           data = await data.json();
-          console.log(data);
           if (data.error == undefined) {
             count++;
           }
@@ -220,7 +219,17 @@ function TabNavigator() {
           <Tab.Screen name="UploadRoute" component={UploadRoute} options={{ headerShown: false, unmountOnBlur: true }} />
           <Tab.Screen name="MatchRoute" component={MatchRoute} options={{ headerShown: false, unmountOnBlur: true, tabBarBadge:badge}} listeners={({ navigation, route }) => ({
             tabPress: (e) => {
-              setBadge(undefined);
+              if (navigation.getState().routes[1].state != undefined && navigation.getState().routes[1].state.index >= 1) {
+                e.preventDefault();
+                Alert.alert('Discard Post?', 'You\'ll lose all progress on this post if you leave! Are you sure you want to?', [
+                  { text: "Don't leave", style: 'cancel', onPress: () => {} },
+                  {
+                    text: 'Leave',
+                    style: 'destructive',
+                    onPress: () => {setBadge(undefined); navigation.navigate("MatchRoute", {})},
+                  },
+                ])
+              }
             }
           })}/>
           <Tab.Screen name="User" component={User} options={{ headerShown: false }} listeners={({ navigation, route }) => ({
@@ -251,6 +260,7 @@ export default function App() {
   async function loadFont() {
     await Font.loadAsync({
       "Inter": require("./assets/fonts/static/Inter-Regular.ttf"),
+      "Inter Bold": require("./assets/fonts/static/Inter-Bold.ttf"),
     });
 
     setFontLoaded(true);

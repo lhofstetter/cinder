@@ -8,6 +8,8 @@ const rightArrow = require("../assets/right_arrow.png")
 
 
 export default function Matches() {
+    const [matches, getMatches] = useState(null);
+    
     return (
         <View style={styles.container}>
             <Pressable style={styles.matchContainer}>

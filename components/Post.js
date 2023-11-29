@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Text, View, Image, Pressable } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { postStyles } from "../styles.js";
+import Gallery from 'react-native-image-gallery';
 
 const backArrow = require('../assets/backarrow.png');
 
@@ -13,6 +14,7 @@ const backArrow = require('../assets/backarrow.png');
  * This element should call navigation.navigate() when user interacts with it. 
  */
 export default function Post({ navigateRight }) {
+    const [images, setImages] = useState(null);
     const route = useRoute();
     const navigation = useNavigation();
 
@@ -27,14 +29,27 @@ export default function Post({ navigateRight }) {
                     navigation.goBack();
                 }}
                 >
-                <Image width={75} height={75} style={postStyles.postBackButton} source={backArrow}/>
+                  <Image width={75} height={75} style={postStyles.postBackButton} source={backArrow}/>
                 </Pressable>
             )});
-    }, []);
+          if (images == null) {
+            let temp = [];
+            for (let i = 0; i < postDetails.image.images.length; i++) {
+              temp.push({ source: { uri: postDetails.image.images[i].uri }, dimensions: { width: 481, height: 481 }})
+            }
+            setImages(temp);
+          } 
+    }, [images]);
+
 
     return (
-        <View>
-          <Image source={{ uri: postDetails.image.image.uri }} style={{ width: 500, height: 500 }} />
+      <View>
+        {(images != null) ? <View>
+          <View style={{width:500, height: 500}}>
+            <Gallery images={images} imageComponent={(image) => {
+              return (<Image width={481} height={481} source={{uri: image.source.uri}}/>)
+            }}/>
+          </View>
           <View style={postStyles.postMobileTitles}>
             <Text style={[postStyles.postMobileTitle, {fontFamily:'Inter'}]}>{postDetails.title}</Text>
             <Text style={postStyles.postMobileSubtitle}>
@@ -47,6 +62,7 @@ export default function Post({ navigateRight }) {
             <Text style={postStyles.postDescription}>{postDetails.description}</Text>
             <Text style={postStyles.postTags}>{postDetails.tags}</Text>
           </View>
+        </View> : <View></View>}
         </View>
       );
 }

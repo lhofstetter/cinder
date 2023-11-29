@@ -9,24 +9,36 @@ import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 export default function PreviewPost() {
   const route = useRoute();
   const navigation = useNavigation();
-  const [fontLoaded, setFontLoaded] = useState(false);
 
   let details = route.params;
 
-  const postImage = async (imageUri) => {
-      let result;
-      if (imageUri.fileSize / (1000000) >= 5) { // if image size is greater than 5 MB, compress when converting to JPEG
-        result = await manipulateAsync(imageUri.uri, [], {compress:0.75, format:SaveFormat.JPEG});
-      } else {
-        result = await manipulateAsync(imageUri.uri, [], {compress:1, format:SaveFormat.JPEG});
+  const postImage = async (imageUris) => {
+      let result = [];
+      
+      for (let i = 0; i < imageUris.length; i++) {
+        if (imageUris[i].fileSize / (1000000) >= 5) { // if image size is greater than 5 MB, compress when converting to JPEG
+          let temp = await manipulateAsync(imageUris[i].uri, [], {compress:0.75, format:SaveFormat.JPEG});
+          result.push(temp);
+        } else {
+          let temp = await manipulateAsync(imageUris[i].uri, [], {compress:1, format:SaveFormat.JPEG});
+          result.push(temp);
+        }
       }
+      
 
       let form = new FormData();
-      form.append("file", {uri: result.uri, type:"image/jpeg", name:imageUri.fileName}); 
+      for (let i = 0; i < result.length; i++) {
+        form.append("files[]", {
+          uri: result[i].uri,
+          type: 'image/jpeg',
+          name: imageUris[i].fileName,
+        });
+      }
       form.append("listing_name", details.title);
       form.append("description", details.description);
       form.append("category", details.selectedType);
       form.append("tags", tags.split(" "));
+      
       return fetch("https://cinder-server2.fly.dev/listing", {
           method: "POST",
           headers: {
@@ -52,7 +64,7 @@ export default function PreviewPost() {
 
   return (
     <Post navigateRight={(<Pressable onPress={()=> {
-      postImage(details.image.image).catch(() => {
+      postImage(details.image.images).catch(() => {
         Alert.alert('Post error :(', 'Your clothing was too drippy for our server to handle. We\'ve updated it now, so go ahead and try posting again.', [
           { text: "Sounds good", style: 'cancel', onPress: () => {} },
         ])

@@ -181,8 +181,22 @@ const postStyles = {
   const uploadStyles = {
     container: {
       display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
+    },
+    uploadPressable: {
+      marginLeft: "10%",
+      marginTop: "10%"
+    },
+    uploadedImagesTitle: {
+      fontFamily: "Inter Bold",
+      fontSize: 20,
+      marginTop: "10%",
+      marginLeft: "10%",
+    },
+    noImagesText: {
+      fontFamily: "Inter",
+      fontSize: 14,
+      marginTop: "10%",
+      marginLeft: "11%",
     },
     uploadcontainer: {
       borderWidth: 1,
