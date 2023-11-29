@@ -199,7 +199,8 @@ GET /match
       ]
     }
   }
-}```
+}
+```
 
 ### Status Codes
 200 OK: Successful request
