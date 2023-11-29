@@ -7,7 +7,6 @@ import { auth } from "../lucia.ts";
 import { getAccountInfo } from "../utils/getAccountInfo.ts";
 import { getListingData } from "../utils/getListing.ts";
 import { validateListingId } from "../utils/listingValidation.ts";
-import { match } from "assert";
 
 export const matchHandler = express.Router();
 matchHandler.get("/", async (req, res) => {

@@ -563,6 +563,23 @@ app.post("/listing", async (req: Request, res: Response) => {
   }
 });
 
+app.get("/account", async (req: Request, res: Response) => {
+  const authRequest = auth.handleRequest(req, res);
+  const session = await authRequest.validate(); // or `authRequest.validateBearerToken()`
+  if (!session) {
+    return res.sendStatus(401);
+  }
+
+  const your_user_id: string = session.user.userId;
+
+  try {
+    return res.json(await getAccountInfo(your_user_id));
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: String(error) });
+  }
+});
+
 /**
  * Gets the data for a particular user_id
  *

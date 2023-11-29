@@ -52,9 +52,7 @@ export const key = sqliteTable("user_key", {
 export const listings = sqliteTable("listings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   listing_name: text("listing_name").notNull(),
-  owner_id: text("owner_id")
-    .notNull()
-    .references(() => user.id),
+  owner_id: text("owner_id").notNull(),
   description: text("description").notNull(),
   size: text("size", { enum: ["XXS", "XS", "S", "M", "L", "XL", "2XL", "3XL"] }),
   waist: integer("waist"),
