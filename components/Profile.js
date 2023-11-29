@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Text, View, Image, ScrollView } from "react-native";
 import { PreviewImage } from "./SetPost";
 import { profileStyles } from "../styles";
@@ -24,6 +25,25 @@ const c11 = require("../assets/clothing11.png");
 const images = [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c1, c2, c4, c7, c9, c10];
 
 export default function Profile() {
+
+  async function getUserInfo() {
+    const response = await axios.get('https://cinder-server2.fly.dev/account');
+
+    const {owned_listings, id, username, profile_pic, phone_number, class_year, bio} = response.data
+    console.log(response.data);
+
+    setUser({
+      name: username,
+      picture: profile_pic,
+      year: class_year,
+      bio: bio,
+      listings: owned_listings.map(listing => listing.image_links[0]),
+    });
+  }
+
+  useEffect(() => {getUserInfo()}, []);
+
+
   const [user, setUser] = useState({
     name: "Bobby B.",
     picture: samplepfp,
@@ -33,6 +53,8 @@ export default function Profile() {
     bio: "help me give my awesome clothes a new home! looking for over-sized sweaters",
     listings: images,
   });
+
+  console.log(user)
 
   const [listings, setListings] = useState();
 
@@ -61,7 +83,7 @@ export default function Profile() {
 
     stars[i] = (
       <Image
-        source={src}
+        source={{src}}
         style={profileStyles.star}
       ></Image>
     );
@@ -72,7 +94,7 @@ export default function Profile() {
     return (
       <Image
         style={profileStyles.listing}
-        source={image}
+        source={{uri: image}}
       ></Image>
     );
   });
@@ -92,7 +114,7 @@ export default function Profile() {
         >
           <Image
             style={profileStyles.userProfilePic}
-            source={user.picture}
+            source={{uri: user.picture}}
           ></Image>
           <View
             style={profileStyles.usernameContainer}
@@ -104,17 +126,7 @@ export default function Profile() {
               {user.name}{" "}
             </Text>
             <Text> Class of {user.year} </Text>
-            <View
-              style={profileStyles.starContainer}
-            >
-              {stars}
-              <Text
-                style={profileStyles.numOfRatings}
-              >
-                {" "}
-                ({user.ratings}){" "}
-              </Text>
-            </View>
+
           </View>
         </View>
         <Text

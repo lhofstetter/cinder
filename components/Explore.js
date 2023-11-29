@@ -169,7 +169,7 @@ const Advanced = () => {
 
   return (
     <View style={exploreStyles.container}>
-      <Image source={logo} style={exploreStyles.mobileHeader} />
+      <Text style={exploreStyles.mobileHeader}>cindr_</Text  >
     { characters.length === alreadyRemoved.length ? ( actualRefresh ? <View style={exploreStyles.loading}><ActivityIndicator size="large"/><Text style={exploreStyles.loadingText}>Hang on, we're getting some drip ready for you!</Text></View> : (<View style={exploreStyles.emptyCardContainer}><Text style={[exploreStyles.emptyCardTitle, {fontFamily: 'Inter'}]}>No more listings are available right now. Please try again later.</Text></View>)) : <View style={exploreStyles.cardContainer}>
         {characters.map((character, index) => (
           <SwipeableCard
