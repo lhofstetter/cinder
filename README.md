@@ -10,6 +10,7 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 2. `npx tsc`
 3. `node server/server.js`
 4. `npm start`
+
 # API Endpoint Documentation
 
 ## `GET /account/{id}`
@@ -60,57 +61,6 @@ GET /account/123
 200 OK: Successful request
 400 Bad Request: User does not exist
 500 Internal server error
-
-
-## `GET /account/{id}`
-
-### Description
-
-This endpoint retrieves information about a specific user.
-
-### Parameters
-
-- `id` (required): The unique identifier of the user.
-
-### Request
-
-```http
-GET /account/123
-```
-
-###Response
-
-```json
-{
-    "id":"n2to7j44j7v6zyx",
-    "username":"ThomasIsABigLoser",
-    "profile_pic":"https://imgur.com/image_link",
-    "phone_number":"2032127226",
-    "class_year":2024,
-    "bio":"cool bio",
-    "owned_listings":[
-        {
-            "id":6,
-            "listing_name":"Album",
-            "owner_id":"n2to7j44j7v6zyx",
-            "description":"Bang",
-            "size":"L",
-            "waist":null,
-            "inseam":"top",
-            "category":"1701147400",
-            "created_at":null,
-            "tags":["cool","tags2","tags3","tags4"],
-            "image_links":["https://i.imgur.com/bctsoAx.jpeg"]
-        }
-    ]
-}
-```
-
-### Status Codes
-200 OK: Successful request
-400 Bad Request: User does not exist
-500 Internal server error
-
 
 ## `GET /account`
 
