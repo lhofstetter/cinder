@@ -13,6 +13,82 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 
 # API Endpoint Documentation
 
+## `POST /match/like/{listing_id}`
+
+### Description
+
+This endpoint logs a like on a specified listing
+
+### Parameters
+
+- `listing_id` (required): The id of the listing you want to like
+
+### Request
+
+```http
+POST /match/like/123
+```
+
+###Response
+
+```json
+{ "message": "Like logged successfully" }
+```
+
+or if you match you will get an array of the listing ids for which you matched
+
+```json
+{ "matches": [7] }
+```
+
+if there is some issue you will get this response
+
+```json
+{ "message": "An unexpected error occurred", "error": "<some error message>" };
+```
+
+### Status Codes
+
+200 OK: Successful request
+400 Bad Request: Invalid listing id or you tried to like your own listing
+401 Unauthorized: you are not signed in
+500 Internal server error
+
+## `POST /match/dislike/{listing_id}`
+
+### Description
+
+This endpoint logs a dislike for a specified listing
+
+### Parameters
+
+- `listing_id` (required): The id of the listing you want to like
+
+### Request
+
+```http
+POST /match/dislike/123
+```
+
+###Response
+
+```json
+{ "message": "Dislike logged successfully" }
+```
+
+if there is some issue you will get this response
+
+```json
+{ "message": "An unexpected error occurred", "error": "<some error message>" };
+```
+
+### Status Codes
+
+200 OK: Successful request
+400 Bad Request: Invalid listing id or you tried to like your own listing
+401 Unauthorized: you are not signed in
+500 Internal server error
+
 ## `GET /account/{id}`
 
 ### Description
@@ -33,31 +109,32 @@ GET /account/123
 
 ```json
 {
-    "id":"n2to7j44j7v6zyx",
-    "username":"ThomasIsABigLoser",
-    "profile_pic":"https://imgur.com/image_link",
-    "phone_number":"2032127226",
-    "class_year":2024,
-    "bio":"cool bio",
-    "owned_listings":[
-        {
-            "id":6,
-            "listing_name":"Album",
-            "owner_id":"n2to7j44j7v6zyx",
-            "description":"Bang",
-            "size":"L",
-            "waist":null,
-            "inseam":"top",
-            "category":"1701147400",
-            "created_at":null,
-            "tags":["cool","tags2","tags3","tags4"],
-            "image_links":["https://i.imgur.com/bctsoAx.jpeg"]
-        }
-    ]
+  "id": "n2to7j44j7v6zyx",
+  "username": "ThomasIsABigLoser",
+  "profile_pic": "https://imgur.com/image_link",
+  "phone_number": "2032127226",
+  "class_year": 2024,
+  "bio": "cool bio",
+  "owned_listings": [
+    {
+      "id": 6,
+      "listing_name": "Album",
+      "owner_id": "n2to7j44j7v6zyx",
+      "description": "Bang",
+      "size": "L",
+      "waist": null,
+      "inseam": "top",
+      "category": "1701147400",
+      "created_at": null,
+      "tags": ["cool", "tags2", "tags3", "tags4"],
+      "image_links": ["https://i.imgur.com/bctsoAx.jpeg"]
+    }
+  ]
 }
 ```
 
 ### Status Codes
+
 200 OK: Successful request
 400 Bad Request: User does not exist
 500 Internal server error
@@ -78,31 +155,32 @@ GET /account
 
 ```json
 {
-    "id":"n2to7j44j7v6zyx",
-    "username":"ThomasIsABigLoser",
-    "profile_pic":"https://imgur.com/image_link",
-    "phone_number":"2032127226",
-    "class_year":2024,
-    "bio":"cool bio",
-    "owned_listings":[
-        {
-            "id":6,
-            "listing_name":"Album",
-            "owner_id":"n2to7j44j7v6zyx",
-            "description":"Bang",
-            "size":"L",
-            "waist":null,
-            "inseam":"top",
-            "category":"1701147400",
-            "created_at":null,
-            "tags":["cool","tags2","tags3","tags4"],
-            "image_links":["https://i.imgur.com/bctsoAx.jpeg"]
-        }
-    ]
+  "id": "n2to7j44j7v6zyx",
+  "username": "ThomasIsABigLoser",
+  "profile_pic": "https://imgur.com/image_link",
+  "phone_number": "2032127226",
+  "class_year": 2024,
+  "bio": "cool bio",
+  "owned_listings": [
+    {
+      "id": 6,
+      "listing_name": "Album",
+      "owner_id": "n2to7j44j7v6zyx",
+      "description": "Bang",
+      "size": "L",
+      "waist": null,
+      "inseam": "top",
+      "category": "1701147400",
+      "created_at": null,
+      "tags": ["cool", "tags2", "tags3", "tags4"],
+      "image_links": ["https://i.imgur.com/bctsoAx.jpeg"]
+    }
+  ]
 }
 ```
 
 ### Status Codes
+
 200 OK: Successful request
 401 Unauthorized: You are not signed in
 500 Internal server error
@@ -135,15 +213,8 @@ GET /match
         "inseam": "accessory",
         "category": "1701148012",
         "created_at": null,
-        "tags": [
-          "bang",
-          "tags2",
-          "tags3",
-          "tags4"
-        ],
-        "image_links": [
-          "https://i.imgur.com/fzCsSOY.jpeg"
-        ]
+        "tags": ["bang", "tags2", "tags3", "tags4"],
+        "image_links": ["https://i.imgur.com/fzCsSOY.jpeg"]
       }
     ],
     "listings_they_have_liked": [
@@ -157,15 +228,8 @@ GET /match
         "inseam": "top",
         "category": "1701147400",
         "created_at": null,
-        "tags": [
-          "cool",
-          "tags2",
-          "tags3",
-          "tags4"
-        ],
-        "image_links": [
-          "https://i.imgur.com/bctsoAx.jpeg"
-        ]
+        "tags": ["cool", "tags2", "tags3", "tags4"],
+        "image_links": ["https://i.imgur.com/bctsoAx.jpeg"]
       }
     ],
     "their_account_info": {
@@ -186,15 +250,8 @@ GET /match
           "inseam": "accessory",
           "category": "1701148012",
           "created_at": null,
-          "tags": [
-            "bang",
-            "tags2",
-            "tags3",
-            "tags4"
-          ],
-          "image_links": [
-            "https://i.imgur.com/fzCsSOY.jpeg"
-          ]
+          "tags": ["bang", "tags2", "tags3", "tags4"],
+          "image_links": ["https://i.imgur.com/fzCsSOY.jpeg"]
         }
       ]
     }
@@ -203,6 +260,7 @@ GET /match
 ```
 
 ### Status Codes
+
 200 OK: Successful request
 401 Unauthorized: You are not signed in
 500 Internal server error
