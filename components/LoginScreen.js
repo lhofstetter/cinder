@@ -71,6 +71,7 @@ export default function LoginScreen(){
                     onChangeText={setPassword}
                     value={password}
                     placeholder="password"
+                    secureTextEntry={true}
                     placeholderTextColor={'#DF85FF'}
                 />
                 <Pressable style={styles.loginButton} onPress={login}>
@@ -101,6 +102,7 @@ const styles = StyleSheet.create({
     textContainer: {
         flexDirection: "row",
         justifyContent: "center",
+        marginBottom: 20
     }, 
 
     titleText: {
@@ -112,7 +114,7 @@ const styles = StyleSheet.create({
     },
 
     inputBox: {
-        color: "green",
+        color: "black",
         height: 45,
         fontSize: 20,
         width: 300,

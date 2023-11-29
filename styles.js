@@ -231,8 +231,11 @@ const postStyles = {
       marginTop: 30,
     },
     mobileHeader: {
-      marginTop: 20,
-      marginBottom: 30,
+        fontSize: 40,
+        fontWeight: "600",
+        letterSpacing: -1,
+        color: '#DF85FF',
+        marginBottom: 20
     },
     cardContainer: {
       width: "90%",
@@ -344,6 +347,7 @@ const postStyles = {
     userProfilePic: {
       width: 100,
       height: 100,
+      borderRadius: 100
     },
     userContainerMinusBio: {
       display: "flex",

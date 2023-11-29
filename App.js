@@ -48,9 +48,7 @@ function User() {
 
 function Login(){
   return Platform.OS == "ios" ? (
-    <SafeAreaView>
       <LoginScreen />
-    </SafeAreaView>
   ) : (
     <LoginScreen />
   );
@@ -171,29 +169,29 @@ function TabNavigator() {
                 iconName = focused ? "homeFocus" : "homeUnfocused";
                 image = focused ? homeFocused : homeUnfocused;
 
-                return Platform.OS == "web" ? <img src={image} /> : <Image source={image} />;
+                return Platform.OS == "web" ? <img src={image} /> : <Image width={33} height={33} source={image} />;
               } else if (route.name === "UploadRoute") {
                 iconName = focused ? "uploadFocus" : "uploadUnfocused";
                 image = focused ? uploadFocused : uploadUnfocused;
 
-                return Platform.OS == "web" ? <img src={image} /> : <Image source={image} />;
+                return Platform.OS == "web" ? <img src={image} /> : <Image width={33} height={33} source={image} />;
               } 
               else if (route.name === "MatchRoute") {
                 iconName = focused ? "likesFocused" : "likesUnfocused";
                 image = focused ? likesFocused : likesUnfocused;
 
-                return <Image source={image} />;
+                return <Image width={33} height={33} source={image} />;
               }
               else if (route.name === "User") {
                 iconName = focused ? "profileFocus" : "profileUnfocused";
                 image = focused ? profileFocused : profileUnfocused;
 
-                return <Image source={image} />;
-              } else if (route.name == "Match") {
+                return <Image width={33} height={33} source={image} />;
+              } else if (route.name === "Match") {
                 iconName = focused ? "matchFocus" : "matchUnfocused";
                 image = focused ? matchFocused : matchUnfocused;
 
-                return <Image source={image}/>
+                return <Image width={33} height={33} source={image}/>
               }         
             },
             tabBarActiveTintColor: "black",
