@@ -29,7 +29,7 @@ This endpoint logs a like on a specified listing
 POST /match/like/123
 ```
 
-###Response
+### Response
 
 ```json
 { "message": "Like logged successfully" }
@@ -70,7 +70,7 @@ This endpoint logs a dislike for a specified listing
 POST /match/dislike/123
 ```
 
-###Response
+### Response
 
 ```json
 { "message": "Dislike logged successfully" }
@@ -105,7 +105,7 @@ This endpoint retrieves information about a specific user.
 GET /account/123
 ```
 
-###Response
+### Response
 
 ```json
 {
@@ -151,7 +151,7 @@ This endpoint retrieves information about the authenticated user.
 GET /account
 ```
 
-###Response
+### Response
 
 ```json
 {
@@ -197,7 +197,7 @@ This endpoint retrieves information about the authenticated user's matches
 GET /match
 ```
 
-###Response
+### Response
 
 ```json
 {
