@@ -4,7 +4,7 @@ import express, { Request, Response } from "express";
 import fileUpload, { UploadedFile } from "express-fileupload";
 
 import { db } from "./db/index.ts";
-import { images, listings, tags } from "./db/schema.ts";
+import { images, listings, tags, likes } from "./db/schema.ts";
 import { auth } from "./lucia.ts";
 import { authHandler } from "./routers/auth.ts";
 import { matchHandler } from "./routers/match.ts";
@@ -161,6 +161,13 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
       });
     }
 
+    // Get all listing_ids of listings the user has liked or disliked already
+    const likedListingsQuery = await db
+      .select({ listing_id: likes.listing_id })
+      .from(likes)
+      .where(eq(likes.account_id, user_id));
+    const likedOrDislikedListings: number[] = likedListingsQuery.map((entry) => entry.listing_id);
+
     // If no filters are selected, retrun all listing data
     if (
       filterData.sizes.length === 0 &&
@@ -172,7 +179,7 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
       const allListingIdsQuery = await db
         .select({ listing_id: listings.id })
         .from(listings)
-        .where(not(eq(listings.owner_id, user_id)));
+        .where(and(not(eq(listings.owner_id, user_id)), not(inArray(listings.id, likedOrDislikedListings))));
       const allListingIds = allListingIdsQuery.map((entry) => entry.listing_id);
       const listingInfoPromises = [];
       for (const listing_id of allListingIds) {
@@ -187,7 +194,7 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
     let listingsTableOrSubQuery: any = db
       .select()
       .from(listings)
-      .where(not(eq(listings.owner_id, user_id)));
+      .where(and(not(eq(listings.owner_id, user_id)), not(inArray(listings.id, likedOrDislikedListings))));
     let listingsIdsWithTag: number[] = [];
     if (filterData.tags.length > 0) {
       const listingsWithTagQuery = await db
@@ -199,7 +206,12 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
         listingsTableOrSubQuery = db
           .select()
           .from(listings)
-          .where(and(inArray(listings.id, listingsIdsWithTag), not(eq(listings.owner_id, user_id))))
+          .where(
+            and(
+              and(inArray(listings.id, listingsIdsWithTag), not(eq(listings.owner_id, user_id))),
+              not(inArray(listings.id, likedOrDislikedListings)),
+            ),
+          )
           .as("sq");
       }
     }
@@ -225,7 +237,7 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
       matchingListingIds.push(...matchingNonSizeSpecificListings.map((entry) => entry.listing_id));
     }
     if (filterData.categories.includes("bottom")) {
-      const matchingBottoms = await queryBottoms(filterData, listingsIdsWithTag, user_id);
+      const matchingBottoms = await queryBottoms(filterData, listingsIdsWithTag, user_id, likedOrDislikedListings);
       matchingListingIds.push(...matchingBottoms.map((entry) => entry.listing_id));
     }
 
@@ -241,7 +253,12 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
   }
 });
 
-async function queryBottoms(filterData: ListingsFilterData, listingsIdsWithTag: number[], user_id: string) {
+async function queryBottoms(
+  filterData: ListingsFilterData,
+  listingsIdsWithTag: number[],
+  user_id: string,
+  likedOrDislikedListings: number[],
+) {
   const listingsTableOrSubQuery =
     filterData.tags.length > 0
       ? db
@@ -249,15 +266,23 @@ async function queryBottoms(filterData: ListingsFilterData, listingsIdsWithTag: 
           .from(listings)
           .where(
             and(
-              and(inArray(listings.id, listingsIdsWithTag), eq(listings.category, "bottom")),
-              not(eq(listings.owner_id, user_id)),
+              and(
+                and(inArray(listings.id, listingsIdsWithTag), eq(listings.category, "bottom")),
+                not(eq(listings.owner_id, user_id)),
+              ),
+              not(inArray(listings.id, likedOrDislikedListings)),
             ),
           )
           .as("sq")
       : db
           .select()
           .from(listings)
-          .where(and(eq(listings.category, "bottom"), not(eq(listings.owner_id, user_id))))
+          .where(
+            and(
+              and(eq(listings.category, "bottom"), not(eq(listings.owner_id, user_id))),
+              not(inArray(listings.id, likedOrDislikedListings)),
+            ),
+          )
           .as("bottoms");
   if (filterData.waist_sizes.length > 0 && filterData.inseam_lengths.length > 0 && filterData.sizes.length > 0) {
     return await db
