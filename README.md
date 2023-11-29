@@ -10,8 +10,251 @@ Once the repository is cloned on your computer, you can use 'npm install --force
 2. `npx tsc`
 3. `node server/server.js`
 4. `npm start`
-
 # API Endpoint Documentation
+
+## `GET /account/{id}`
+
+### Description
+
+This endpoint retrieves information about a specific user.
+
+### Parameters
+
+- `id` (required): The unique identifier of the user.
+
+### Request
+
+```http
+GET /account/123
+```
+
+###Response
+
+```json
+{
+    "id":"n2to7j44j7v6zyx",
+    "username":"ThomasIsABigLoser",
+    "profile_pic":"https://imgur.com/image_link",
+    "phone_number":"2032127226",
+    "class_year":2024,
+    "bio":"cool bio",
+    "owned_listings":[
+        {
+            "id":6,
+            "listing_name":"Album",
+            "owner_id":"n2to7j44j7v6zyx",
+            "description":"Bang",
+            "size":"L",
+            "waist":null,
+            "inseam":"top",
+            "category":"1701147400",
+            "created_at":null,
+            "tags":["cool","tags2","tags3","tags4"],
+            "image_links":["https://i.imgur.com/bctsoAx.jpeg"]
+        }
+    ]
+}
+```
+
+### Status Codes
+200 OK: Successful request
+400 Bad Request: User does not exist
+500 Internal server error
+
+
+## `GET /account/{id}`
+
+### Description
+
+This endpoint retrieves information about a specific user.
+
+### Parameters
+
+- `id` (required): The unique identifier of the user.
+
+### Request
+
+```http
+GET /account/123
+```
+
+###Response
+
+```json
+{
+    "id":"n2to7j44j7v6zyx",
+    "username":"ThomasIsABigLoser",
+    "profile_pic":"https://imgur.com/image_link",
+    "phone_number":"2032127226",
+    "class_year":2024,
+    "bio":"cool bio",
+    "owned_listings":[
+        {
+            "id":6,
+            "listing_name":"Album",
+            "owner_id":"n2to7j44j7v6zyx",
+            "description":"Bang",
+            "size":"L",
+            "waist":null,
+            "inseam":"top",
+            "category":"1701147400",
+            "created_at":null,
+            "tags":["cool","tags2","tags3","tags4"],
+            "image_links":["https://i.imgur.com/bctsoAx.jpeg"]
+        }
+    ]
+}
+```
+
+### Status Codes
+200 OK: Successful request
+400 Bad Request: User does not exist
+500 Internal server error
+
+
+## `GET /account`
+
+### Description
+
+This endpoint retrieves information about the authenticated user.
+
+### Request
+
+```http
+GET /account
+```
+
+###Response
+
+```json
+{
+    "id":"n2to7j44j7v6zyx",
+    "username":"ThomasIsABigLoser",
+    "profile_pic":"https://imgur.com/image_link",
+    "phone_number":"2032127226",
+    "class_year":2024,
+    "bio":"cool bio",
+    "owned_listings":[
+        {
+            "id":6,
+            "listing_name":"Album",
+            "owner_id":"n2to7j44j7v6zyx",
+            "description":"Bang",
+            "size":"L",
+            "waist":null,
+            "inseam":"top",
+            "category":"1701147400",
+            "created_at":null,
+            "tags":["cool","tags2","tags3","tags4"],
+            "image_links":["https://i.imgur.com/bctsoAx.jpeg"]
+        }
+    ]
+}
+```
+
+### Status Codes
+200 OK: Successful request
+401 Unauthorized: You are not signed in
+500 Internal server error
+
+## `GET /match`
+
+### Description
+
+This endpoint retrieves information about the authenticated user's matches
+
+### Request
+
+```http
+GET /match
+```
+
+###Response
+
+```json
+{
+  "72l8ux9nredq88u": {
+    "listings_you_have_liked": [
+      {
+        "id": 7,
+        "listing_name": "Inner Speaker",
+        "owner_id": "72l8ux9nredq88u",
+        "description": "Bang",
+        "size": "M",
+        "waist": null,
+        "inseam": "accessory",
+        "category": "1701148012",
+        "created_at": null,
+        "tags": [
+          "bang",
+          "tags2",
+          "tags3",
+          "tags4"
+        ],
+        "image_links": [
+          "https://i.imgur.com/fzCsSOY.jpeg"
+        ]
+      }
+    ],
+    "listings_they_have_liked": [
+      {
+        "id": 6,
+        "listing_name": "Album",
+        "owner_id": "n2to7j44j7v6zyx",
+        "description": "Bang",
+        "size": "L",
+        "waist": null,
+        "inseam": "top",
+        "category": "1701147400",
+        "created_at": null,
+        "tags": [
+          "cool",
+          "tags2",
+          "tags3",
+          "tags4"
+        ],
+        "image_links": [
+          "https://i.imgur.com/bctsoAx.jpeg"
+        ]
+      }
+    ],
+    "their_account_info": {
+      "id": "72l8ux9nredq88u",
+      "username": "LukeIsABigLoser",
+      "profile_pic": "https://i.imgur.com/Y6t3Gtk.jpeg",
+      "phone_number": "2032127226",
+      "class_year": 2023,
+      "bio": "Bang",
+      "owned_listings": [
+        {
+          "id": 7,
+          "listing_name": "Inner Speaker",
+          "owner_id": "72l8ux9nredq88u",
+          "description": "Bang",
+          "size": "M",
+          "waist": null,
+          "inseam": "accessory",
+          "category": "1701148012",
+          "created_at": null,
+          "tags": [
+            "bang",
+            "tags2",
+            "tags3",
+            "tags4"
+          ],
+          "image_links": [
+            "https://i.imgur.com/fzCsSOY.jpeg"
+          ]
+        }
+      ]
+    }
+  }
+}```
+
+### Status Codes
+200 OK: Successful request
+401 Unauthorized: You are not signed in
+500 Internal server error
 
 <details>
  <summary><code>POST</code> <code><b>/filtered-listings</b></code> <code>(Returns all listing data matching your provided search criteria)</code></summary>
@@ -229,3 +472,4 @@ The endpoint would return nothing since you selected 0 categories.
 > | `imageSrc` | Source of the image |
 
 </details>
+````
