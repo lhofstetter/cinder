@@ -383,7 +383,7 @@ const postStyles = {
       display: "flex",
       flexWrap: "wrap",
       flexDirection: "row",
-      justifyContent: "center",
+      justifyContent: "start",
       marginTop: 20,
     },
   };
