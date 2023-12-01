@@ -35,7 +35,10 @@ export default function Post({ navigateRight }) {
           if (images == null) {
             let temp = [];
             for (let i = 0; i < postDetails.image.images.length; i++) {
-              temp.push({ source: { uri: postDetails.image.images[i].uri }, dimensions: { width: 481, height: 481 }})
+              if (postDetails.image.images[i].uri == undefined)
+                temp.push({ source: { uri: postDetails.image.images[i] }, dimensions: { width: 481, height: 481 }})
+              else 
+                temp.push({ source: { uri: postDetails.image.images[i].uri }, dimensions: { width: 481, height: 481 }})
             }
             setImages(temp);
           } 

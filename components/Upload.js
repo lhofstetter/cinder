@@ -31,7 +31,7 @@ function DisplayPhoto(imageData, width, height) {
   }
 }
 
-function Upload() {
+export default function Upload() {
   const [images, setImages] = useState(null);
   const { showActionSheetWithOptions } = useActionSheet();
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
@@ -183,85 +183,3 @@ function Upload() {
   
 }
 
-export default function UploadItem() {
-  const [upload, setUpload] = useState(false); // create a state for whether we are currently uploading or not (whether user has hit the uplaod button)
-  const { showActionSheetWithOptions } = useActionSheet();
-  const [itemImage, setItemImage] = useState(null);
-  const [status, requestPermission] = ImagePicker.useCameraPermissions();
-
-  let inputElement;
-
-  let result;
-
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setItemImage(result.assets[0]);
-    }
-  };
-
-  const takeImage = async () => {
-    requestPermission().then(async () => {
-      result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 1,
-      });
-    });
-
-    if (!result.canceled) {
-      setItemImage(result.assets[0]);
-    }
-  };
-
-  const UploadImage = (props) => {
-    const handleClick = () => {
-      inputElement.click();
-    };
-
-    if (Platform.OS == "web") {
-      return (
-        <Pressable onPressIn={handleClick}>
-          <ImageBackground
-            {...props}
-            source={require("../assets/Upload_Icon.png")}
-            style={[uploadStyles.uploadborder, { width: 100, height: 100 }]}
-          >
-            {Platform.OS == "web" ? (
-              <input
-                name="image"
-                type="file"
-                style={{ opacity: 0.0 }}
-                ref={(input) => (inputElement = input)}
-                onChange={() => {
-                  let img = URL.createObjectURL(inputElement.files[0]);
-                  setItemImage(img);
-                }}
-              />
-            ) : (
-              <Text></Text>
-            )}
-          </ImageBackground>
-        </Pressable>
-      );
-    } else {
-      return (
-        <ImageBackground
-          {...props}
-          source={require("../assets/Upload_Icon.png")}
-          style={[uploadStyles.uploadborder, { width: 100, height: 100 }]}
-        >
-          <Text></Text>
-        </ImageBackground>
-      );
-    }
-  };
-
-  return (
-    <Upload/>
-  );
-}
