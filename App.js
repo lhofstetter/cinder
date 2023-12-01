@@ -8,7 +8,7 @@ import { SafeAreaView } from "react-native";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import * as SecureStore from 'expo-secure-store';
 
-import UploadItem from "./components/Upload.js";
+import Upload from "./components/Upload.js";
 import Explore from "./components/Explore.js";
 import DetailsPost from "./components/SetPost.js";
 import PreviewPost from "./components/Preview.js";
@@ -16,15 +16,16 @@ import Profile from "./components/Profile.js";
 import Matches from "./components/Matches.js";
 import LoginScreen from "./components/LoginScreen.js";
 import AccountCreate from "./components/AccountCreate.js";
+import Post from "./components/Post.js";
 
-const homeFocused = require("./assets/home.png");
-const homeUnfocused = require("./assets/home_unfocused.png");
-const uploadFocused = require("./assets/upload.png");
-const uploadUnfocused = require("./assets/upload_unfocused.png");
-const profileFocused = require("./assets/profile.png");
-const profileUnfocused = require("./assets/profile_unfocused.png");
-const likesFocused = require("./assets/likes_unfocused.png");
-const likesUnfocused = require("./assets/likes.png");
+const homeFocused = require("./assets/home_unfocused.png");
+const homeUnfocused = require("./assets/home.png");
+const uploadFocused = require("./assets/upload_unfocused.png");
+const uploadUnfocused = require("./assets/upload.png");
+const profileFocused = require("./assets/profile_unfocused.png");
+const profileUnfocused = require("./assets/profile.png");
+const likesFocused = require("./assets/likes.png");
+const likesUnfocused = require("./assets/likes_unfocused.png");
 
 function Swipe() {
   return Platform.OS == "ios" ? (
@@ -64,14 +65,14 @@ function Account(){
   );
 }
 
-function Upload() {
+function BeginUpload() {
   return Platform.OS == "ios" ? (
     <SafeAreaView>
-      <UploadItem />
+      <Upload />
     </SafeAreaView>
   ) : (
     <>
-      <UploadItem />
+      <Upload />
     </>
   );
 }
@@ -100,6 +101,14 @@ function Preview() {
   );
 }
 
+function Posts() {
+  return (
+    <SafeAreaView>
+      <Post/>
+    </SafeAreaView>
+  )
+}
+
 
 const LoginStack = createNativeStackNavigator();
 
@@ -117,7 +126,7 @@ const UploadStack = createNativeStackNavigator();
 function UploadRoute() {
   return (
     <UploadStack.Navigator screenOptions={{headerTitleStyle: {fontFamily: "Inter"}}}>
-      <UploadStack.Screen name="Upload" component={Upload}/>
+      <UploadStack.Screen name="Upload" component={BeginUpload}/>
       <UploadStack.Screen name="New Listing" component={Details} options={{ headerBackVisible: false, gestureEnabled: false}}/>
       <UploadStack.Screen name="Preview" component={Preview} options={{ headerBackVisible: false }} />
     </UploadStack.Navigator>
@@ -130,7 +139,19 @@ function MatchRoute() {
   return (
     <MatchStack.Navigator screenOptions={{headerTitleStyle: {fontFamily: "Inter"}}}>
       <MatchStack.Screen name="Matches" component={Matches}/>
+      <MatchStack.Screen name="Match Profile" component={Profile}/>
     </MatchStack.Navigator>
+  );
+}
+
+const ProfileStack = createNativeStackNavigator();
+
+function ProfileRoute() {
+  return (
+    <ProfileStack.Navigator screenOptions={{headerTitleStyle: {fontFamily: "Inter"}}}>
+      <ProfileStack.Screen name="Profile" component={Profile}/>
+      <ProfileStack.Screen name="Post" component={Post}/>
+    </ProfileStack.Navigator>
   );
 }
 
@@ -140,19 +161,29 @@ function TabNavigator() {
   const [badge, setBadge] = React.useState(undefined);
 
   React.useEffect(() => {
-    let temp = undefined;
     let count = 0;
     const getMatches = async () => {
-      for (let i = 1; i < 3; i++) {
-        await fetch("https://cinder-server2.fly.dev/listing/" + String(i)).then(async (data) => {
-          data = await data.json();
-          if (data.error == undefined) {
-            count++;
-          }
-        });
+      let cookie = await SecureStore.getItemAsync("cookie");
+      let auth = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
+
+      let results = await fetch("https://cinder-server2.fly.dev/match/", {
+          headers: {
+              'Content-Type': 'application/json',
+              'Cookie': 'auth_session=' + auth,
+              'Origin': 'https://cinder-server2.fly.dev/./'
+            }
+      });
+      results = await results.json();
+
+      if (results.message != null && results.message == "You have no matches") {
+          setBadge(undefined);
+          return;
       }
-      temp = count;
-      setBadge(temp);
+      let users = Object.keys(results);
+      for (let i = 0; i < users.length; i++) {
+          count++;
+      }
+      setBadge(count);
     }
     getMatches();
   }, []);
@@ -169,29 +200,29 @@ function TabNavigator() {
                 iconName = focused ? "homeFocus" : "homeUnfocused";
                 image = focused ? homeFocused : homeUnfocused;
 
-                return Platform.OS == "web" ? <img src={image} /> : <Image width={33} height={33} source={image} />;
+                return Platform.OS == "web" ? <img src={image} /> : <Image source={image} />;
               } else if (route.name === "UploadRoute") {
                 iconName = focused ? "uploadFocus" : "uploadUnfocused";
                 image = focused ? uploadFocused : uploadUnfocused;
 
-                return Platform.OS == "web" ? <img src={image} /> : <Image width={33} height={33} source={image} />;
+                return Platform.OS == "web" ? <img src={image} /> : <Image source={image} />;
               } 
               else if (route.name === "MatchRoute") {
                 iconName = focused ? "likesFocused" : "likesUnfocused";
                 image = focused ? likesFocused : likesUnfocused;
 
-                return <Image width={33} height={33} source={image} />;
+                return <Image source={image} />;
               }
-              else if (route.name === "User") {
+              else if (route.name === "UserRoute") {
                 iconName = focused ? "profileFocus" : "profileUnfocused";
                 image = focused ? profileFocused : profileUnfocused;
 
-                return <Image width={33} height={33} source={image} />;
+                return <Image source={image} />;
               } else if (route.name === "Match") {
                 iconName = focused ? "matchFocus" : "matchUnfocused";
                 image = focused ? matchFocused : matchUnfocused;
 
-                return <Image width={33} height={33} source={image}/>
+                return <Image source={image}/>
               }         
             },
             tabBarActiveTintColor: "black",
@@ -230,7 +261,7 @@ function TabNavigator() {
               }
             }
           })}/>
-          <Tab.Screen name="User" component={User} options={{ headerShown: false }} listeners={({ navigation, route }) => ({
+          <Tab.Screen name="UserRoute" component={ProfileRoute} options={{ headerShown: false, unmountOnBlur:true }} listeners={({ navigation, route }) => ({
               tabPress: (e) => {
                 if (navigation.getState().routes[1].state != undefined && navigation.getState().routes[1].state.index >= 1) {
                   e.preventDefault();

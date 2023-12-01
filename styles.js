@@ -338,6 +338,7 @@ const postStyles = {
       height: 115,
       width: 115,
       margin: 2,
+      borderRadius:10,
     },
     scrollContainer: {
       display: "flex",
@@ -383,7 +384,7 @@ const postStyles = {
       display: "flex",
       flexWrap: "wrap",
       flexDirection: "row",
-      justifyContent: "start",
+      justifyContent: "left",
       marginTop: 20,
     },
   };

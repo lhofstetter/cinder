@@ -4,6 +4,7 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import Post from "./Post.js";
 import { postStyles } from "../styles";
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import * as SecureStore from 'expo-secure-store';
 
 
 export default function PreviewPost() {
@@ -28,24 +29,31 @@ export default function PreviewPost() {
 
       let form = new FormData();
       for (let i = 0; i < result.length; i++) {
-        form.append("files[]", {
+        form.append("file", {
           uri: result[i].uri,
           type: 'image/jpeg',
           name: imageUris[i].fileName,
-        });
+        }, imageUris[i].fileName);
       }
       form.append("listing_name", details.title);
       form.append("description", details.description);
       form.append("category", details.selectedType);
       form.append("tags", tags.split(" "));
+
+      let cookie = (await SecureStore.getItemAsync('cookie'));
+      let auth = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
       
       return fetch("https://cinder-server2.fly.dev/listing", {
           method: "POST",
           headers: {
               'Content-Type': 'multipart/form-data',
+              'Cookie': 'auth_session=' + auth,
+              'Origin': 'https://cinder-server2.fly.dev/./'
           },
           body: form,
       });
+
+     
   }
 
   let preTags = [];
