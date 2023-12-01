@@ -34,12 +34,12 @@ const SwipeableCard = ({ character, index, swiped, outOfFrame }) => {
             let xRatio;
 
             xRatio = event.nativeEvent.pageX / width;
-            setColor([color[0], 1.0 - xRatio, "#00FF00", "Slay"]);
+            setColor([color[0], 1.0 - xRatio, "#00FF00", "Like"]);
           } else if (event.nativeEvent.pageX - color[0][0] < -50) {
             let xRatio;
 
             xRatio = 1 / (event.nativeEvent.pageX / (width / 16));
-            setColor([color[0], 1.0 - xRatio, "#FF0000", "Nay"]);
+            setColor([color[0], 1.0 - xRatio, "#FF0000", "Dislike"]);
           } else {
             setColor([color[0], 1.0, "#fff", ""]);
           }
@@ -52,7 +52,7 @@ const SwipeableCard = ({ character, index, swiped, outOfFrame }) => {
             let xRatio;
 
             xRatio = (event.nativeEvent.pageX + 100) / width;
-            setColor([color[0], 1.0 - xRatio, "#00FF00", "Slay"]);
+            setColor([color[0], 1.0 - xRatio, "#00FF00", "Like"]);
           } else if (event.nativeEvent.pageX - color[0][0] < -100) {
             // moving to the left
             let xRatio;
@@ -61,7 +61,7 @@ const SwipeableCard = ({ character, index, swiped, outOfFrame }) => {
             if (xRatio == Infinity)
               // fixes a bug where somehow the above calculation tends toward infinity
               xRatio = 1.0;
-            setColor([color[0], 1.0 - xRatio, "#FF0000", "Nay"]);
+            setColor([color[0], 1.0 - xRatio, "#FF0000", "Dislike"]);
           } else {
             setColor([color[0], 1.0, "#fff", ""]);
           }

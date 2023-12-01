@@ -59,7 +59,9 @@ export default function Post({ navigateRight }) {
           <View style={postStyles.postMobileTitles}>
             <Text style={[postStyles.postMobileTitle, { fontFamily: "Inter" }]}>{postDetails.title}</Text>
             <Text style={postStyles.postMobileSubtitle}>
-              Size {postDetails.selectedSize} • {postDetails.selectedType}
+              {postDetails.selectedSize ? `Size: ${postDetails.selectedSize} • ` : ""}
+              {postDetails.selectedWaist ? `Size: ${postDetails.selectedWaist} • ` : ""}
+              {postDetails.selectedType}
             </Text>
           </View>
           <View style={postStyles.seperator} />

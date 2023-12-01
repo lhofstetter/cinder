@@ -9,11 +9,14 @@ const rightArrow = require("../assets/right_arrow.png");
 
 export default function Matches() {
   const [matches, setMatches] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigation = useNavigation();
 
   useEffect(() => {
     async function retrieveMatches() {
+      setIsLoading(true);
+      try {
       let cookie = await SecureStore.getItemAsync("cookie");
       let auth = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
       let temp = [];
@@ -40,18 +43,30 @@ export default function Matches() {
           posts: results[users[i]]["their_account_info"]["owned_listings"],
         });
       }
-
       setMatches(temp);
+      }
+      catch (error) {
+        console.log(error);
+      }
+      finally {
+      setIsLoading(false);
+      }
     }
     retrieveMatches();
   }, []);
 
+  if (isLoading) {
+    return <View style={{flex: "column", height: "100%", justifyContent: "center", alignItems: "center"}}>
+      <Text style={{fontWeight: 600, fontSize:20}}>Loading...</Text>
+    </View>
+  }
+
   return (
     <View style={styles.container}>
-      {matches == null ? (
-        <Text style={{ fontFamily: "Inter", justifyContent: "center", textAlign: "center" }}>
-          You have no matches. :({" "}
-        </Text>
+      {matches === null && isLoading === false ? (
+      <View style={{flex: "column", height: "100%", justifyContent: "center", alignItems: "center"}}>
+          <Text style={{fontWeight: 600, fontSize:20}}>You have no matches</Text>
+        </View>
       ) : (
         matches.map(({ image, profile, posts, the_listing_image_of_the_listing_they_liked }, index) => (
           <Pressable
