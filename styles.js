@@ -288,6 +288,10 @@ const exploreStyles = {
     position: "absolute",
     bottom: 0,
     margin: 10,
+    fontWeight: 600,
+    fontSize: 30,
+    shadowRadius: 6,
+    shadowOpacity: 1,
     color: "#fff",
   },
   emptyCardTitle: {

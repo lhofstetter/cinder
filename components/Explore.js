@@ -1,21 +1,20 @@
-import React, { useState, useMemo, useEffect } from "react";
+import axios from "axios";
+import React, { useState, useEffect } from "react";
 import {
   ImageBackground,
   Text,
   View,
-  Image,
   Pressable,
   useWindowDimensions,
   Platform,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import TinderCard from "react-tinder-card";
 import * as ImagePicker from "expo-image-picker";
 import { exploreStyles } from "../styles";
 import * as SecureStore from "expo-secure-store";
 import { useNavigation } from "@react-navigation/native";
-
-const logo = require("../assets/cindr.png");
 
 const alreadyRemoved = [];
 
@@ -90,6 +89,7 @@ const SwipeableCard = ({ character, index, swiped, outOfFrame }) => {
               source={character.image_links[0]}
             >
               <Text style={exploreStyles.cardTitle}>{character.listing_name}</Text>
+              <Text style={{ shadowOpacity: 1, shadowRadius: 6 }}>{character.size}</Text>
               <Text style={exploreStyles.likeOrDislikeText}>{color[3]}</Text>
             </ImageBackground>
           </View>
@@ -119,25 +119,43 @@ const Advanced = () => {
 
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const getListings = async () => {
-      let temp = characters;
-      let i = begin;
-      while (temp.length < 5 && i - begin < 15) {
-        await fetch("https://cinder-server2.fly.dev/listing/" + String(i)).then(async (data) => {
-          if (data.ok) {
-            data = await data.json();
-            data["id"] = i;
-            temp.unshift(data);
-          }
-          i++;
-        });
+  const getListings = async () => {
+    try {
+      let cookie = await SecureStore.getItemAsync("cookie");
+      if (!cookie) {
+        console.log("no cookie");
+        return;
       }
-      setCharacters(temp);
-      setBegin(i);
+      let auth = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
+      if (!auth) {
+        console.log("no auth");
+        return;
+      }
+      const { data } = await axios.post(
+        "https://cinder-server2.fly.dev/filtered-listings",
+        {
+          sizes: [],
+          categories: [],
+          inseam_lengths: [],
+          tags: [],
+          waist_sizes: [],
+        },
+        {
+          headers: {
+            Cookie: "auth_session=" + auth,
+            Origin: "https://cinder-server2.fly.dev/./",
+          },
+        },
+      );
+      setCharacters(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
       setActualRefresh(false);
-    };
+    }
+  };
 
+  useEffect(() => {
     if (actualRefresh) getListings();
   }, []);
 
@@ -147,7 +165,7 @@ const Advanced = () => {
     let auth = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
 
     if (direction == "right") {
-      await fetch("https://cinder-server2.fly.dev/match/like/" + String(id), {
+      const response = await fetch("https://cinder-server2.fly.dev/match/like/" + String(id), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -155,6 +173,12 @@ const Advanced = () => {
           Origin: "https://cinder-server2.fly.dev/./",
         },
       });
+      const data = await response.json()
+      console.log(data);
+      if (data?.matches) {
+        const {data: listingData} = await axios.get(`https://cinder-server2.fly.dev/listing/${id}`);
+        Alert.alert(`You matched with the owner of "${listingData.listing_name}"! Shoot them a message and coordiante a swap!"`)
+      }
     } else {
       await fetch("https://cinder-server2.fly.dev/match/dislike/" + String(id), {
         method: "POST",
