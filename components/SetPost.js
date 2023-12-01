@@ -73,8 +73,8 @@ export default function DetailsPost() {
   const [selectedType, setSelectedType] = useState("");
   const [typeOfSize, setTypeOfSize] = useState(defaultSizes);
   const [selectedSize, setSelectedSize] = useState();
-  const [currentStyle, setCurrentStyle] = useState([editStyles.title, {fontFamily: 'Inter'}]);
-  const [descriptionStyle, setDescriptionStyle] = useState([editStyles.postDescription, {fontFamily: 'Inter'}]);
+  const [currentStyle, setCurrentStyle] = useState([editStyles.title, { fontFamily: "Inter" }]);
+  const [descriptionStyle, setDescriptionStyle] = useState([editStyles.postDescription, { fontFamily: "Inter" }]);
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -83,48 +83,57 @@ export default function DetailsPost() {
   console.log(image);
 
   useEffect(() => {
-    if (selectedType == "" || description == "Type out your description!" || description == "" || selectedSize == undefined || text == "Write a title" || text == ""){
-      navigation.setOptions({headerRight: () => (
-          <Text style={editStyles.previewMobileInvalid}>Continue</Text>      
-      )});
+    if (
+      selectedType == "" ||
+      description == "Type out your description!" ||
+      description == "" ||
+      selectedSize == undefined ||
+      text == "Write a title" ||
+      text == ""
+    ) {
+      navigation.setOptions({ headerRight: () => <Text style={editStyles.previewMobileInvalid}>Continue</Text> });
     } else {
-      navigation.setOptions({headerRight: () => (
-        <Pressable onPress={() => {
-            navigation.navigate("Preview", {
-              title:text,
-              description:description,
-              selectedType:selectedType,
-              selectedSize:selectedSize,
-              image:image,
-              tags:"",
-            });
-        }}>
-        <Text style={[editStyles.previewMobile, {fontFamily: "Inter"}]}>Continue</Text>
-      </Pressable>
-      )})
+      navigation.setOptions({
+        headerRight: () => (
+          <Pressable
+            onPress={() => {
+              navigation.navigate("Preview", {
+                title: text,
+                description: description,
+                selectedType: selectedType,
+                selectedSize: selectedSize,
+                image: image,
+                tags: "",
+              });
+            }}
+          >
+            <Text style={[editStyles.previewMobile, { fontFamily: "Inter" }]}>Continue</Text>
+          </Pressable>
+        ),
+      });
     }
   }, [text, selectedType, selectedSize, description]);
 
-  function handleFocus () {
+  function handleFocus() {
     if (text == "Write a title") {
       setText("");
     }
-    setCurrentStyle([editStyles.titleFocus, {fontFamily: 'Inter'}]);
+    setCurrentStyle([editStyles.titleFocus, { fontFamily: "Inter" }]);
   }
 
   function handleUnfocus() {
-    setCurrentStyle([editStyles.title, {fontFamily: 'Inter'}]);
+    setCurrentStyle([editStyles.title, { fontFamily: "Inter" }]);
   }
 
   function handleDescriptionFocus() {
     if (description == "Type out your description!") {
       setDescription("");
     }
-    setDescriptionStyle([editStyles.postDescriptionFocus, {fontFamily: 'Inter'}]);
+    setDescriptionStyle([editStyles.postDescriptionFocus, { fontFamily: "Inter" }]);
   }
 
   function handleDescriptionUnfocus() {
-    setDescriptionStyle([editStyles.postDescription, {fontFamily: 'Inter'}]);
+    setDescriptionStyle([editStyles.postDescription, { fontFamily: "Inter" }]);
   }
 
   function checkSelected() {
@@ -140,9 +149,15 @@ export default function DetailsPost() {
   }
 
   return (
-     <View>
-      <TextInput onFocus={handleFocus} onEndEditing={handleUnfocus} onChangeText={setText} value={text} style={currentStyle}></TextInput>
-      <PreviewImage imageSrc={image.images[0].uri} style={editStyles.previewImageMobile}/>
+    <View>
+      <TextInput
+        onFocus={handleFocus}
+        onEndEditing={handleUnfocus}
+        onChangeText={setText}
+        value={text}
+        style={currentStyle}
+      ></TextInput>
+      <PreviewImage imageSrc={image.images[0].uri} style={editStyles.previewImageMobile} />
       <TextInput
         multiline
         onFocus={handleDescriptionFocus}
@@ -163,10 +178,16 @@ export default function DetailsPost() {
         />
       </View>
       <View style={editStyles.sizeContainer}>
-        <Text style={[editStyles.categoryListLabel, {fontFamily: "Inter"}]}>Size</Text>
-        <SelectList fontFamily={"Inter"} boxStyles={editStyles.categoryList} setSelected={(val) => setSelectedSize(val)} data={typeOfSize} save="value"/>
+        <Text style={[editStyles.categoryListLabel, { fontFamily: "Inter" }]}>Size</Text>
+        <SelectList
+          fontFamily={"Inter"}
+          boxStyles={editStyles.categoryList}
+          setSelected={(val) => setSelectedSize(val)}
+          data={typeOfSize}
+          save="value"
+        />
       </View>
-      <Text style={[editStyles.categoryListLabel, {fontFamily: "Inter"}]}>Add Tags</Text>
+      <Text style={[editStyles.categoryListLabel, { fontFamily: "Inter" }]}>Add Tags</Text>
       <TextInput
         multiline
         onChangeText={(currentTags) => {
@@ -185,7 +206,7 @@ export default function DetailsPost() {
                   });
                 }}
               >
-                <Text style={[editStyles.previewMobile, {fontFamily: "Inter"}]}>Preview</Text>
+                <Text style={[editStyles.previewMobile, { fontFamily: "Inter" }]}>Preview</Text>
               </Pressable>
             ),
           });
@@ -197,4 +218,4 @@ export default function DetailsPost() {
   );
 }
 
-export {PreviewImage};
+export { PreviewImage };
