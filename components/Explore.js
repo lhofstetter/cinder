@@ -1,12 +1,10 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { ImageBackground, Text, View, Image, Pressable, useWindowDimensions, Platform, ActivityIndicator } from "react-native";
+import React, { useState, useEffect } from "react";
+import { ImageBackground, Text, View, Pressable, useWindowDimensions, Platform, ActivityIndicator } from "react-native";
 import TinderCard from "react-tinder-card";
 import * as ImagePicker from 'expo-image-picker';
 import { exploreStyles } from "../styles";
 import * as SecureStore from 'expo-secure-store';
 import { useNavigation } from "@react-navigation/native";
-
-const logo = require("../assets/cindr.png");
 
 const alreadyRemoved = [];
 

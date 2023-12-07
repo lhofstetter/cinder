@@ -4,7 +4,6 @@ import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SecureStore from 'expo-secure-store';
 import * as Crypto from "expo-crypto";
-import axios from "axios";
 
 const logo = require("../assets/white_text_logo.png")
 

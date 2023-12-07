@@ -1,11 +1,10 @@
 import React from "react";
+import * as ImagePicker from "expo-image-picker";
 import * as Crypto from "expo-crypto";
-import axios from "axios";
+import * as SecureStore from 'expo-secure-store';
 import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert} from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import * as SecureStore from 'expo-secure-store';
 import { useActionSheet } from "@expo/react-native-action-sheet";
-import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 
 const arrow = require("../assets/back_arrow.png")
