@@ -56,11 +56,8 @@ export default function AccountCreate(){
             },
             body: form,
         }).then(async (res) => {
-            await SecureStore.setItemAsync("cookie", String(res.headers["set-cookie"]));
-            navigation.navigate("App Path");
-        }, (e) => {
-            const error = e.response.data;
-            switch (error) {
+            let word = await res.text();
+            switch (word) {
                 case "Invalid username":
                     Alert.alert("Invalid Username", "Username must be between 5 and 30 characters.");
                     break;
@@ -70,6 +67,10 @@ export default function AccountCreate(){
                     // must be > 6 chars and < 255
                 case "Username already taken":
                     Alert.alert("Username Taken", "Please enter a different username. ");
+                    break;
+                case "OK":
+                    await SecureStore.setItemAsync("cookie", String(res.headers["set-cookie"]));
+                    navigation.navigate("App Path");
                     break;
                 default:
                     Alert.alert("Error", "An unknown problem occured, please try again later.");
@@ -86,7 +87,6 @@ export default function AccountCreate(){
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
     });
-    console.log(result);
     if (!result.canceled) {
       setItemImage(result.assets[0]);
     }
@@ -102,6 +102,14 @@ export default function AccountCreate(){
       setItemImage(result.assets[0]);
     }
   };
+
+  const handlePhoneNumberInput = (text) => {
+    setPhoneNumber(text.replace(/\D/g, ""));
+  }
+
+  const handleYearInput = (text) => {
+    setClassOf(text.replace(/\D/g, ""));
+  }
 
     return(
         <View style={styles.container}>
@@ -132,6 +140,7 @@ export default function AccountCreate(){
                         style={styles.inputBox} 
                         onChangeText={setUsername}
                         value={username}
+                        autoCapitalize="none"
                     />
                 </View>
                 <View style={styles.field}>
@@ -143,6 +152,7 @@ export default function AccountCreate(){
                         onChangeText={setPassword}
                         value={password}
                         secureTextEntry={true}
+                        autoCapitalize="none"
                     />
                 </View>
                 <View style={styles.field}>
@@ -154,6 +164,7 @@ export default function AccountCreate(){
                         onChangeText={setConfirmPassword}
                         value={confirmPassword}
                         secureTextEntry={true}
+                        autoCapitalize="none"
                     />
                 </View>
                 <View style={styles.field}>
@@ -162,7 +173,7 @@ export default function AccountCreate(){
                     </Text>
                     <TextInput 
                         style={styles.inputBox} 
-                        onChangeText={setPhoneNumber}
+                        onChangeText={handlePhoneNumberInput}
                         value={phoneNumber}
                         inputMode="numeric"
                     />
@@ -173,7 +184,7 @@ export default function AccountCreate(){
                     </Text>
                     <TextInput 
                         style={styles.inputBox} 
-                        onChangeText={setClassOf}
+                        onChangeText={handleYearInput}
                         value={classOf}
                         inputMode="numeric"
                         maxLength={4}
@@ -184,10 +195,12 @@ export default function AccountCreate(){
                         Bio
                     </Text>
                     <TextInput 
-                        style={styles.inputBox} 
+                        style={styles.inputBoxBio} 
                         onChangeText={setBio}
                         value={bio}
                         inputMode="text"
+                        autoCapitalize="none"
+                        multiline
                     />
                 </View>
                 <View style={styles.field}>
@@ -324,12 +337,21 @@ const styles = StyleSheet.create({
         width: 150,
         height: 150,
         borderRadius: 100,
-        backgroundColor: '#D9D9D9'
+        backgroundColor: '#D9D9D9',
+        top:25,
     },
 
     inputBox:{
         backgroundColor: '#D9D9D9',
-        width: 200,
+        width: "50%",
+        height: 32,
+        borderRadius: 8,
+        paddingLeft:"2%",
+    },
+
+    inputBoxBio:{
+        backgroundColor: '#D9D9D9',
+        width: "50%",
         height: 32,
         borderRadius: 8,
         paddingLeft:"2%",

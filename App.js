@@ -296,6 +296,7 @@ export default function App() {
   }
 
   async function getLoginInfo() {
+    await SecureStore.deleteItemAsync("cookie");
     let cookie = await SecureStore.getItemAsync("cookie");
     if (cookie != null) {
       let exp_date = new Date(cookie.split(";")[2].split("=")[1]).getTime();

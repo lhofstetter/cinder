@@ -46,6 +46,7 @@ export default function Profile() {
             'Origin': 'https://cinder-server2.fly.dev/./'
           }
         });
+        console.log(response);
         let future = await response.json();
         const {owned_listings, id, username, profile_pic, phone_number, class_year, bio} = future;
     
