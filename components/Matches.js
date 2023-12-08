@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, Image, Pressable, StyleSheet } from "react-native";
-import * as SecureStore from "expo-secure-store";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import * as SecureStore from 'expo-secure-store';
+import { useNavigation } from "@react-navigation/native";
 
-const matchedClothing = require("../assets/clothing0.png");
-const samplepfp = require("../assets/samplepfp.png");
-const rightArrow = require("../assets/right_arrow.png");
+const rightArrow = require("../assets/right_arrow.png")
 
 export default function Matches() {
   const [matches, setMatches] = useState(null);

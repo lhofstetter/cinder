@@ -1,42 +1,37 @@
 import React from "react";
-import * as Crypto from "expo-crypto";
-import axios from "axios";
-import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import * as SecureStore from "expo-secure-store";
-import { useActionSheet } from "@expo/react-native-action-sheet";
 import * as ImagePicker from "expo-image-picker";
-import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
+import * as Crypto from "expo-crypto";
+import * as SecureStore from 'expo-secure-store';
+import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useActionSheet } from "@expo/react-native-action-sheet";
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 
-const arrow = require("../assets/back_arrow.png");
+const arrow = require("../assets/back_arrow.png")
 
-export default function AccountCreate() {
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [confirmPassword, setConfirmPassword] = React.useState("");
-  const [phoneNumber, setPhoneNumber] = React.useState("");
-  const [classOf, setClassOf] = React.useState("");
-  const [bio, setBio] = React.useState("");
-  const { showActionSheetWithOptions } = useActionSheet();
-  const [status, requestPermission] = ImagePicker.useCameraPermissions();
-  const [itemImage, setItemImage] = React.useState();
+export default function AccountCreate(){
+    const [username, setUsername] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const [confirmPassword, setConfirmPassword] = React.useState("");
+    const [phoneNumber, setPhoneNumber] = React.useState("");
+    const [classOf, setClassOf] = React.useState("");
+    const [bio, setBio] = React.useState("");
+    const { showActionSheetWithOptions } = useActionSheet();
+    const [status, requestPermission] = ImagePicker.useCameraPermissions();
+    const [itemImage, setItemImage] = React.useState();
 
-  const navigation = useNavigation();
-  let passwd;
+    const navigation = useNavigation();
+    let passwd;
 
-  React.useEffect(() => {
-    const permission = async () => {
-      await requestPermission();
-    };
+    React.useEffect(() => {
+        const permission = async () => {
+            await requestPermission();
+        }
 
-    if (status == null || !status.granted) permission();
-  }, []);
+        if (status == null || !status.granted)
+            permission();
+    }, []);
 
-  const handleSignUp = async function () {
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Confirmed password does not match.");
-      return;
-    }
 
     passwd = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
 
@@ -88,7 +83,6 @@ export default function AccountCreate() {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
     });
-    console.log(result);
     if (!result.canceled) {
       setItemImage(result.assets[0]);
     }
@@ -105,66 +99,174 @@ export default function AccountCreate() {
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.bar}>
-        <Pressable
-          onPress={() => {
-            navigation.goBack();
-          }}
-        >
-          <Image style={styles.arrow} source={arrow} />
-        </Pressable>
 
-        <Text style={styles.title}>Profile</Text>
-        <View style={styles.empty}></View>
-      </View>
+  const handlePhoneNumberInput = (text) => {
+    setPhoneNumber(text.replace(/\D/g, ""));
+  }
 
-      <View style={styles.main}>
-        <View style={styles.field}>
-          <Text style={styles.inputLabel}>Username</Text>
-          <TextInput style={styles.inputBox} onChangeText={setUsername} value={username} />
-        </View>
-        <View style={styles.field}>
-          <Text style={styles.inputLabel}>Password</Text>
-          <TextInput style={styles.inputBox} onChangeText={setPassword} value={password} secureTextEntry={true} />
-        </View>
-        <View style={styles.field}>
-          <Text style={styles.inputLabel}>Confirm Password</Text>
-          <TextInput
-            style={styles.inputBox}
-            onChangeText={setConfirmPassword}
-            value={confirmPassword}
-            secureTextEntry={true}
-          />
-        </View>
-        <View style={styles.field}>
-          <Text style={styles.inputLabel}>Phone Number</Text>
-          <TextInput style={styles.inputBox} onChangeText={setPhoneNumber} value={phoneNumber} inputMode="numeric" />
-        </View>
-        <View style={styles.field}>
-          <Text style={styles.inputLabel}>Class Of</Text>
-          <TextInput
-            style={styles.inputBox}
-            onChangeText={setClassOf}
-            value={classOf}
-            inputMode="numeric"
-            maxLength={4}
-          />
-        </View>
-        <View style={styles.field}>
-          <Text style={styles.inputLabel}>Bio</Text>
-          <TextInput style={styles.inputBox} onChangeText={setBio} value={bio} inputMode="text" />
-        </View>
-        <View style={styles.field}>
-          <Text style={styles.inputLabel}>Profile Picture</Text>
-          <Pressable
-            style={styles.uploadBox}
-            onPress={() => {
-              const options = ["Choose Photo from Library", "Take Photo", "Cancel"];
-              switch (Platform.OS) {
-                case "ios":
-                  showActionSheetWithOptions(
+  const handleYearInput = (text) => {
+    setClassOf(text.replace(/\D/g, ""));
+  }
+
+    return(
+        <View style={styles.container}>
+
+
+            <View style={styles.bar}>
+            <Pressable onPress={() => {
+                navigation.goBack();
+            }}>
+                <Image
+                    style={styles.arrow}
+                    source={arrow}
+                 />
+            </Pressable>
+                
+                <Text style={styles.title}>
+                    Profile
+                </Text>
+                <View style={styles.empty}></View>
+            </View>
+
+            <View style={styles.main}>
+                <View style={styles.field}>
+                    <Text style={styles.inputLabel}>
+                        Username
+                    </Text>
+                    <TextInput 
+                        style={styles.inputBox} 
+                        onChangeText={setUsername}
+                        value={username}
+                        autoCapitalize="none"
+                    />
+                </View>
+                <View style={styles.field}>
+                    <Text style={styles.inputLabel}>
+                        Password
+                    </Text>
+                    <TextInput 
+                        style={styles.inputBox} 
+                        onChangeText={setPassword}
+                        value={password}
+                        secureTextEntry={true}
+                        autoCapitalize="none"
+                    />
+                </View>
+                <View style={styles.field}>
+                    <Text style={styles.inputLabel}>
+                        Confirm Password
+                    </Text>
+                    <TextInput 
+                        style={styles.inputBox} 
+                        onChangeText={setConfirmPassword}
+                        value={confirmPassword}
+                        secureTextEntry={true}
+                        autoCapitalize="none"
+                    />
+                </View>
+                <View style={styles.field}>
+                    <Text style={styles.inputLabel}>
+                        Phone Number
+                    </Text>
+                    <TextInput 
+                        style={styles.inputBox} 
+                        onChangeText={handlePhoneNumberInput}
+                        value={phoneNumber}
+                        inputMode="numeric"
+                    />
+                </View>
+                <View style={styles.field}>
+                    <Text style={styles.inputLabel}>
+                        Class Of
+                    </Text>
+                    <TextInput 
+                        style={styles.inputBox} 
+                        onChangeText={handleYearInput}
+                        value={classOf}
+                        inputMode="numeric"
+                        maxLength={4}
+                    />
+                </View>
+                <View style={styles.field}>
+                    <Text style={styles.inputLabel}>
+                        Bio
+                    </Text>
+                    <TextInput 
+                        style={styles.inputBoxBio} 
+                        onChangeText={setBio}
+                        value={bio}
+                        inputMode="text"
+                        autoCapitalize="none"
+                        multiline
+                    />
+                </View>
+                <View style={styles.field}>
+                    <Text style={styles.inputLabel}>
+                        Profile Picture
+                    </Text>
+                    <Pressable style={styles.uploadBox} onPress={() => {
+                        const options = ["Choose Photo from Library", "Take Photo", "Cancel"];
+                        switch (Platform.OS) {
+                        case "ios":
+                            showActionSheetWithOptions(
+                            {
+                                options: options,
+                                cancelButtonIndex: 2,
+                            },
+                            (selectedIndex) => {
+                                switch (selectedIndex) {
+                                case 0:
+                                    pickImage();
+                                    break;
+
+                                case 1:
+                                    takeImage();
+                                    break;
+
+                                case 2:
+                                    break;
+                                }
+                            },
+                            );
+                            break;
+                        case "web":
+                            setUpload(true);
+                            break;
+
+                        case "android":
+                            showActionSheetWithOptions(
+                            {
+                                options: options,
+                                cancelButtonIndex: 2,
+                            },
+                            (selectedIndex) => {
+                                switch (selectedIndex) {
+                                case 1:
+                                    pickImage();
+                                    break;
+
+                                case 2:
+                                    takeImage();
+                                    break;
+
+                                case 3:
+                                    break;
+                                }
+                            },
+                            );
+                            break;
+                        default:
+                            break;
+                        }
+                    }}>
+                        {itemImage == undefined ? <></> : <Image source={{uri: itemImage.uri}} style={styles.profilePicture}/>}
+                    </Pressable>
+                </View>
+            </View>
+
+            <Pressable 
+                onPress={handleSignUp}
+                style={({pressed}) => [
                     {
                       options: options,
                       cancelButtonIndex: 2,
@@ -237,80 +339,92 @@ export default function AccountCreate() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    height: "100%",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
+    container: {
+        height: "100%",
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+    }, 
 
-  main: {
-    paddingVertical: 30,
-    marginBottom: "auto",
-  },
 
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
-  },
+    main: {
+        paddingVertical: 30,
+        marginBottom: "auto"
+    },
 
-  bar: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    height: 30,
-  },
+    title: {
+        fontSize: 22,
+        fontWeight: "700"
 
-  empty: {
-    width: 34,
-  },
+    },
 
-  arrow: {
-    width: 34,
-    objectFit: "contain",
-  },
+    bar: {
+        width: "100%",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        height: 30
+    },
 
-  field: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginVertical: 10,
-  },
+    empty: {
+        width: 34
+    },
 
-  profilePicture: {
-    width: 150,
-    height: 150,
-    borderRadius: 100,
-  },
+    arrow: {
+        width: 34,
+        objectFit: "contain"
+    },
 
-  uploadBox: {
-    width: 150,
-    height: 150,
-    borderRadius: 100,
-    backgroundColor: "#D9D9D9",
-  },
+    field: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginVertical: 10
+    },
 
-  inputBox: {
-    backgroundColor: "#D9D9D9",
-    width: 200,
-    height: 32,
-    borderRadius: 8,
-    paddingLeft: "2%",
-  },
+    profilePicture: {
+        width: 150,
+        height: 150,
+        borderRadius: 100
+    },
 
-  saveButton: {
-    marginBottom: 18,
-    width: "100%",
-    height: 40,
-    color: "white",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-  },
+    uploadBox:{
+        width: 150,
+        height: 150,
+        borderRadius: 100,
+        backgroundColor: '#D9D9D9',
+        top:25,
+    },
 
-  saveText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-});
+    inputBox:{
+        backgroundColor: '#D9D9D9',
+        width: "50%",
+        height: 32,
+        borderRadius: 8,
+        paddingLeft:"2%",
+    },
+
+    inputBoxBio:{
+        backgroundColor: '#D9D9D9',
+        width: "50%",
+        height: 32,
+        borderRadius: 8,
+        paddingLeft:"2%",
+    },
+
+    saveButton: {
+        marginBottom: 18,
+        width: "100%",
+        height: 40,
+        color: "white",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 8
+    },
+
+    saveText: {
+        color: "white",
+        fontWeight: "700",
+        fontSize: 16,
+    },
+})
+

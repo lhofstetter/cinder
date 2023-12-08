@@ -1,29 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Text, View, Image, ScrollView, Pressable } from "react-native";
-import { PreviewImage } from "./SetPost";
 import { profileStyles } from "../styles";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
-
-const samplepfp = require("../assets/samplepfp.png");
-const star = require("../assets/star.png");
-const emptyStar = require("../assets/star_unfilled.png");
-
-const c0 = require("../assets/clothing0.png");
-const c1 = require("../assets/clothing1.png");
-const c2 = require("../assets/clothing2.png");
-const c3 = require("../assets/clothing3.png");
-const c4 = require("../assets/clothing4.png");
-const c5 = require("../assets/clothing5.png");
-const c6 = require("../assets/clothing6.png");
-const c7 = require("../assets/clothing7.png");
-const c8 = require("../assets/clothing8.png");
-const c9 = require("../assets/clothing9.png");
-const c10 = require("../assets/clothing10.png");
-const c11 = require("../assets/clothing11.png");
-
-const images = [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c1, c2, c4, c7, c9, c10];
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -46,6 +25,7 @@ export default function Profile() {
             Origin: "https://cinder-server2.fly.dev/./",
           },
         });
+        console.log(response);
         let future = await response.json();
         const { owned_listings, id, username, profile_pic, phone_number, class_year, bio } = future;
 

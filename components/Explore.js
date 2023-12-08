@@ -1,15 +1,5 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
-import {
-  ImageBackground,
-  Text,
-  View,
-  Pressable,
-  useWindowDimensions,
-  Platform,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
+import { ImageBackground, Text, View, Pressable, useWindowDimensions, Platform, ActivityIndicator } from "react-native";
 import TinderCard from "react-tinder-card";
 import * as ImagePicker from "expo-image-picker";
 import { exploreStyles } from "../styles";

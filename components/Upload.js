@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ImageBackground, Text, View, Image, Pressable, Platform, Alert } from "react-native";
+import { Text, View, Image, Pressable, Platform, Alert } from "react-native";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { useNavigation } from "@react-navigation/native";
 import { Badge } from "react-native-paper";

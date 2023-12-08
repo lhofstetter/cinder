@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Text, View, Image, Pressable, Alert } from "react-native";
+import React from "react";
+import { Text, Pressable, Alert } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import Post from "./Post.js";
 import { postStyles } from "../styles";
-import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
-import * as SecureStore from "expo-secure-store";
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import * as SecureStore from 'expo-secure-store';
 
 export default function PreviewPost() {
   const route = useRoute();
