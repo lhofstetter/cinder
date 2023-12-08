@@ -1,16 +1,17 @@
 import React from "react";
-import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert} from "react-native";
+import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { LinearGradient } from 'expo-linear-gradient';
-import * as SecureStore from 'expo-secure-store';
+import { LinearGradient } from "expo-linear-gradient";
+import * as SecureStore from "expo-secure-store";
 import * as Crypto from "expo-crypto";
 
-const logo = require("../assets/white_text_logo.png")
+const logo = require("../assets/white_text_logo.png");
 
-export default function LoginScreen(){
-    const [username, setUsername] = React.useState("");
-    const [password, setPassword] = React.useState("");
-    const navigation = useNavigation();
+export default function LoginScreen() {
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const navigation = useNavigation();
+
 
     const login = async function() {
         let encrypted_password = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
@@ -94,63 +95,61 @@ export default function LoginScreen(){
     )
 }
 
-const styles = StyleSheet.create({  
-    background: {
-        height: "100%",
-        display: "flex",
-        justifyContent: "space-between",
-        padding: 20
-      },
-    mainContainer: {
-        alignItems: "center"
-    },
+const styles = StyleSheet.create({
+  background: {
+    height: "100%",
+    display: "flex",
+    justifyContent: "space-between",
+    padding: 20,
+  },
+  mainContainer: {
+    alignItems: "center",
+  },
 
-    textContainer: {
-        flexDirection: "row",
-        justifyContent: "center",
-        marginBottom: 20
-    }, 
+  textContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
 
-    titleText: {
-        fontSize: 50,
-        fontWeight: "600",
-        letterSpacing: -1,
-        color: "white",
-        marginBottom: 20
-    },
+  titleText: {
+    fontSize: 50,
+    fontWeight: "600",
+    letterSpacing: -1,
+    color: "white",
+    marginBottom: 20,
+  },
 
-    inputBox: {
-        color: "black",
-        height: 45,
-        fontSize: 20,
-        width: 300,
-        margin: 12,
-        padding: 10,
-        backgroundColor: "#F1C8FF",
-        borderRadius: 12
-    },
+  inputBox: {
+    color: "black",
+    height: 45,
+    fontSize: 20,
+    width: 300,
+    margin: 12,
+    padding: 10,
+    backgroundColor: "#F1C8FF",
+    borderRadius: 12,
+  },
 
-    loginButton: {
-        marginTop: 18,
-        width: 300,
-        backgroundColor: "#CF45FF",
-        height: 45,
-        color: "white",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 8
-    },
+  loginButton: {
+    marginTop: 18,
+    width: 300,
+    backgroundColor: "#CF45FF",
+    height: 45,
+    color: "white",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+  },
 
-    loginText: {
-        color: "white",
-        fontWeight: "700",
-        fontSize: 16,
-    },
+  loginText: {
+    color: "white",
+    fontWeight: "700",
+    fontSize: 16,
+  },
 
-    signUpText: {
-        color: "#DF85FF",
-        fontWeight: "700"
-    }
-
-    
-}); 
+  signUpText: {
+    color: "#DF85FF",
+    fontWeight: "700",
+  },
+});

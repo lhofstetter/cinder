@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { ImageBackground, Text, View, Pressable, useWindowDimensions, Platform, ActivityIndicator } from "react-native";
 import TinderCard from "react-tinder-card";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
 import { exploreStyles } from "../styles";
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from "expo-secure-store";
 import { useNavigation } from "@react-navigation/native";
 
 const alreadyRemoved = [];
@@ -24,12 +24,12 @@ const SwipeableCard = ({ character, index, swiped, outOfFrame }) => {
             let xRatio;
 
             xRatio = event.nativeEvent.pageX / width;
-            setColor([color[0], 1.0 - xRatio, "#00FF00", "Slay"]);
+            setColor([color[0], 1.0 - xRatio, "#00FF00", "Like"]);
           } else if (event.nativeEvent.pageX - color[0][0] < -50) {
             let xRatio;
 
             xRatio = 1 / (event.nativeEvent.pageX / (width / 16));
-            setColor([color[0], 1.0 - xRatio, "#FF0000", "Nay"]);
+            setColor([color[0], 1.0 - xRatio, "#FF0000", "Dislike"]);
           } else {
             setColor([color[0], 1.0, "#fff", ""]);
           }
@@ -42,15 +42,16 @@ const SwipeableCard = ({ character, index, swiped, outOfFrame }) => {
             let xRatio;
 
             xRatio = (event.nativeEvent.pageX + 100) / width;
-            setColor([color[0], 1.0 - xRatio, "#00FF00", "Slay"]);
+            setColor([color[0], 1.0 - xRatio, "#00FF00", "Like"]);
           } else if (event.nativeEvent.pageX - color[0][0] < -100) {
             // moving to the left
             let xRatio;
 
             xRatio = 1 / (event.nativeEvent.pageX / (width / 8));
-            if (xRatio == Infinity) // fixes a bug where somehow the above calculation tends toward infinity
+            if (xRatio == Infinity)
+              // fixes a bug where somehow the above calculation tends toward infinity
               xRatio = 1.0;
-            setColor([color[0], 1.0 - xRatio, "#FF0000", "Nay"]);
+            setColor([color[0], 1.0 - xRatio, "#FF0000", "Dislike"]);
           } else {
             setColor([color[0], 1.0, "#fff", ""]);
           }
@@ -69,19 +70,26 @@ const SwipeableCard = ({ character, index, swiped, outOfFrame }) => {
       <TinderCard
         onSwipe={(dir) => swiped(dir, character.listing_name.replace(" ", "_"), character.id)}
         onCardLeftScreen={() => outOfFrame(character.listing_name)}
-        preventSwipe={['up', 'down']}
+        preventSwipe={["up", "down"]}
       >
         {Platform.OS == "web" ? (
           <View style={[exploreStyles.cardWeb, { backgroundColor: color[2] }]}>
-            <ImageBackground style={[exploreStyles.cardImageWeb, { opacity: color[1] }]} source={character.image_links[0]}>
+            <ImageBackground
+              style={[exploreStyles.cardImageWeb, { opacity: color[1] }]}
+              source={character.image_links[0]}
+            >
               <Text style={exploreStyles.cardTitle}>{character.listing_name}</Text>
+              <Text style={{ shadowOpacity: 1, shadowRadius: 6 }}>{character.size}</Text>
               <Text style={exploreStyles.likeOrDislikeText}>{color[3]}</Text>
             </ImageBackground>
           </View>
         ) : (
           <View style={[exploreStyles.cardMobile, { backgroundColor: color[2] }]}>
             <Text style={exploreStyles.likeOrDislikeText}>{color[3]}</Text>
-            <ImageBackground style={[exploreStyles.cardImageMobile, { opacity: color[1] }]} source={{uri:character.image_links[0]}}>
+            <ImageBackground
+              style={[exploreStyles.cardImageMobile, { opacity: color[1] }]}
+              source={{ uri: character.image_links[0] }}
+            >
               <Text style={exploreStyles.cardTitle}>{character.listing_name}</Text>
             </ImageBackground>
           </View>
@@ -100,62 +108,84 @@ const Advanced = () => {
   const [actualRefresh, setActualRefresh] = useState(true);
 
   const navigation = useNavigation();
-  
-  useEffect(() => {
-    const getListings = async () => {
-      let temp = characters;
-      let i = begin;
-      while (temp.length < 5 && i - begin < 15) {
-        await fetch("https://cinder-server2.fly.dev/listing/" + String(i)).then(async (data) => {
-          if (data.ok) {
-            data = await data.json();
-            data['id'] = i;
-            temp.unshift(data);
-          }
-          i++;
-        });
+
+  const getListings = async () => {
+    try {
+      let cookie = await SecureStore.getItemAsync("cookie");
+      if (!cookie) {
+        console.log("no cookie");
+        return;
       }
-      setCharacters(temp);
-      setBegin(i);
+      let auth = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
+      if (!auth) {
+        console.log("no auth");
+        return;
+      }
+      const { data } = await axios.post(
+        "https://cinder-server2.fly.dev/filtered-listings",
+        {
+          sizes: [],
+          categories: [],
+          inseam_lengths: [],
+          tags: [],
+          waist_sizes: [],
+        },
+        {
+          headers: {
+            Cookie: "auth_session=" + auth,
+            Origin: "https://cinder-server2.fly.dev/./",
+          },
+        },
+      );
+      setCharacters(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
       setActualRefresh(false);
-    };
+    }
+  };
 
-    if (actualRefresh)
-      getListings();
+  useEffect(() => {
+    if (actualRefresh) getListings();
   }, []);
-
 
   const swiped = async (direction, nameToDelete, id) => {
     setLastDirection(direction);
     let cookie = await SecureStore.getItemAsync("cookie");
     let auth = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
 
-    if (direction == 'right') {
-      await fetch("https://cinder-server2.fly.dev/match/like/" + String(id), {
-        method: "POST", 
+    if (direction == "right") {
+      const response = await fetch("https://cinder-server2.fly.dev/match/like/" + String(id), {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Cookie': 'auth_session=' + auth,
-          'Origin': 'https://cinder-server2.fly.dev/./'
-        }
+          "Content-Type": "application/json",
+          Cookie: "auth_session=" + auth,
+          Origin: "https://cinder-server2.fly.dev/./",
+        },
       });
+      const data = await response.json()
+      console.log(data);
+      if (data?.matches) {
+        const {data: listingData} = await axios.get(`https://cinder-server2.fly.dev/listing/${id}`);
+        Alert.alert(`You matched with the owner of "${listingData.listing_name}"! Shoot them a message and coordiante a swap!"`)
+      }
     } else {
       await fetch("https://cinder-server2.fly.dev/match/dislike/" + String(id), {
-        method: "POST", 
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Cookie': 'auth_session=' + auth,
-          'Origin': 'https://cinder-server2.fly.dev/./'
-        }
+          "Content-Type": "application/json",
+          Cookie: "auth_session=" + auth,
+          Origin: "https://cinder-server2.fly.dev/./",
+        },
       });
     }
 
-   if (refresh % 5 == 0) {
-    setRefresh(refresh + 1);
-    setActualRefresh(true);
-   } else {
-    setRefresh(refresh + 1);
-   }
+    if (refresh % 5 == 0) {
+      setRefresh(refresh + 1);
+      setActualRefresh(true);
+    } else {
+      setRefresh(refresh + 1);
+    }
   };
 
   const outOfFrame = (id) => {
@@ -167,18 +197,27 @@ const Advanced = () => {
 
   return (
     <View style={exploreStyles.container}>
-      <Text style={exploreStyles.mobileHeader}>cindr_</Text  >
-    { characters.length === alreadyRemoved.length ? ( actualRefresh ? <View style={exploreStyles.loading}><ActivityIndicator size="large"/><Text style={exploreStyles.loadingText}>Hang on, we're getting some drip ready for you!</Text></View> : (<View style={exploreStyles.emptyCardContainer}><Text style={[exploreStyles.emptyCardTitle, {fontFamily: 'Inter'}]}>No more listings are available right now. Please try again later.</Text></View>)) : <View style={exploreStyles.cardContainer}>
-        {characters.map((character, index) => (
-          <SwipeableCard
-            character={character}
-            index={index}
-            key={index}
-            swiped={swiped}
-            outOfFrame={outOfFrame}
-          />
-        ))}
-      </View>}
+      <Text style={exploreStyles.mobileHeader}>cindr_</Text>
+      {characters.length === alreadyRemoved.length ? (
+        actualRefresh ? (
+          <View style={exploreStyles.loading}>
+            <ActivityIndicator size="large" />
+            <Text style={exploreStyles.loadingText}>Hang on, we're getting some drip ready for you!</Text>
+          </View>
+        ) : (
+          <View style={exploreStyles.emptyCardContainer}>
+            <Text style={[exploreStyles.emptyCardTitle, { fontFamily: "Inter" }]}>
+              No more listings are available right now. Please try again later.
+            </Text>
+          </View>
+        )
+      ) : (
+        <View style={exploreStyles.cardContainer}>
+          {characters.map((character, index) => (
+            <SwipeableCard character={character} index={index} key={index} swiped={swiped} outOfFrame={outOfFrame} />
+          ))}
+        </View>
+      )}
     </View>
   );
 };

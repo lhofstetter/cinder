@@ -32,53 +32,50 @@ export default function AccountCreate(){
             permission();
     }, []);
 
-    const handleSignUp = async function (){
-        if (password !== confirmPassword){
-            Alert.alert("Error", "Confirmed password does not match.");
-            return;
+
+    passwd = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
+
+    let form = new FormData();
+    result = await manipulateAsync(itemImage.uri, [], { compress: 1, format: SaveFormat.JPEG });
+    form.append("file", { uri: result.uri, type: "image/jpeg", name: itemImage.fileName });
+    form.append("username", username);
+    form.append("password", passwd);
+    form.append("phone_number", Number(phoneNumber));
+    form.append("bio", bio);
+    form.append("class_year", Number(classOf));
+    await fetch("https://cinder-server2.fly.dev/auth/signup/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      body: form,
+    }).then(
+      async (res) => {
+        await SecureStore.setItemAsync("cookie", String(res.headers["set-cookie"]));
+        navigation.navigate("App Path");
+      },
+      (e) => {
+        const error = e.response.data;
+        switch (error) {
+          case "Invalid username":
+            Alert.alert("Invalid Username", "Username must be between 5 and 30 characters.");
+            break;
+          case "Invalid password":
+            Alert.alert("Invalid Password", "Password must more than 6 characters.");
+            break;
+          // must be > 6 chars and < 255
+          case "Username already taken":
+            Alert.alert("Username Taken", "Please enter a different username. ");
+            break;
+          default:
+            Alert.alert("Error", "An unknown problem occured, please try again later.");
+            break;
         }
+      },
+    );
+  };
 
-        passwd = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
-
-        let form = new FormData();
-        result = await manipulateAsync(itemImage.uri, [], {compress:1, format:SaveFormat.JPEG});
-        form.append("file", {uri: result.uri, type:"image/jpeg", name:itemImage.fileName}); 
-        form.append("username", username);
-        form.append("password", passwd);
-        form.append("phone_number", Number(phoneNumber));
-        form.append("bio", bio);
-        form.append("class_year", Number(classOf));
-        await fetch("https://cinder-server2.fly.dev/auth/signup/", {
-            method:"POST",
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            },
-            body: form,
-        }).then(async (res) => {
-            let word = await res.text();
-            switch (word) {
-                case "Invalid username":
-                    Alert.alert("Invalid Username", "Username must be between 5 and 30 characters.");
-                    break;
-                case "Invalid password":
-                    Alert.alert("Invalid Password", "Password must more than 6 characters.");
-                    break;
-                    // must be > 6 chars and < 255
-                case "Username already taken":
-                    Alert.alert("Username Taken", "Please enter a different username. ");
-                    break;
-                case "OK":
-                    await SecureStore.setItemAsync("cookie", String(res.headers["set-cookie"]));
-                    navigation.navigate("App Path");
-                    break;
-                default:
-                    Alert.alert("Error", "An unknown problem occured, please try again later.");
-                    break;
-            }
-        });
-    }
-
-    let result;
+  let result;
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -92,15 +89,16 @@ export default function AccountCreate(){
   };
 
   const takeImage = async () => {
-      result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 1,
-      });
+    result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
 
     if (!result.canceled) {
       setItemImage(result.assets[0]);
     }
   };
+
 
   const handlePhoneNumberInput = (text) => {
     setPhoneNumber(text.replace(/\D/g, ""));
@@ -270,20 +268,77 @@ export default function AccountCreate(){
                 onPress={handleSignUp}
                 style={({pressed}) => [
                     {
-                      backgroundColor: pressed ? '#CF45FF' : '#DF85FF',
+                      options: options,
+                      cancelButtonIndex: 2,
                     },
-                    styles.saveButton,
-                  ]}
-            >
-                    <Text style={styles.saveText}>Save</Text>
-            </Pressable>
+                    (selectedIndex) => {
+                      switch (selectedIndex) {
+                        case 0:
+                          pickImage();
+                          break;
 
+                        case 1:
+                          takeImage();
+                          break;
+
+                        case 2:
+                          break;
+                      }
+                    },
+                  );
+                  break;
+                case "web":
+                  setUpload(true);
+                  break;
+
+                case "android":
+                  showActionSheetWithOptions(
+                    {
+                      options: options,
+                      cancelButtonIndex: 2,
+                    },
+                    (selectedIndex) => {
+                      switch (selectedIndex) {
+                        case 1:
+                          pickImage();
+                          break;
+
+                        case 2:
+                          takeImage();
+                          break;
+
+                        case 3:
+                          break;
+                      }
+                    },
+                  );
+                  break;
+                default:
+                  break;
+              }
+            }}
+          >
+            {itemImage == undefined ? <></> : <Image source={{ uri: itemImage.uri }} style={styles.profilePicture} />}
+          </Pressable>
         </View>
-    )
+      </View>
+
+      <Pressable
+        onPress={handleSignUp}
+        style={({ pressed }) => [
+          {
+            backgroundColor: pressed ? "#CF45FF" : "#DF85FF",
+          },
+          styles.saveButton,
+        ]}
+      >
+        <Text style={styles.saveText}>Save</Text>
+      </Pressable>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-
     container: {
         height: "100%",
         paddingHorizontal: 20,
@@ -372,3 +427,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 })
+
