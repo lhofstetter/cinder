@@ -15,7 +15,6 @@ export default function LoginScreen() {
 
     const login = async function() {
         let encrypted_password = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
-        console.log(username);
         fetch("https://cinder-server2.fly.dev/auth/login/", {
             method:"POST",
         }, {
