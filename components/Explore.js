@@ -5,6 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import { exploreStyles } from "../styles";
 import * as SecureStore from "expo-secure-store";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
 const alreadyRemoved = [];
 
@@ -112,32 +113,26 @@ const Advanced = () => {
   const getListings = async () => {
     try {
       let cookie = await SecureStore.getItemAsync("cookie");
-      if (!cookie) {
-        console.log("no cookie");
-        return;
-      }
       let auth = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
-      if (!auth) {
-        console.log("no auth");
-        return;
-      }
-      const { data } = await axios.post(
-        "https://cinder-server2.fly.dev/filtered-listings",
-        {
+
+      let data = await fetch("https://cinder-server2.fly.dev/filtered-listings/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: "auth_session=" + auth,
+          Origin: "https://cinder-server2.fly.dev/./",
+        },
+        body: JSON.stringify({
           sizes: [],
           categories: [],
           inseam_lengths: [],
-          tags: [],
-          waist_sizes: [],
-        },
-        {
-          headers: {
-            Cookie: "auth_session=" + auth,
-            Origin: "https://cinder-server2.fly.dev/./",
-          },
-        },
-      );
-      setCharacters(data);
+          tags:[], 
+          waist_sizes:[],
+        }),
+      });
+
+      let formatted_data = await data.json();
+      setCharacters(formatted_data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -163,7 +158,7 @@ const Advanced = () => {
           Origin: "https://cinder-server2.fly.dev/./",
         },
       });
-      const data = await response.json()
+      const data = await response.json();
       console.log(data);
       if (data?.matches) {
         const {data: listingData} = await axios.get(`https://cinder-server2.fly.dev/listing/${id}`);
@@ -194,7 +189,7 @@ const Advanced = () => {
     alreadyRemoved.push(id);
     setCharacters(temp);
   };
-
+  console.log(characters, alreadyRemoved);
   return (
     <View style={exploreStyles.container}>
       <Text style={exploreStyles.mobileHeader}>cindr_</Text>

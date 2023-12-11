@@ -17,18 +17,16 @@ export default function LoginScreen() {
         let encrypted_password = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
         fetch("https://cinder-server2.fly.dev/auth/login/", {
             method:"POST",
-        }, {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: {
+            body: JSON.stringify({
                 username:String(username),
                 password:String(encrypted_password),
-            }
+            })
         }).then(async (res) => {
-            let status = await res.text();
-            console.log(res);
-            switch (status) {
+          let reply = await res.text();
+            switch (reply) {
                 case "Invalid username":
                     Alert.alert("Invalid Username", "Sorry! A valid username is between 5 and 30 characters.");
                     break;
@@ -40,7 +38,8 @@ export default function LoginScreen() {
                     Alert.alert("Incorrect username or password", "Go ahead and check your spelling, then try again. If it still doesn't work, make sure you've made an account!");
                     break;
                 case "OK":
-                    await SecureStore.setItemAsync("cookie", String(res.headers["set-cookie"][0]));
+                    console.log(res.headers)
+                    await SecureStore.setItemAsync("cookie", String(res.headers['map']['set-cookie']));
                     navigation.navigate("App Path");
                     break;
                 default:
