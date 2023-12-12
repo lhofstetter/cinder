@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as SecureStore from "expo-secure-store";
 import * as Crypto from "expo-crypto";
+import * as FileSystem from 'expo-file-system';
 
 const logo = require("../assets/white_text_logo.png");
 
@@ -21,8 +22,8 @@ export default function LoginScreen() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                username:String(username),
-                password:String(encrypted_password),
+                username:username,
+                password:encrypted_password,
             })
         }).then(async (res) => {
           let reply = await res.text();
