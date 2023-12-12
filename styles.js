@@ -236,6 +236,7 @@ const exploreStyles = {
     letterSpacing: -1,
     color: "#DF85FF",
     marginBottom: 20,
+    right:"-35%"
   },
   cardContainer: {
     width: "90%",
