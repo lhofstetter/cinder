@@ -51,8 +51,6 @@ export default function Profile() {
     getUserInfo();
   }, []);
 
-  //images to be replaced with listing component probably
-
   return (
     <View>
       {user == null ? (

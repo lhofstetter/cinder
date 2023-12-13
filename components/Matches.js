@@ -15,33 +15,33 @@ export default function Matches() {
     async function retrieveMatches() {
       setIsLoading(true);
       try {
-      let cookie = await SecureStore.getItemAsync("cookie");
-      let auth = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
-      let temp = [];
+        let cookie = await SecureStore.getItemAsync("cookie");
+        let auth = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
+        let temp = [];
 
-      let results = await fetch("https://cinder-server2.fly.dev/match/", {
-        headers: {
-          "Content-Type": "application/json",
-          Cookie: "auth_session=" + auth,
-          Origin: "https://cinder-server2.fly.dev/./",
-        },
-      });
-      results = await results.json();
-
-      if (results.message != null && results.message == "You have no matches") {
-        return;
-      }
-      let users = Object.keys(results);
-      for (let i = 0; i < users.length; i++) {
-        temp.push({
-          profile: results[users[i]]["their_account_info"],
-          image: results[users[i]]["listings_you_have_liked"][0]["image_links"][0],
-          the_listing_image_of_the_listing_they_liked:
-            results[users[i]]["listings_they_have_liked"][0]["image_links"][0],
-          posts: results[users[i]]["their_account_info"]["owned_listings"],
+        let results = await fetch("https://cinder-server2.fly.dev/match/", {
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: "auth_session=" + auth,
+            Origin: "https://cinder-server2.fly.dev/./",
+          },
         });
-      }
-      setMatches(temp);
+        results = await results.json();
+
+        if (results.message != null && results.message == "You have no matches") {
+          return;
+        }
+        let users = Object.keys(results);
+        for (let i = 0; i < users.length; i++) {
+          temp.push({
+            profile: results[users[i]]["their_account_info"],
+            image: results[users[i]]["listings_you_have_liked"][0]["image_links"][0],
+            the_listing_image_of_the_listing_they_liked:
+              results[users[i]]["listings_they_have_liked"][0]["image_links"][0],
+            posts: results[users[i]]["their_account_info"]["owned_listings"],
+          });
+        }
+        setMatches(temp);
       }
       catch (error) {
         console.log(error);
