@@ -109,7 +109,6 @@ const Advanced = () => {
   const [characters, setCharacters] = useState([]);
   const [lastDirection, setLastDirection] = useState();
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
-  const [begin, setBegin] = useState(0);
   const [refresh, setRefresh] = useState(1);
   const [actualRefresh, setActualRefresh] = useState(true);
   const [settings, setSettings] = useState({visible: false});
