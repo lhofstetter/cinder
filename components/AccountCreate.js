@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useRef } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as Crypto from "expo-crypto";
 import * as SecureStore from 'expo-secure-store';
-import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert} from "react-native";
+import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert, Keyboard, ScrollView} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
@@ -104,15 +104,25 @@ export default function AccountCreate(){
   };
 
   const handlePhoneNumberInput = (text) => {
+    if (text.length === 10) /** @todo support non-US phone numbers */
+        classOfRef.current.focus();
     setPhoneNumber(text.replace(/\D/g, ""));
   }
 
   const handleYearInput = (text) => {
+    if (text.length === 4)
+        bioRef.current.focus();
     setClassOf(text.replace(/\D/g, ""));
   }
 
+  const bioRef = useRef();
+  const passwordRef = useRef();
+  const confirmPasswordRef = useRef();
+  const phoneNumberRef = useRef();
+  const classOfRef = useRef();
+
     return(
-        <View style={styles.container}>
+        <ScrollView style={styles.container} scrollEnabled={false} keyboardShouldPersistTaps={"handled"} keyboardDismissMode="onDrag">
 
 
             <View style={styles.bar}>
@@ -141,6 +151,15 @@ export default function AccountCreate(){
                         onChangeText={setUsername}
                         value={username}
                         autoCapitalize="none"
+                        enterKeyHint="next"
+                        onSubmitEditing={() => {
+                            passwordRef.current.focus();
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.nativeEvent.key === "Enter") {
+                                passwordRef.current.focus();
+                            }
+                        }}
                     />
                 </View>
                 <View style={styles.field}>
@@ -153,6 +172,16 @@ export default function AccountCreate(){
                         value={password}
                         secureTextEntry={true}
                         autoCapitalize="none"
+                        enterKeyHint="next"
+                        ref={passwordRef}
+                        onSubmitEditing={() => {
+                            confirmPasswordRef.current.focus();
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.nativeEvent.key === "Enter") {
+                                confirmPasswordRef.current.focus();
+                            }
+                        }}
                     />
                 </View>
                 <View style={styles.field}>
@@ -164,7 +193,17 @@ export default function AccountCreate(){
                         onChangeText={setConfirmPassword}
                         value={confirmPassword}
                         secureTextEntry={true}
+                        enterKeyHint="next"
                         autoCapitalize="none"
+                        ref={confirmPasswordRef}
+                        onSubmitEditing={() => {
+                            phoneNumberRef.current.focus();
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.nativeEvent.key === "Enter") {
+                                phoneNumberRef.current.focus();
+                            }
+                        }}
                     />
                 </View>
                 <View style={styles.field}>
@@ -176,6 +215,7 @@ export default function AccountCreate(){
                         onChangeText={handlePhoneNumberInput}
                         value={phoneNumber}
                         inputMode="numeric"
+                        ref={phoneNumberRef}
                     />
                 </View>
                 <View style={styles.field}>
@@ -188,6 +228,7 @@ export default function AccountCreate(){
                         value={classOf}
                         inputMode="numeric"
                         maxLength={4}
+                        ref={classOfRef}
                     />
                 </View>
                 <View style={styles.field}>
@@ -201,6 +242,13 @@ export default function AccountCreate(){
                         inputMode="text"
                         autoCapitalize="none"
                         multiline
+                        ref={bioRef}
+                        enterKeyHint="done"
+                        onKeyPress={(e) => {
+                            if (e.nativeEvent.key === "Enter") {
+                                Keyboard.dismiss();
+                            }
+                        }}
                     />
                 </View>
                 <View style={styles.field}>
@@ -279,7 +327,7 @@ export default function AccountCreate(){
                     <Text style={styles.saveText}>Save</Text>
             </Pressable>
 
-        </View>
+        </ScrollView>
     )
 }
 

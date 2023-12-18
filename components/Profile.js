@@ -12,7 +12,6 @@ export default function Profile() {
   const details = route.params;
 
   useEffect(() => {
-    console.log(details);
     async function getUserInfo() {
       if (details === undefined) {
         let cookie = await SecureStore.getItemAsync("cookie");
@@ -51,8 +50,6 @@ export default function Profile() {
 
     getUserInfo();
   }, []);
-
-  //images to be replaced with listing component probably
 
   return (
     <View>

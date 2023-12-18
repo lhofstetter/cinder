@@ -1,9 +1,10 @@
-import React from "react";
-import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert } from "react-native";
+import React, { useRef } from "react";
+import { Text, View, StyleSheet, TextInput, Pressable, Image, Alert, Keyboard } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import * as SecureStore from "expo-secure-store";
 import * as Crypto from "expo-crypto";
+import * as FileSystem from 'expo-file-system';
 
 const logo = require("../assets/white_text_logo.png");
 
@@ -14,6 +15,9 @@ export default function LoginScreen() {
 
 
     const login = async function() {
+        if (Keyboard.isVisible()) {
+          Keyboard.dismiss();
+        }
         let encrypted_password = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
         fetch("https://cinder-server2.fly.dev/auth/login/", {
             method:"POST",
@@ -21,8 +25,8 @@ export default function LoginScreen() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                username:String(username),
-                password:String(encrypted_password),
+                username:username,
+                password:encrypted_password,
             })
         }).then(async (res) => {
           let reply = await res.text();
@@ -47,8 +51,13 @@ export default function LoginScreen() {
                     break;
             }
             
+        }, (res) => {
+          if (String(res) === "TypeError: Network request failed")
+            Alert.alert("Error", "We're having trouble reaching our servers. :( Please try again later.");
         });
     };
+
+    const reference = useRef();
 
     return(
             <LinearGradient
@@ -69,6 +78,11 @@ export default function LoginScreen() {
                     placeholder="username"
                     placeholderTextColor={'#DF85FF'}
                     autoCapitalize="none"
+                    enterKeyHint="next"
+                    blurOnSubmit={false}
+                    onSubmitEditing={() => {
+                      reference.current.focus();
+                    }}
                 />
                 <TextInput 
                     style={styles.inputBox} 
@@ -78,6 +92,16 @@ export default function LoginScreen() {
                     secureTextEntry={true}
                     placeholderTextColor={'#DF85FF'}
                     autoCapitalize="none"
+                    enterKeyHint="done"
+                    ref={reference}
+                    onKeyPress={(e) => {
+                      if (e.nativeEvent.key === "Enter") {
+                        Keyboard.dismiss();
+                      }
+                    }}
+                    onSubmitEditing={() => {
+                      Keyboard.dismiss();
+                    }}
                 />
                 <Pressable style={styles.loginButton} onPress={login}>
                     <Text style={styles.loginText}>Login</Text>

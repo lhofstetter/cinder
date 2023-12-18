@@ -49,7 +49,7 @@ const shoeSizes = [
   { key: "13", value: "12.5" },
   { key: "14", value: "13" },
   { key: "15", value: "13.5" },
-  { key: "15", value: "14" },
+  { key: "16", value: "14" },
 ];
 
 const accessorySize = [
