@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { ImageBackground, Text, View, Pressable, useWindowDimensions, Platform, ActivityIndicator, Alert, Image, TextInput } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { ImageBackground, Text, View, Pressable, useWindowDimensions, Platform, ActivityIndicator, Alert, Image, TextInput, Modal, ScrollView } from "react-native";
 import { Svg, Path } from 'react-native-svg';
-import Dialog, { DialogContent } from 'react-native-popup-dialog';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import TinderCard from "react-tinder-card";
 import * as ImagePicker from "expo-image-picker";
@@ -120,6 +119,7 @@ const Advanced = () => {
     "Shoes": [true, {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"}],
     "Accessories": [true, {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"}]
   });
+  const [modalPressed, setModalPressed] = useState(false);
   const [sizes, setSizes] = useState({
     "Tops": {min: 1, max: 6, "numericalRange": [1, 6], "correspondingValues": ["XS", "S", "M", "L", "XL", "XXL"]},
     "Bottoms": {min: 1, max: 7, "numericalRange": [1, 7], "correspondingValues": ["XS", "S", "M", "L", "XL", "XXL", "3XL"]},
@@ -166,6 +166,7 @@ const Advanced = () => {
   }, []);
 
   
+  const modalRef = useRef();
 
   const swiped = async (direction, nameToDelete, id) => {
     setLastDirection(direction);
@@ -251,88 +252,6 @@ const Advanced = () => {
           </Svg>
         </Pressable>
         </View>
-      
-        <Dialog
-          visible={settings.visible}
-          onTouchOutside={() => {
-            setSettings({ visible: false });
-          }}
-        >
-          <DialogContent style={{paddingBottom:"4%"}}>
-            <Text style={{fontFamily: 'Inter', marginTop:"5%"}}>Categories</Text>
-            <View style={{display:'flex', flexDirection:'row', marginTop:"7%"}}>
-              {categories.map((category, index) => (
-                <CategoryButton label={category} key={index}/>
-              ))}
-            </View>
-            <View style={{display:'flex', flexDirection:'row'}}>
-              <Pressable onPress={() => {
-                setPressed(false);
-              }} style={{display: 'flex', flexDirection:"row", marginTop: '10%'}}>
-
-                { !pressed ? <Svg xmlns="http://www.w3.org/2000/svg" height={30} viewBox="0 -960 960 960" width={30}>
-                      <Path
-                        d="M480-280q83 0 141.5-58.5T680-480q0-83-58.5-141.5T480-680q-83 0-141.5 58.5T280-480q0 83 58.5 141.5T480-280Zm0 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
-                        fill="black" 
-                      />
-                    </Svg> : <Svg xmlns="http://www.w3.org/2000/svg" height={30} viewBox="0 -960 960 960" width={30}>
-                      <Path
-                        d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
-                        fill="black" 
-                      />
-                    </Svg>}
-                <Text style={{fontFamily: 'Inter', marginLeft: '7%', marginTop: '4%'}}>One Size</Text>
-              </Pressable>
-              <Pressable onPress={() => {
-                setPressed(true);
-                setSelectedCategories(selectedCategories);
-              }} style={{display: 'flex', flexDirection:'row', marginTop: '9.2%'}}>
-                { pressed ? <Svg xmlns="http://www.w3.org/2000/svg" height={30} viewBox="0 -960 960 960" width={30}>
-                    <Path
-                      d="M480-280q83 0 141.5-58.5T680-480q0-83-58.5-141.5T480-680q-83 0-141.5 58.5T280-480q0 83 58.5 141.5T480-280Zm0 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
-                      fill="black" 
-                    />
-                  </Svg> : <Svg xmlns="http://www.w3.org/2000/svg" height={30} viewBox="0 -960 960 960" width={30}>
-                      <Path
-                        d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
-                        fill="black" 
-                      />
-                    </Svg>}
-                <Text style={{fontFamily: 'Inter', marginLeft: '7%', marginTop: '5%'}}>Many Sizes</Text>
-              </Pressable>
-            </View>
-            <View style={{display:"flex", flexDirection:'column'}}>
-              {selectedCategories.Tops[0] && pressed ? <MultiSlider
-                      onValuesChangeStart={disableScroll}
-                      onValuesChangeFinish={enableScroll}
-                      values={sizes.Tops.numericalRange}
-                      onValuesChange={(newValues) => {
-                        sizes.Tops.numericalRange = newValues;
-                        setSizes(sizes);
-                      }}
-                      smoothSnapped={true}
-                      step={1}
-                      min={sizes.Tops.min}
-                      max={sizes.Tops.max - 1}
-                      enableLabel={true}
-                      showSteps={true}
-                      showStepsLabels={true}
-                      selectedStyle={{backgroundColor: "#DF85FF"}}
-                      customLabel={() => (
-                        <View style={{marginTop:"5%", marginLeft:"2%", display:"flex", flexDirection:"row"}}><Text style={{fontFamily: "Inter"}}>Top Sizes: {sizes.Tops.correspondingValues[sizes.Tops.numericalRange[0]]} - {sizes.Tops.correspondingValues[sizes.Tops.numericalRange[1]]}</Text></View>
-                      )}
-                      stepsAs={[{
-                        index:0,
-                        stepLabel: "XS",
-                      }, {
-                        index:sizes.Tops.max - 1,
-                        stepLabel: "XXL",
-                      }]}
-                      />: <></>}
-            </View>
-          </DialogContent>
-        </Dialog>
-      
       {characters.length === alreadyRemoved.length ? (
         actualRefresh ? (
           <View style={exploreStyles.loading}>
@@ -353,6 +272,96 @@ const Advanced = () => {
           ))}
         </View>
       )}
+        <View>
+            
+            <Modal
+              visible={settings.visible}
+              transparent={true}
+              animationType="slide"
+              ref={modalRef}
+            >
+              <View style={{backgroundColor:'white', position:'absolute', display:'flex', flexDirection:'column', top:'30%', left:'6%', padding:20, borderRadius:20}}>
+                <Text style={{fontFamily: 'Inter', marginTop:"5%"}}>Categories</Text>
+                <View style={{display:'flex', flexDirection:'row', marginTop:"7%"}}>
+                  {categories.map((category, index) => (
+                    <CategoryButton label={category} key={index}/>
+                  ))}
+                </View>
+                <View style={{display:'flex', flexDirection:'row'}}>
+                  <Pressable onPress={() => {
+                    setPressed(false);
+                  }} style={{display: 'flex', flexDirection:"row", marginTop: '10%'}}>
+
+                    { !pressed ? <Svg xmlns="http://www.w3.org/2000/svg" height={30} viewBox="0 -960 960 960" width={30}>
+                          <Path
+                            d="M480-280q83 0 141.5-58.5T680-480q0-83-58.5-141.5T480-680q-83 0-141.5 58.5T280-480q0 83 58.5 141.5T480-280Zm0 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                            fill="black" 
+                          />
+                        </Svg> : <Svg xmlns="http://www.w3.org/2000/svg" height={30} viewBox="0 -960 960 960" width={30}>
+                          <Path
+                            d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                            fill="black" 
+                          />
+                        </Svg>}
+                    <Text style={{fontFamily: 'Inter', marginLeft: '7%', marginTop: '4%'}}>One Size</Text>
+                  </Pressable>
+                  <Pressable onPress={() => {
+                    setPressed(true);
+                    setSelectedCategories(selectedCategories);
+                  }} style={{display: 'flex', flexDirection:'row', marginTop: '9.2%'}}>
+                    { pressed ? <Svg xmlns="http://www.w3.org/2000/svg" height={30} viewBox="0 -960 960 960" width={30}>
+                        <Path
+                          d="M480-280q83 0 141.5-58.5T680-480q0-83-58.5-141.5T480-680q-83 0-141.5 58.5T280-480q0 83 58.5 141.5T480-280Zm0 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                          fill="black" 
+                        />
+                      </Svg> : <Svg xmlns="http://www.w3.org/2000/svg" height={30} viewBox="0 -960 960 960" width={30}>
+                          <Path
+                            d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                            fill="black" 
+                          />
+                        </Svg>}
+                    <Text style={{fontFamily: 'Inter', marginLeft: '7%', marginTop: '5%'}}>Many Sizes</Text>
+                  </Pressable>
+                </View>
+                <View style={{display:"flex", flexDirection:'column'}}>
+                  {selectedCategories.Tops[0]}
+                  {selectedCategories.Tops[0] && pressed ? <MultiSlider
+                          onValuesChangeStart={disableScroll}
+                          onValuesChangeFinish={enableScroll}
+                          values={sizes.Tops.numericalRange}
+                          onValuesChange={(newValues) => {
+                            sizes.Tops.numericalRange = newValues;
+                            setSizes(sizes);
+                          }}
+                          smoothSnapped={true}
+                          step={1}
+                          min={sizes.Tops.min}
+                          max={sizes.Tops.max - 1}
+                          enableLabel={true}
+                          showSteps={true}
+                          showStepsLabels={true}
+                          selectedStyle={{backgroundColor: "#DF85FF"}}
+                          customLabel={() => (
+                            <View style={{marginTop:"5%", marginLeft:"2%", display:"flex", flexDirection:"row"}}><Text style={{fontFamily: "Inter"}}>Top Sizes: {sizes.Tops.correspondingValues[sizes.Tops.numericalRange[0]]} - {sizes.Tops.correspondingValues[sizes.Tops.numericalRange[1]]}</Text></View>
+                          )}
+                          stepsAs={[{
+                            index:0,
+                            stepLabel: "XS",
+                          }, {
+                            index:sizes.Tops.max - 1,
+                            stepLabel: "XXL",
+                          }]}
+                          />: <></>}
+                </View>
+                <Pressable onPress={() => {
+                    setSettings({visible: false});
+                }} style={{marginLeft: "25%", borderColor:"#DF85FF", backgroundColor:"#DF85FF", borderWidth:1, width:"50%", borderRadius: 20, marginTop:"5%", display:"flex", alignItems:"center", alignContent:"center" }}>
+                  <Text style={{color:"white", paddingTop:"5%", paddingBottom:"5%"}}>Save</Text>
+                </Pressable>
+                </View>
+                
+            </Modal>
+          </View>
     </View>
   );
 };
