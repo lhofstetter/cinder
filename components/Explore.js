@@ -119,7 +119,6 @@ const Advanced = () => {
     "Shoes": [true, {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"}],
     "Accessories": [true, {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"}]
   });
-  const [modalPressed, setModalPressed] = useState(false);
   const [sizes, setSizes] = useState({
     "Tops": {min: 1, max: 6, "numericalRange": [1, 6], "correspondingValues": ["XS", "S", "M", "L", "XL", "XXL"]},
     "Bottoms": {min: 1, max: 7, "numericalRange": [1, 7], "correspondingValues": ["XS", "S", "M", "L", "XL", "XXL", "3XL"]},
@@ -220,15 +219,19 @@ const Advanced = () => {
       <View style={style}>
         <Pressable onPress={() => {
           if (!selectedCategories[label][0]) {
-            selectedCategories[label][0] = !selectedCategories[label][0];
-            selectedCategories[label][1] = {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"};
-            setSelectedCategories(selectedCategories);
-            setStyle(selectedCategories[label][1]);
+            let temp = Object.create(selectedCategories);
+            temp[label][0] = !selectedCategories[label][0];
+            temp[label][1] = {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"};
+            //selectedCategories[label][0] = !selectedCategories[label][0];
+            //selectedCategories[label][1] = {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"};
+            setSelectedCategories(temp);
+            setStyle(temp[label][1]);
           } else {
-            selectedCategories[label][0] = !selectedCategories[label][0];
-            selectedCategories[label][1] = {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:undefined};
-            setSelectedCategories(selectedCategories);
-            setStyle(selectedCategories[label][1]);
+            let temp = Object.create(selectedCategories);
+            temp[label][0] = !selectedCategories[label][0];
+            temp[label][1] = {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:undefined};
+            setSelectedCategories(temp);
+            setStyle(temp[label][1]);
           }
         }} style={{marginLeft:"2%"}}>
             <Text style={{fontFamily: 'Inter', padding:"2%"}}>{label}</Text>
@@ -273,7 +276,6 @@ const Advanced = () => {
         </View>
       )}
         <View>
-            
             <Modal
               visible={settings.visible}
               transparent={true}
@@ -324,14 +326,14 @@ const Advanced = () => {
                   </Pressable>
                 </View>
                 <View style={{display:"flex", flexDirection:'column'}}>
-                  {selectedCategories.Tops[0]}
-                  {selectedCategories.Tops[0] && pressed ? <MultiSlider
+                  {(selectedCategories.Tops[0] && pressed) ? <MultiSlider
                           onValuesChangeStart={disableScroll}
                           onValuesChangeFinish={enableScroll}
                           values={sizes.Tops.numericalRange}
                           onValuesChange={(newValues) => {
-                            sizes.Tops.numericalRange = newValues;
-                            setSizes(sizes);
+                            let temp = Object.create(sizes);
+                            temp.Tops.numericalRange = newValues;
+                            setSizes(temp);
                           }}
                           smoothSnapped={true}
                           step={1}
