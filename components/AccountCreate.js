@@ -21,7 +21,7 @@ export default function AccountCreate(){
     const [itemImage, setItemImage] = React.useState();
 
     const navigation = useNavigation();
-    let passwd;
+    let passwd, loweredUsername;
 
     React.useEffect(() => {
         const permission = async () => {
@@ -39,11 +39,12 @@ export default function AccountCreate(){
         }
 
         passwd = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
+        loweredUsername = username.toLowerCase();
 
         let form = new FormData();
         result = await manipulateAsync(itemImage.uri, [], {compress:1, format:SaveFormat.JPEG});
         form.append("file", {uri: result.uri, type:"image/jpeg", name:itemImage.fileName}); 
-        form.append("username", username);
+        form.append("username", loweredUsername);
         form.append("password", passwd);
         form.append("phone_number", Number(phoneNumber));
         form.append("bio", bio);
@@ -123,8 +124,6 @@ export default function AccountCreate(){
 
     return(
         <ScrollView style={styles.container} scrollEnabled={false} keyboardShouldPersistTaps={"handled"} keyboardDismissMode="onDrag">
-
-
             <View style={styles.bar}>
             <Pressable onPress={() => {
                 navigation.goBack();

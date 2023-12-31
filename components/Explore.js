@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ImageBackground, Text, View, Pressable, useWindowDimensions, Platform, ActivityIndicator, Alert, Image, TextInput, Modal, ScrollView } from "react-native";
 import { Svg, Path } from 'react-native-svg';
-import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import TinderCard from "react-tinder-card";
 import * as ImagePicker from "expo-image-picker";
 import { exploreStyles } from "../styles";
@@ -12,6 +11,12 @@ import axios from "axios";
 
 const alreadyRemoved = [];
 const categories = ["Tops", "Bottoms", "Shoes", "Accessories"];
+const validSizes = {
+  "Tops": ["XS", "S", "M", "L", "XL", "XXL"],
+  "Bottoms": ["XS", "S", "M", "L", "XL", "XXL", "3XL"],
+  "Shoes": ["6", "6.5", "7", "7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12", "12.5", "13", "13.5", "14"],
+  "Accessories": ["S", "M", "L"]
+}
 
 const SwipeableCard = ({ character, index, swiped, outOfFrame }) => {
   const [color, setColor] = useState([null, 1.0, "#fff", ""]);
@@ -112,23 +117,24 @@ const Advanced = () => {
   const [actualRefresh, setActualRefresh] = useState(true);
   const [settings, setSettings] = useState({visible: false});
   const [pressed, setPressed] = useState(false);
-  const [state, setState] = useState({ scrollEnabled: false});
   const [selectedCategories, setSelectedCategories] = useState({
     "Tops": [true, {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"}],
     "Bottoms": [true, {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"}],
     "Shoes": [true, {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"}],
     "Accessories": [true, {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"}]
   });
+
   const [sizes, setSizes] = useState({
     "Tops": {min: 1, max: 6, "numericalRange": [1, 6], "correspondingValues": ["XS", "S", "M", "L", "XL", "XXL"]},
     "Bottoms": {min: 1, max: 7, "numericalRange": [1, 7], "correspondingValues": ["XS", "S", "M", "L", "XL", "XXL", "3XL"]},
     "Shoes": {min: 1, max: 17, "numericalRange": [1, 17], "correspondingValues": ["6", "6.5", "7", "7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12", "12.5", "13", "13.5", "14"]},
     "Accessories": {min: 1, max: 3, "numericalRange": [1, 3], "correspondingValues": ["S", "M", "L"]},
   });
+  const [topSizes, setTopSizes] = useState(["XS", "XXL"]);
+  const [bottomSizes, setBottomSizes] = useState(["XS", "3XL"]);
+  const [sizeStyle, setSizeStyle] = useState();
 
-  const navigation = useNavigation();
-  const enableScroll = () => setState({ scrollEnabled: true });
-  const disableScroll = () => setState({ scrollEnabled: false });
+
 
   const getListings = async () => {
     try {
@@ -212,6 +218,22 @@ const Advanced = () => {
     setCharacters(temp);
   };
 
+  const handleMinChangeSizes = (size) => {
+    setTopSizes([size, topSizes[1]]);
+  }
+
+  const handleMaxChangeSizes = (size) => {
+    setTopSizes([topSizes[0], size]);
+  }
+
+  const handleMinChangeSizesBottoms = (size) => {
+    setBottomSizes([size, bottomSizes[1]]);
+  }
+
+  const handleMaxChangeSizesBottoms = (size) => {
+    setBottomSizes([bottomSizes[0], size]);
+  }
+
   function CategoryButton ({ label }) {
     const [style, setStyle] = useState(selectedCategories[label][1]);
 
@@ -222,8 +244,6 @@ const Advanced = () => {
             let temp = Object.create(selectedCategories);
             temp[label][0] = !selectedCategories[label][0];
             temp[label][1] = {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"};
-            //selectedCategories[label][0] = !selectedCategories[label][0];
-            //selectedCategories[label][1] = {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"};
             setSelectedCategories(temp);
             setStyle(temp[label][1]);
           } else {
@@ -239,6 +259,11 @@ const Advanced = () => {
       </View>
     );
   }
+
+  const maxSizeRef = useRef();
+  const minTopSizeRef = useRef();
+  const maxSizeRefBot = useRef();
+  const minBotSizeRef = useRef();
 
   return (
     <View style={exploreStyles.container}>
@@ -282,81 +307,61 @@ const Advanced = () => {
               animationType="slide"
               ref={modalRef}
             >
-              <View style={{backgroundColor:'white', position:'absolute', display:'flex', flexDirection:'column', top:'30%', left:'6%', padding:20, borderRadius:20}}>
+              <View style={{backgroundColor:'white', position:'absolute', display:'flex', flexDirection:'column', top:'20%', left:'6%', padding:20, borderRadius:20}}>
                 <Text style={{fontFamily: 'Inter', marginTop:"5%"}}>Categories</Text>
                 <View style={{display:'flex', flexDirection:'row', marginTop:"7%"}}>
                   {categories.map((category, index) => (
                     <CategoryButton label={category} key={index}/>
                   ))}
                 </View>
-                <View style={{display:'flex', flexDirection:'row'}}>
-                  <Pressable onPress={() => {
-                    setPressed(false);
-                  }} style={{display: 'flex', flexDirection:"row", marginTop: '10%'}}>
-
-                    { !pressed ? <Svg xmlns="http://www.w3.org/2000/svg" height={30} viewBox="0 -960 960 960" width={30}>
-                          <Path
-                            d="M480-280q83 0 141.5-58.5T680-480q0-83-58.5-141.5T480-680q-83 0-141.5 58.5T280-480q0 83 58.5 141.5T480-280Zm0 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
-                            fill="black" 
-                          />
-                        </Svg> : <Svg xmlns="http://www.w3.org/2000/svg" height={30} viewBox="0 -960 960 960" width={30}>
-                          <Path
-                            d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
-                            fill="black" 
-                          />
-                        </Svg>}
-                    <Text style={{fontFamily: 'Inter', marginLeft: '7%', marginTop: '4%'}}>One Size</Text>
-                  </Pressable>
-                  <Pressable onPress={() => {
-                    setPressed(true);
-                    setSelectedCategories(selectedCategories);
-                  }} style={{display: 'flex', flexDirection:'row', marginTop: '9.2%'}}>
-                    { pressed ? <Svg xmlns="http://www.w3.org/2000/svg" height={30} viewBox="0 -960 960 960" width={30}>
-                        <Path
-                          d="M480-280q83 0 141.5-58.5T680-480q0-83-58.5-141.5T480-680q-83 0-141.5 58.5T280-480q0 83 58.5 141.5T480-280Zm0 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
-                          fill="black" 
-                        />
-                      </Svg> : <Svg xmlns="http://www.w3.org/2000/svg" height={30} viewBox="0 -960 960 960" width={30}>
-                          <Path
-                            d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
-                            fill="black" 
-                          />
-                        </Svg>}
-                    <Text style={{fontFamily: 'Inter', marginLeft: '7%', marginTop: '5%'}}>Many Sizes</Text>
-                  </Pressable>
-                </View>
-                <View style={{display:"flex", flexDirection:'column'}}>
-                  {(selectedCategories.Tops[0] && pressed) ? <MultiSlider
-                          onValuesChangeStart={disableScroll}
-                          onValuesChangeFinish={enableScroll}
-                          values={sizes.Tops.numericalRange}
-                          onValuesChange={(newValues) => {
-                            let temp = Object.create(sizes);
-                            temp.Tops.numericalRange = newValues;
-                            setSizes(temp);
-                          }}
-                          smoothSnapped={true}
-                          step={1}
-                          min={sizes.Tops.min}
-                          max={sizes.Tops.max - 1}
-                          enableLabel={true}
-                          showSteps={true}
-                          showStepsLabels={true}
-                          selectedStyle={{backgroundColor: "#DF85FF"}}
-                          customLabel={() => (
-                            <View style={{marginTop:"5%", marginLeft:"2%", display:"flex", flexDirection:"row"}}><Text style={{fontFamily: "Inter"}}>Top Sizes: {sizes.Tops.correspondingValues[sizes.Tops.numericalRange[0]]} - {sizes.Tops.correspondingValues[sizes.Tops.numericalRange[1]]}</Text></View>
-                          )}
-                          stepsAs={[{
-                            index:0,
-                            stepLabel: "XS",
-                          }, {
-                            index:sizes.Tops.max - 1,
-                            stepLabel: "XXL",
-                          }]}
-                          />: <></>}
+                <View style={{display:"flex", flexDirection:'column', marginLeft:"5%"}}>
+                  { selectedCategories['Tops'][0] ?
+                  <View style={{display:"flex", flexDirection:'row'}}>
+                    <Text style={{fontFamily:'Inter', marginTop:'7%', fontSize: 15}}>Top Sizes: </Text>
+                    <TextInput value={topSizes[0]} onChangeText={handleMinChangeSizes} autoCapitalize="characters" ref={minTopSizeRef} onSubmitEditing={() => {
+                      maxSizeRef.current.focus();
+                    }} enterKeyHint="next" style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} maxLength={3}/>
+                    <Text style={{fontFamily:'Inter', marginTop:'5%'}}> - </Text>
+                    <TextInput value={topSizes[1]} onChangeText={handleMaxChangeSizes} autoCapitalize="characters" ref={maxSizeRef} style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} enterKeyHint="done" maxLength={3} />
+                  </View> : <></>}
+                  { selectedCategories['Bottoms'][0] ? <View style={{display:"flex", flexDirection:'row'}}>
+                    <Text style={{fontFamily:'Inter', marginTop:'7%', fontSize: 15}}>Bottom Sizes: </Text>
+                    <TextInput value={bottomSizes[0]} onChangeText={handleMinChangeSizesBottoms} ref={minBotSizeRef} autoCapitalize="characters" onSubmitEditing={() => {
+                      if (validSizes['Bottoms'].includes(bottomSizes[0])) {
+                        maxSizeRefBot.current.focus();
+                      } else {
+                        Alert.alert("Invalid size", "Please enter a valid minimum size!", [{text: "Ok", onPress: () => {
+                          minBotSizeRef.current.focus();
+                        }}]);
+                      }
+                    }} enterKeyHint="next" style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} maxLength={3}/>
+                    <Text style={{fontFamily:'Inter', marginTop:'5%'}}> - </Text>
+                    <TextInput value={bottomSizes[1]} onChangeText={handleMaxChangeSizesBottoms} autoCapitalize="characters" ref={maxSizeRefBot} style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} enterKeyHint="done" maxLength={3} />
+                  </View> : <></>}
                 </View>
                 <Pressable onPress={() => {
-                    setSettings({visible: false});
+                    if (validSizes['Bottoms'].includes(bottomSizes[0]) && validSizes['Tops'].includes(topSizes[0]))
+                      setSettings({visible: false});
+                    else {
+                      if (!validSizes['Bottoms'].includes(bottomSizes[0])) {
+                        Alert.alert("Invalid size", "Please enter a valid minimum size for bottoms!", [{text: "Ok", onPress: () => {
+                          minBotSizeRef.current.focus();
+                        }}]);
+                      } else if (!validSizes['Bottoms'].includes(bottomSizes[1])) {
+                        Alert.alert("Invalid size", "Please enter a valid maximum size for bottoms!", [{text: "Ok", onPress: () => {
+                          maxSizeRefBot.current.focus();
+                        }}]);
+                      } else if (!validSizes['Tops'].includes(topSizes[0])) {
+                        Alert.alert("Invalid size", "Please enter a valid minimum size for tops!", [{text: "Ok", onPress: () => {
+                          minTopSizeRef.current.focus();
+                        }}]);
+                      } else if (!validSizes['Tops'].includes(topSizes[1])) {
+                        Alert.alert("Invalid size", "Please enter a valid maximum size for tops!", [{text: "Ok", onPress: () => {
+                          maxSizeRef.current.focus();
+                        }}]);
+                      }
+                    }
+
                 }} style={{marginLeft: "25%", borderColor:"#DF85FF", backgroundColor:"#DF85FF", borderWidth:1, width:"50%", borderRadius: 20, marginTop:"5%", display:"flex", alignItems:"center", alignContent:"center" }}>
                   <Text style={{color:"white", paddingTop:"5%", paddingBottom:"5%"}}>Save</Text>
                 </Pressable>

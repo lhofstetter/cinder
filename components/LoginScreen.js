@@ -15,6 +15,7 @@ export default function LoginScreen() {
 
 
     const login = async function() {
+        let loweredUsername = username.toLowerCase();
         if (Keyboard.isVisible()) {
           Keyboard.dismiss();
         }
@@ -25,7 +26,7 @@ export default function LoginScreen() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                username:username,
+                username:loweredUsername,
                 password:encrypted_password,
             })
         }).then(async (res) => {
@@ -42,7 +43,6 @@ export default function LoginScreen() {
                     Alert.alert("Incorrect username or password", "Go ahead and check your spelling, then try again. If it still doesn't work, make sure you've made an account!");
                     break;
                 case "OK":
-                    console.log(res.headers)
                     await SecureStore.setItemAsync("cookie", String(res.headers['map']['set-cookie']));
                     navigation.navigate("App Path");
                     break;

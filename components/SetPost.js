@@ -156,7 +156,7 @@ export default function DetailsPost() {
         onChangeText={setText}
         value={text}
         style={currentStyle}
-      ></TextInput>
+      />
       <PreviewImage imageSrc={image.images[0].uri} style={editStyles.previewImageMobile} />
       <TextInput
         multiline
@@ -165,7 +165,7 @@ export default function DetailsPost() {
         onChangeText={setDescription}
         value={description}
         style={descriptionStyle}
-      ></TextInput>
+      />
       <View style={editStyles.categoryListContainer}>
         <Text style={editStyles.categoryListLabel}>Clothing Type</Text>
         <SelectList
