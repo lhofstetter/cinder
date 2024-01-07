@@ -337,14 +337,17 @@ export default function App() {
 
   async function getLoginInfo() {
     let cookie = await SecureStore.getItemAsync("cookie");
-    if (cookie != null) {
+    if (cookie !== null && cookie !== undefined) {
+      if (cookie === "undefined") {
+        setLogin("Login Path");
+        return;
+      }
       let exp_date = new Date(cookie.split(";")[2].split("=")[1]).getTime();
       if (exp_date - new Date().getTime() > 0) {
         setLogin("App Path");
         return;
       }
     }
-    SecureStore.deleteItemAsync("cookie");
     setLogin("Login Path");
   }
 

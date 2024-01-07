@@ -124,22 +124,112 @@ const Advanced = () => {
     "Accessories": [true, {borderStyle:"solid", borderRadius:100, borderColor:'black', borderWidth:1, display:'flex', alignItems:'center', marginLeft:"2%", backgroundColor:"#DF85FF"}]
   });
 
-  const [sizes, setSizes] = useState({
-    "Tops": {min: 1, max: 6, "numericalRange": [1, 6], "correspondingValues": ["XS", "S", "M", "L", "XL", "XXL"]},
-    "Bottoms": {min: 1, max: 7, "numericalRange": [1, 7], "correspondingValues": ["XS", "S", "M", "L", "XL", "XXL", "3XL"]},
-    "Shoes": {min: 1, max: 17, "numericalRange": [1, 17], "correspondingValues": ["6", "6.5", "7", "7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12", "12.5", "13", "13.5", "14"]},
-    "Accessories": {min: 1, max: 3, "numericalRange": [1, 3], "correspondingValues": ["S", "M", "L"]},
-  });
   const [topSizes, setTopSizes] = useState(["XS", "XXL"]);
   const [bottomSizes, setBottomSizes] = useState(["XS", "3XL"]);
-  const [sizeStyle, setSizeStyle] = useState();
+  const [shoeSizes, setShoeSizes] = useState(["6", "14"]);
+  const [accessorySizes, setAccessorySizes] = useState(["S", "L"]);
 
+  const [fetchedShoes, setFetchedShoes] = useState([]);
+  const [fetchedBottoms, setFetchedBottoms] = useState([]);
+  const [fetchedTops, setFetchedTops] = useState([]);
+  const [fetchedAccessory, setFetchedAccessory] = useState([]);
 
 
   const getListings = async () => {
+    let shoe = fetchedShoes;
+    let bottom = fetchedBottoms;
+    let top = fetchedTops;
+    let accessory = fetchedAccessory;
+
+    let i, min, max;
+    
+    min = validSizes.Shoes.indexOf(shoeSizes[0]);
+    max = validSizes.Shoes.indexOf(shoeSizes[1]);
+    for (i = 0; i < validSizes.Shoes.length; i++) {
+      if (i >= min && i <= max) {
+        if (!shoe.includes(validSizes.Shoes[i]))
+          shoe.push(validSizes.Shoes[i]);
+      } else {
+        shoe = shoe.filter((item) => item != shoe[i]);
+      } 
+    }
+    setFetchedShoes(shoe);
+
+    min = validSizes.Tops.indexOf(topSizes[0]);
+    max = validSizes.Tops.indexOf(topSizes[1]);
+    for (i = 0; i < validSizes.Tops.length; i++) {
+      if (i >= min && i <= max) {
+        if (!top.includes(validSizes.Tops[i]))
+          top.push(validSizes.Tops[i]);
+      } else {
+        top = top.filter((item) => item != top[i]);
+      } 
+    }
+    setFetchedTops(top);
+
+    min = validSizes.Bottoms.indexOf(bottomSizes[0]);
+    max = validSizes.Bottoms.indexOf(bottomSizes[1]);
+    for (i = 0; i < validSizes.Bottoms.length; i++) {
+      if (i >= min && i <= max) {
+        if (!bottom.includes(validSizes.Bottoms[i]))
+          bottom.push(validSizes.Bottoms[i]);
+      } else {
+        bottom = bottom.filter((item) => item != bottom[i]);
+      } 
+    }
+    setFetchedBottoms(bottom);
+
+    min = validSizes.Accessories.indexOf(accessorySizes[0]);
+    max = validSizes.Accessories.indexOf(accessorySizes[1]);
+    for (i = 0; i < validSizes.Accessories.length; i++) {
+      if (i >= min && i <= max) {
+        if (!accessory.includes(validSizes.Accessories[i]))
+          accessory.push(validSizes.Accessories[i]);
+      } else {
+        accessory = accessory.filter((item) => item != accessory[i]);
+      } 
+    }
+    setFetchedAccessory(accessory);
+
     try {
       let cookie = await SecureStore.getItemAsync("cookie");
       let auth = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
+      let size = [];
+      let category = [];
+      /*
+      if (selectedCategories.Tops[0]) {
+        for (let i = 0; i < top.length; i++) {
+          if (size.indexOf(top[i]) === -1)
+            size.push(top[i]);
+        }
+        category.push("top");
+      }
+
+      if (selectedCategories.Bottoms[0]) {
+        for (let i = 0; i < bottom.length; i++) {
+          if (size.indexOf(bottom[i]) === -1)
+            size.push(bottom[i]);
+        }
+        category.push("bottom")
+      }
+      /*
+      if (selectedCategories.Shoes[0]) {
+        for (let i = 0; i < shoe.length; i++) {
+          if (size.indexOf(shoe[i]) === -1)
+            size.push(shoe[i]);
+        }
+        category.push("shoes");
+      }
+      
+      if (selectedCategories.Accessories[0]) {
+        for (let i = 0; i < accessory.length; i++) {
+          if (size.indexOf(accessory[i]) === -1)
+            size.push(accessory[i]);
+        }
+        category.push("accessory");
+      }
+      console.log(size, category);
+      */
 
       let data = await fetch("https://cinder-server2.fly.dev/filtered-listings/", {
         method: "POST",
@@ -149,15 +239,15 @@ const Advanced = () => {
           Origin: "https://cinder-server2.fly.dev/./",
         },
         body: JSON.stringify({
-          sizes: [],
-          categories: [],
+          sizes: size,
+          categories: category,
           inseam_lengths: [],
           tags:[], 
           waist_sizes:[],
         }),
       });
-
       let formatted_data = await data.json();
+      console.log(formatted_data);
       setCharacters(formatted_data);
     } catch (error) {
       console.log(error);
@@ -234,6 +324,22 @@ const Advanced = () => {
     setBottomSizes([bottomSizes[0], size]);
   }
 
+  const handleMinChangeShoeSizes = (size) => {
+    setShoeSizes([size, shoeSizes[1]]);
+  }
+
+  const handleMaxChangeShoesSizes = (size) => {
+    setShoeSizes([shoeSizes[0], size]);
+  }
+
+  const handleMinChangeAccessorySizes = (size) => {
+    setAccessorySizes([size, accessorySizes[1]]);
+  }
+
+  const handleMaxChangeAccessorySizes = (size) => {
+    setAccessorySizes([accessorySizes[0], size]);
+  }
+
   function CategoryButton ({ label }) {
     const [style, setStyle] = useState(selectedCategories[label][1]);
 
@@ -264,6 +370,10 @@ const Advanced = () => {
   const minTopSizeRef = useRef();
   const maxSizeRefBot = useRef();
   const minBotSizeRef = useRef();
+  const minShoeSizeRef = useRef();
+  const maxShoeSizeRef = useRef();
+  const minAccessorySizeRef = useRef();
+  const maxAccessorySizeRef = useRef();
 
   return (
     <View style={exploreStyles.container}>
@@ -319,10 +429,32 @@ const Advanced = () => {
                   <View style={{display:"flex", flexDirection:'row'}}>
                     <Text style={{fontFamily:'Inter', marginTop:'7%', fontSize: 15}}>Top Sizes: </Text>
                     <TextInput value={topSizes[0]} onChangeText={handleMinChangeSizes} autoCapitalize="characters" ref={minTopSizeRef} onSubmitEditing={() => {
-                      maxSizeRef.current.focus();
+                      if (validSizes.Tops.includes(topSizes[0]))
+                        minTopSizeRef.current.focus();
+                      else
+                        Alert.alert("Invalid size", "Please enter a valid minimum size!", [{text: "Ok", onPress: () => {
+                          minTopSizeRef.current.focus();
+                        }}]);
+                    }} onEndEditing={() => {
+                      if (validSizes.Tops.includes(topSizes[0]))
+                        minTopSizeRef.current.focus();
+                      else
+                        Alert.alert("Invalid size", "Please enter a valid minimum size!", [{text: "Ok", onPress: () => {
+                          minTopSizeRef.current.focus();
+                        }}]);
                     }} enterKeyHint="next" style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} maxLength={3}/>
                     <Text style={{fontFamily:'Inter', marginTop:'5%'}}> - </Text>
-                    <TextInput value={topSizes[1]} onChangeText={handleMaxChangeSizes} autoCapitalize="characters" ref={maxSizeRef} style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} enterKeyHint="done" maxLength={3} />
+                    <TextInput value={topSizes[1]} onChangeText={handleMaxChangeSizes} autoCapitalize="characters" ref={maxSizeRef} style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} enterKeyHint="done" maxLength={3} onEndEditing={() => {
+                      if (!validSizes.Tops.includes(topSizes[1]))
+                        Alert.alert("Invalid size", "Please enter a valid maximum size!", [{text: "Ok", onPress: () => {
+                          maxSizeRef.current.focus();
+                        }}]);
+                    }} onSubmitEditing={() => {
+                      if (!validSizes.Tops.includes(topSizes[1]))
+                        Alert.alert("Invalid size", "Please enter a valid maximum size!", [{text: "Ok", onPress: () => {
+                          maxSizeRef.current.focus();
+                        }}]);
+                    }}/>
                   </View> : <></>}
                   { selectedCategories['Bottoms'][0] ? <View style={{display:"flex", flexDirection:'row'}}>
                     <Text style={{fontFamily:'Inter', marginTop:'7%', fontSize: 15}}>Bottom Sizes: </Text>
@@ -334,32 +466,107 @@ const Advanced = () => {
                           minBotSizeRef.current.focus();
                         }}]);
                       }
+                    }} onEndEditing={() => {
+                      if (validSizes['Bottoms'].includes(bottomSizes[0])) {
+                        maxSizeRefBot.current.focus();
+                      } else {
+                        Alert.alert("Invalid size", "Please enter a valid minimum size!", [{text: "Ok", onPress: () => {
+                          minBotSizeRef.current.focus();
+                        }}]);
+                      }
                     }} enterKeyHint="next" style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} maxLength={3}/>
                     <Text style={{fontFamily:'Inter', marginTop:'5%'}}> - </Text>
-                    <TextInput value={bottomSizes[1]} onChangeText={handleMaxChangeSizesBottoms} autoCapitalize="characters" ref={maxSizeRefBot} style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} enterKeyHint="done" maxLength={3} />
+                    <TextInput value={bottomSizes[1]} onChangeText={handleMaxChangeSizesBottoms} autoCapitalize="characters" ref={maxSizeRefBot} style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} enterKeyHint="done" maxLength={3} 
+                      onEndEditing={() => {
+                        if (!validSizes['Bottoms'].includes(bottomSizes[1])) {
+                          Alert.alert("Invalid size", "Please enter a valid maximum size!", [{text: "Ok", onPress: () => {
+                            maxSizeRefBot.current.focus();
+                          }}]);
+                        }
+                      }} onSubmitEditing={() => {
+                        if (!validSizes['Bottoms'].includes(bottomSizes[1])) {
+                          Alert.alert("Invalid size", "Please enter a valid maximum size!", [{text: "Ok", onPress: () => {
+                            maxSizeRefBot.current.focus();
+                          }}]);
+                        }
+                      }}/>
+                  </View> : <></>}
+                  { selectedCategories.Shoes[0] ? <View style={{display:"flex", flexDirection:'row'}}>
+                  <Text style={{fontFamily:'Inter', marginTop:'7%', fontSize: 15}}>Shoe Sizes: </Text>
+                    <TextInput value={shoeSizes[0]} onChangeText={handleMinChangeShoeSizes} ref={minShoeSizeRef} autoCapitalize="characters" onSubmitEditing={() => {
+                      if (validSizes.Shoes.includes(shoeSizes[0])) {
+                        maxShoeSizeRef.current.focus();
+                      } else {
+                        Alert.alert("Invalid size", "Please enter a valid minimum size!", [{text: "Ok", onPress: () => {
+                          maxShoeSizeRef.current.focus();
+                        }}]);
+                      }
+                    }} onEndEditing={() => {
+                      if (validSizes.Shoes.includes(shoeSizes[0])) {
+                        maxShoeSizeRef.current.focus();
+                      } else {
+                        Alert.alert("Invalid size", "Please enter a valid minimum size!", [{text: "Ok", onPress: () => {
+                          minShoeSizeRef.current.focus();
+                        }}]);
+                      }
+                    }} enterKeyHint="next" style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} maxLength={3}/>
+                    <Text style={{fontFamily:'Inter', marginTop:'5%'}}> - </Text>
+                    <TextInput value={shoeSizes[1]} onChangeText={handleMaxChangeShoesSizes} autoCapitalize="characters" ref={maxShoeSizeRef} style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} enterKeyHint="done" maxLength={3} 
+                      onEndEditing={() => {
+                        if (!validSizes.Shoes.includes(shoeSizes[1])) {
+                          Alert.alert("Invalid size", "Please enter a valid maximum size!", [{text: "Ok", onPress: () => {
+                            maxShoeSizeRef.current.focus();
+                          }}]);
+                        }
+                      }} onSubmitEditing={() => {
+                        if (!validSizes.Shoes.includes(shoeSizes[1])) {
+                          Alert.alert("Invalid size", "Please enter a valid maximum size!", [{text: "Ok", onPress: () => {
+                            maxShoeSizeRef.current.focus();
+                          }}]);
+                        }
+                      }}/>
+                  </View> : <></>}
+                  { selectedCategories.Accessories[0] ? <View style={{display:"flex", flexDirection:'row'}}>
+                  <Text style={{fontFamily:'Inter', marginTop:'7%', fontSize: 15}}>Accessory Sizes: </Text>
+                    <TextInput value={accessorySizes[0]} onChangeText={handleMinChangeAccessorySizes} ref={minAccessorySizeRef} autoCapitalize="characters" onSubmitEditing={() => {
+                      if (validSizes.Accessories.includes(accessorySizes[0])) {
+                        maxAccessorySizeRef.current.focus();
+                      } else {
+                        Alert.alert("Invalid size", "Please enter a valid minimum size!", [{text: "Ok", onPress: () => {
+                          maxAccessorySizeRef.current.focus();
+                        }}]);
+                      }
+                    }} onEndEditing={() => {
+                      if (validSizes.Accessories.includes(accessorySizes[0])) {
+                        maxAccessorySizeRef.current.focus();
+                      } else {
+                        Alert.alert("Invalid size", "Please enter a valid minimum size!", [{text: "Ok", onPress: () => {
+                          minAccessorySizeRef.current.focus();
+                        }}]);
+                      }
+                    }} enterKeyHint="next" style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} maxLength={3}/>
+                    <Text style={{fontFamily:'Inter', marginTop:'5%'}}> - </Text>
+                    <TextInput value={accessorySizes[1]} onChangeText={handleMaxChangeAccessorySizes} autoCapitalize="characters" ref={maxAccessorySizeRef} style={{marginTop:'5%', borderWidth:1, padding: 5, borderRadius:5}} enterKeyHint="done" maxLength={3} 
+                      onEndEditing={() => {
+                        if (!validSizes.Accessories.includes(accessorySizes[1])) {
+                          Alert.alert("Invalid size", "Please enter a valid maximum size!", [{text: "Ok", onPress: () => {
+                            maxAccessorySizeRef.current.focus();
+                          }}]);
+                        }
+                      }} onSubmitEditing={() => {
+                        if (!validSizes.Accessories.includes(accessorySizes[1])) {
+                          Alert.alert("Invalid size", "Please enter a valid maximum size!", [{text: "Ok", onPress: () => {
+                            maxAccessorySizeRef.current.focus();
+                          }}]);
+                        }
+                      }}/>
                   </View> : <></>}
                 </View>
                 <Pressable onPress={() => {
-                    if (validSizes['Bottoms'].includes(bottomSizes[0]) && validSizes['Tops'].includes(topSizes[0]))
+                    if (validSizes['Bottoms'].includes(bottomSizes[0]) && validSizes['Bottoms'].includes(bottomSizes[1])&& validSizes['Tops'].includes(topSizes[0]) && validSizes['Tops'].includes(topSizes[1]) && validSizes.Shoes.includes(shoeSizes[0]) && validSizes.Shoes.includes(shoeSizes[1]) && validSizes.Accessories.includes(accessorySizes[0]) && validSizes.Accessories.includes(accessorySizes[1]))
                       setSettings({visible: false});
                     else {
-                      if (!validSizes['Bottoms'].includes(bottomSizes[0])) {
-                        Alert.alert("Invalid size", "Please enter a valid minimum size for bottoms!", [{text: "Ok", onPress: () => {
-                          minBotSizeRef.current.focus();
-                        }}]);
-                      } else if (!validSizes['Bottoms'].includes(bottomSizes[1])) {
-                        Alert.alert("Invalid size", "Please enter a valid maximum size for bottoms!", [{text: "Ok", onPress: () => {
-                          maxSizeRefBot.current.focus();
-                        }}]);
-                      } else if (!validSizes['Tops'].includes(topSizes[0])) {
-                        Alert.alert("Invalid size", "Please enter a valid minimum size for tops!", [{text: "Ok", onPress: () => {
-                          minTopSizeRef.current.focus();
-                        }}]);
-                      } else if (!validSizes['Tops'].includes(topSizes[1])) {
-                        Alert.alert("Invalid size", "Please enter a valid maximum size for tops!", [{text: "Ok", onPress: () => {
-                          maxSizeRef.current.focus();
-                        }}]);
-                      }
+                      Alert.alert("Invalid settings :(", "It looks like one of the sizes you entered isn't valid. Please double-check your filters and try again.");
                     }
 
                 }} style={{marginLeft: "25%", borderColor:"#DF85FF", backgroundColor:"#DF85FF", borderWidth:1, width:"50%", borderRadius: 20, marginTop:"5%", display:"flex", alignItems:"center", alignContent:"center" }}>
