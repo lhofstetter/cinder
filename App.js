@@ -17,6 +17,7 @@ import Matches from "./components/Matches.js";
 import LoginScreen from "./components/LoginScreen.js";
 import AccountCreate from "./components/AccountCreate.js";
 import Post from "./components/Post.js";
+import Settings from "./components/Settings.js";
 
 const homeFocused = require("./assets/home_unfocused.png");
 const homeUnfocused = require("./assets/home.png");
@@ -150,6 +151,7 @@ function ProfileRoute() {
     <ProfileStack.Navigator screenOptions={{ headerTitleStyle: { fontFamily: "Inter" } }}>
       <ProfileStack.Screen name="Profile" component={Profile} />
       <ProfileStack.Screen name="Post" component={Post} />
+      <ProfileStack.Screen name="Settings" component={Settings}/>
     </ProfileStack.Navigator>
   );
 }
@@ -294,7 +296,7 @@ function TabNavigator() {
         listeners={({ navigation, route }) => ({
           tabPress: (e) => {
             if (
-              navigation.getState().routes[1].state != undefined &&
+              navigation.getState().routes[1].state !== undefined &&
               navigation.getState().routes[1].state.index >= 1
             ) {
               e.preventDefault();

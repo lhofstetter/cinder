@@ -24,6 +24,7 @@
     "@react-spring/web": "^9.5.5",
     "@rpldy/upload-button": "^1.6.0",
     "@rpldy/uploady": "^1.6.0",
+    "@types/react-native-image-gallery": "^2.1.5",
     "@types/react-native-popup-dialog": "^0.16.7",
     "axios": "^1.6.0",
     "expo": "~49.0.15",
