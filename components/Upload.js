@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Text, View, Image, Pressable, Platform, Alert } from "react-native";
-import { useActionSheet } from "@expo/react-native-action-sheet";
-import { useNavigation } from "@react-navigation/native";
-import { Badge } from "react-native-paper";
+import React, {useEffect, useState} from "react";
+import {Text, View, Image, Pressable, Platform, Alert} from "react-native";
+import {useActionSheet} from "@expo/react-native-action-sheet";
+import {useNavigation} from "@react-navigation/native";
+import {Badge} from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-import { uploadStyles, editStyles } from "../styles";
+import {uploadStyles, editStyles} from "../styles";
 
 const blankUpload = require("../assets/blankupload.png");
 
@@ -13,16 +13,16 @@ function DisplayPhoto(imageData, width, height) {
   if (width != null && height != null) {
     return (
       <Image
-        source={{ uri: imageData.imageData.uri }}
-        style={[uploadStyles.uploadborder, { width: width, height: height }]}
+        source={{uri: imageData.imageData.uri}}
+        style={[uploadStyles.uploadborder, {width: width, height: height}]}
         borderRadius={10}
       />
     );
   } else {
     return (
       <Image
-        source={{ uri: imageData.imageData.uri }}
-        style={[{ display: "flex" }]}
+        source={{uri: imageData.imageData.uri}}
+        style={[{display: "flex"}]}
         height={100}
         width={100}
         borderRadius={10}
@@ -33,7 +33,7 @@ function DisplayPhoto(imageData, width, height) {
 
 export default function Upload() {
   const [images, setImages] = useState(null);
-  const { showActionSheetWithOptions } = useActionSheet();
+  const {showActionSheetWithOptions} = useActionSheet();
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
   const navigation = useNavigation();
 
@@ -88,7 +88,7 @@ export default function Upload() {
     if (status == null || !status.granted) permission();
 
     if (images == null) {
-      navigation.setOptions({ headerRight: () => <Text style={editStyles.previewMobileInvalid}>Continue</Text> });
+      navigation.setOptions({headerRight: () => <Text style={editStyles.previewMobileInvalid}>Continue</Text>});
     } else {
       navigation.setOptions({
         headerRight: () => (
@@ -97,9 +97,8 @@ export default function Upload() {
               navigation.navigate("New Listing", {
                 images: images,
               });
-            }}
-          >
-            <Text style={[editStyles.previewMobile, { fontFamily: "Inter" }]}>Continue</Text>
+            }}>
+            <Text style={[editStyles.previewMobile, {fontFamily: "Inter"}]}>Continue</Text>
           </Pressable>
         ),
       });
@@ -122,7 +121,7 @@ export default function Upload() {
                     options: options,
                     cancelButtonIndex: 2,
                   },
-                  (selectedIndex) => {
+                  selectedIndex => {
                     switch (selectedIndex) {
                       case 0:
                         pickImage();
@@ -147,7 +146,7 @@ export default function Upload() {
                     options: options,
                     cancelButtonIndex: 2,
                   },
-                  (selectedIndex) => {
+                  selectedIndex => {
                     switch (selectedIndex) {
                       case 1:
                         pickImage();
@@ -167,23 +166,18 @@ export default function Upload() {
                 break;
             }
           }
-        }}
-      >
+        }}>
         <Image source={blankUpload} />
       </Pressable>
       <Text style={uploadStyles.uploadedImagesTitle}>Current Photos</Text>
       {images == null ? (
         <Text style={uploadStyles.noImagesText}>No photos uploaded yet :( let's add some! </Text>
       ) : (
-        <View
-          style={{ alignItems: "stretch", display: "flex", flexDirection: "row", flexWrap: "wrap", marginLeft: 15 }}
-        >
+        <View style={{alignItems: "stretch", display: "flex", flexDirection: "row", flexWrap: "wrap", marginLeft: 15}}>
           {images.map((image, index) => (
-            <View key={index} style={{ marginLeft: "5%", marginTop: "5%" }}>
-              <Image source={{ uri: image.uri }} style={{ width: 100, height: 100, borderRadius: 10 }} />
-              <Badge style={{ position: "absolute", top: -5, right: -5, backgroundColor: "#DF85FF" }}>
-                {index + 1}
-              </Badge>
+            <View key={index} style={{marginLeft: "5%", marginTop: "5%"}}>
+              <Image source={{uri: image.uri}} style={{width: 100, height: 100, borderRadius: 10}} />
+              <Badge style={{position: "absolute", top: -5, right: -5, backgroundColor: "#DF85FF"}}>{index + 1}</Badge>
             </View>
           ))}
         </View>

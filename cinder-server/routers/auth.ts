@@ -1,14 +1,14 @@
 import express from "express";
-import { auth } from "../lucia.ts";
-import { LuciaError } from "lucia";
-import { UploadedFile } from "express-fileupload";
-import { getUrlForImage } from "../utils/imageUpload.ts";
+import {auth} from "../lucia.ts";
+import {LuciaError} from "lucia";
+import {UploadedFile} from "express-fileupload";
+import {getUrlForImage} from "../utils/imageUpload.ts";
 
 export const authHandler = express.Router();
 
 authHandler.post("/signup", async (req, res) => {
   console.log(req.body);
-  const { username, password, phone_number, class_year, bio } = req.body;
+  const {username, password, phone_number, class_year, bio} = req.body;
   let image_url: undefined | string;
   if (req.files?.file) {
     const file = req.files?.file as UploadedFile;
@@ -59,7 +59,7 @@ authHandler.post("/signup", async (req, res) => {
 });
 
 authHandler.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+  const {username, password} = req.body;
   // basic check
   if (typeof username !== "string" || username.length < 1 || username.length > 31) {
     return res.status(400).send("Invalid username");

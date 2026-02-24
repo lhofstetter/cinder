@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Text, View, Image, Pressable, StyleSheet } from "react-native";
-import * as SecureStore from 'expo-secure-store';
-import { useNavigation } from "@react-navigation/native";
+import React, {useState, useEffect} from "react";
+import {Text, View, Image, Pressable, StyleSheet} from "react-native";
+import * as SecureStore from "expo-secure-store";
+import {useNavigation} from "@react-navigation/native";
 
-const rightArrow = require("../assets/right_arrow.png")
+const rightArrow = require("../assets/right_arrow.png");
 
 export default function Matches() {
   const [matches, setMatches] = useState(null);
@@ -42,31 +42,31 @@ export default function Matches() {
           });
         }
         setMatches(temp);
-      }
-      catch (error) {
+      } catch (error) {
         console.log(error);
-      }
-      finally {
-      setIsLoading(false);
+      } finally {
+        setIsLoading(false);
       }
     }
     retrieveMatches();
   }, []);
 
   if (isLoading) {
-    return <View style={{flex: "column", height: "100%", justifyContent: "center", alignItems: "center"}}>
-      <Text style={{fontWeight: 600, fontSize:20}}>Loading...</Text>
-    </View>
+    return (
+      <View style={{flex: "column", height: "100%", justifyContent: "center", alignItems: "center"}}>
+        <Text style={{fontWeight: 600, fontSize: 20}}>Loading...</Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
       {matches === null && isLoading === false ? (
-      <View style={{flex: "column", height: "100%", justifyContent: "center", alignItems: "center"}}>
-          <Text style={{fontWeight: 600, fontSize:20}}>You have no matches</Text>
+        <View style={{flex: "column", height: "100%", justifyContent: "center", alignItems: "center"}}>
+          <Text style={{fontWeight: 600, fontSize: 20}}>You have no matches</Text>
         </View>
       ) : (
-        matches.map(({ image, profile, posts, the_listing_image_of_the_listing_they_liked }, index) => (
+        matches.map(({image, profile, posts, the_listing_image_of_the_listing_they_liked}, index) => (
           <Pressable
             style={styles.matchContainer}
             key={profile.id}
@@ -75,14 +75,13 @@ export default function Matches() {
                 profile: profile,
                 posts: posts,
               });
-            }}
-          >
-            <Image source={{ uri: String(profile.profile_pic) }} width={80} height={80} style={styles.profilePicture} />
+            }}>
+            <Image source={{uri: String(profile.profile_pic)}} width={80} height={80} style={styles.profilePicture} />
             <Text style={styles.name}>{profile.username}</Text>
-            <View styles={{ position: "relative" }} width={80} height={80}>
-              <Image source={{ uri: String(image) }} width={60} height={60} style={styles.clothingPicture} />
+            <View styles={{position: "relative"}} width={80} height={80}>
+              <Image source={{uri: String(image)}} width={60} height={60} style={styles.clothingPicture} />
               <Image
-                source={{ uri: String(the_listing_image_of_the_listing_they_liked) }}
+                source={{uri: String(the_listing_image_of_the_listing_they_liked)}}
                 width={60}
                 height={60}
                 style={styles.yourClothingPicture}

@@ -1,10 +1,10 @@
 import React from "react";
-import { Text, Pressable, Alert } from "react-native";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import {Text, Pressable, Alert} from "react-native";
+import {useRoute, useNavigation} from "@react-navigation/native";
 import Post from "./Post.js";
-import { postStyles } from "../styles";
-import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-import * as SecureStore from 'expo-secure-store';
+import {postStyles} from "../styles";
+import {manipulateAsync, SaveFormat} from "expo-image-manipulator";
+import * as SecureStore from "expo-secure-store";
 
 export default function PreviewPost() {
   const route = useRoute();
@@ -12,16 +12,16 @@ export default function PreviewPost() {
 
   let details = route.params;
 
-  const postImage = async (imageUris) => {
+  const postImage = async imageUris => {
     let result = [];
 
     for (let i = 0; i < imageUris.length; i++) {
       if (imageUris[i].fileSize / 1000000 >= 5) {
         // if image size is greater than 5 MB, compress when converting to JPEG
-        let temp = await manipulateAsync(imageUris[i].uri, [], { compress: 0.75, format: SaveFormat.JPEG });
+        let temp = await manipulateAsync(imageUris[i].uri, [], {compress: 0.75, format: SaveFormat.JPEG});
         result.push(temp);
       } else {
-        let temp = await manipulateAsync(imageUris[i].uri, [], { compress: 1, format: SaveFormat.JPEG });
+        let temp = await manipulateAsync(imageUris[i].uri, [], {compress: 1, format: SaveFormat.JPEG});
         result.push(temp);
       }
     }
@@ -80,12 +80,11 @@ export default function PreviewPost() {
               Alert.alert(
                 "Post error :(",
                 "Your clothing was too drippy for our server to handle. We've updated it now, so go ahead and try posting again.",
-                [{ text: "Sounds good", style: "cancel", onPress: () => {} }],
+                [{text: "Sounds good", style: "cancel", onPress: () => {}}],
               );
             });
             navigation.navigate("Swipe");
-          }}
-        >
+          }}>
           <Text style={postStyles.postMobile}>Post</Text>
         </Pressable>
       }

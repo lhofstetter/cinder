@@ -1,17 +1,17 @@
 import cors from "cors";
-import { and, eq, inArray, not, or } from "drizzle-orm";
-import express, { Request, Response } from "express";
-import fileUpload, { UploadedFile } from "express-fileupload";
+import {and, eq, inArray, not, or} from "drizzle-orm";
+import express, {Request, Response} from "express";
+import fileUpload, {UploadedFile} from "express-fileupload";
 
-import { db } from "./db/index.ts";
-import { images, listings, tags, likes } from "./db/schema.ts";
-import { auth } from "./lucia.ts";
-import { authHandler } from "./routers/auth.ts";
-import { matchHandler } from "./routers/match.ts";
-import { getUrlForImage } from "./utils/imageUpload.ts";
-import { validateListingId } from "./utils/listingValidation.ts";
-import { getListingData } from "./utils/getListing.ts";
-import { getAccountInfo } from "./utils/getAccountInfo.ts";
+import {db} from "./db/index.ts";
+import {images, listings, tags, likes} from "./db/schema.ts";
+import {auth} from "./lucia.ts";
+import {authHandler} from "./routers/auth.ts";
+import {matchHandler} from "./routers/match.ts";
+import {getUrlForImage} from "./utils/imageUpload.ts";
+import {validateListingId} from "./utils/listingValidation.ts";
+import {getListingData} from "./utils/getListing.ts";
+import {getAccountInfo} from "./utils/getAccountInfo.ts";
 
 const SIZE_OPTIONS = ["XXS", "XS", "S", "M", "L", "XL", "2XL", "3XL"];
 const app = express();
@@ -163,10 +163,10 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
 
     // Get all listing_ids of listings the user has liked or disliked already
     const likedListingsQuery = await db
-      .select({ listing_id: likes.listing_id })
+      .select({listing_id: likes.listing_id})
       .from(likes)
       .where(eq(likes.account_id, user_id));
-    const likedOrDislikedListings: number[] = likedListingsQuery.map((entry) => entry.listing_id);
+    const likedOrDislikedListings: number[] = likedListingsQuery.map(entry => entry.listing_id);
 
     // If no filters are selected, retrun all listing data
     if (
@@ -177,10 +177,10 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
       filterData.tags.length === 0
     ) {
       const allListingIdsQuery = await db
-        .select({ listing_id: listings.id })
+        .select({listing_id: listings.id})
         .from(listings)
         .where(and(not(eq(listings.owner_id, user_id)), not(inArray(listings.id, likedOrDislikedListings))));
-      const allListingIds = allListingIdsQuery.map((entry) => entry.listing_id);
+      const allListingIds = allListingIdsQuery.map(entry => entry.listing_id);
       const listingInfoPromises = [];
       for (const listing_id of allListingIds) {
         listingInfoPromises.push(getListingData(listing_id));
@@ -198,10 +198,10 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
     let listingsIdsWithTag: number[] = [];
     if (filterData.tags.length > 0) {
       const listingsWithTagQuery = await db
-        .selectDistinct({ listing_id: tags.listing_id })
+        .selectDistinct({listing_id: tags.listing_id})
         .from(tags)
         .where(inArray(tags.tag_name, filterData.tags));
-      listingsIdsWithTag = listingsWithTagQuery.map((entry) => entry.listing_id);
+      listingsIdsWithTag = listingsWithTagQuery.map(entry => entry.listing_id);
       if (listingsIdsWithTag.length > 0) {
         listingsTableOrSubQuery = db
           .select()
@@ -216,11 +216,11 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
       }
     }
 
-    const nonBottomCategories = filterData.categories.filter((category) => category !== "bottom");
+    const nonBottomCategories = filterData.categories.filter(category => category !== "bottom");
 
     if (filterData.sizes.length > 0) {
       const matchingSizedListings = await db
-        .select({ listing_id: listingsTableOrSubQuery.id })
+        .select({listing_id: listingsTableOrSubQuery.id})
         .from(listingsTableOrSubQuery)
         .where(
           and(
@@ -228,17 +228,17 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
             inArray(listingsTableOrSubQuery.category, nonBottomCategories),
           ),
         );
-      matchingListingIds.push(...matchingSizedListings.map((entry) => entry.listing_id));
+      matchingListingIds.push(...matchingSizedListings.map(entry => entry.listing_id));
     } else if (nonBottomCategories.length > 0) {
       const matchingNonSizeSpecificListings = await db
-        .select({ listing_id: listingsTableOrSubQuery.id })
+        .select({listing_id: listingsTableOrSubQuery.id})
         .from(listingsTableOrSubQuery)
         .where(inArray(listingsTableOrSubQuery.category, nonBottomCategories));
-      matchingListingIds.push(...matchingNonSizeSpecificListings.map((entry) => entry.listing_id));
+      matchingListingIds.push(...matchingNonSizeSpecificListings.map(entry => entry.listing_id));
     }
     if (filterData.categories.includes("bottom")) {
       const matchingBottoms = await queryBottoms(filterData, listingsIdsWithTag, user_id, likedOrDislikedListings);
-      matchingListingIds.push(...matchingBottoms.map((entry) => entry.listing_id));
+      matchingListingIds.push(...matchingBottoms.map(entry => entry.listing_id));
     }
 
     const listingInfoPromises = [];
@@ -249,7 +249,7 @@ app.post("/filtered-listings", async (req: Request, res: Response) => {
     return res.json(matchingListings);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: String(error) });
+    return res.status(500).json({error: String(error)});
   }
 });
 
@@ -286,7 +286,7 @@ async function queryBottoms(
           .as("bottoms");
   if (filterData.waist_sizes.length > 0 && filterData.inseam_lengths.length > 0 && filterData.sizes.length > 0) {
     return await db
-      .select({ listing_id: listingsTableOrSubQuery.id })
+      .select({listing_id: listingsTableOrSubQuery.id})
       .from(listingsTableOrSubQuery)
       .where(
         or(
@@ -299,7 +299,7 @@ async function queryBottoms(
       );
   } else if (filterData.waist_sizes.length > 0 && filterData.sizes.length > 0) {
     return await db
-      .select({ listing_id: listingsTableOrSubQuery.id })
+      .select({listing_id: listingsTableOrSubQuery.id})
       .from(listingsTableOrSubQuery)
       .where(
         or(
@@ -309,7 +309,7 @@ async function queryBottoms(
       );
   } else if (filterData.inseam_lengths.length > 0 && filterData.sizes.length > 0) {
     return await db
-      .select({ listing_id: listingsTableOrSubQuery.id })
+      .select({listing_id: listingsTableOrSubQuery.id})
       .from(listingsTableOrSubQuery)
       .where(
         or(
@@ -319,7 +319,7 @@ async function queryBottoms(
       );
   } else if (filterData.inseam_lengths.length > 0 && filterData.waist_sizes.length > 0) {
     return await db
-      .select({ listing_id: listingsTableOrSubQuery.id })
+      .select({listing_id: listingsTableOrSubQuery.id})
       .from(listingsTableOrSubQuery)
       .where(
         or(
@@ -329,21 +329,21 @@ async function queryBottoms(
       );
   } else if (filterData.inseam_lengths.length > 0) {
     return await db
-      .select({ listing_id: listingsTableOrSubQuery.id })
+      .select({listing_id: listingsTableOrSubQuery.id})
       .from(listingsTableOrSubQuery)
       .where(inArray(listingsTableOrSubQuery.inseam, filterData.inseam_lengths));
   } else if (filterData.waist_sizes.length > 0) {
     return await db
-      .select({ listing_id: listingsTableOrSubQuery.id })
+      .select({listing_id: listingsTableOrSubQuery.id})
       .from(listingsTableOrSubQuery)
       .where(inArray(listingsTableOrSubQuery.waist, filterData.waist_sizes));
   } else if (filterData.sizes.length > 0) {
     return await db
-      .select({ listing_id: listingsTableOrSubQuery.id })
+      .select({listing_id: listingsTableOrSubQuery.id})
       .from(listingsTableOrSubQuery)
       .where(inArray(listingsTableOrSubQuery.size, filterData.sizes));
   } else {
-    return await db.select({ listing_id: listingsTableOrSubQuery.id }).from(listingsTableOrSubQuery);
+    return await db.select({listing_id: listingsTableOrSubQuery.id}).from(listingsTableOrSubQuery);
   }
 }
 
@@ -370,12 +370,12 @@ async function queryBottoms(
  */
 app.put("/listing/:listing_id", validateListingId, async (req: Request, res: Response) => {
   try {
-    let { listing_id: listing_id_string } = req.params;
+    let {listing_id: listing_id_string} = req.params;
     const listing_id = parseInt(listing_id_string as string);
 
     const imageUrlPromises = [];
     if (!req.files?.file) {
-      return res.status(400).json({ error: "No image provided for listing" });
+      return res.status(400).json({error: "No image provided for listing"});
     }
     if (Array.isArray(req.files?.file)) {
       for (const file of req.files?.file as UploadedFile[]) {
@@ -386,13 +386,13 @@ app.put("/listing/:listing_id", validateListingId, async (req: Request, res: Res
       imageUrlPromises.push(getUrlForImage(file?.data, file?.name));
     }
 
-    const { images_to_remove }: { images_to_remove: string[] } = req.body;
+    const {images_to_remove}: {images_to_remove: string[]} = req.body;
     const deleteQueue = [];
     for (const image_url of images_to_remove) {
       deleteQueue.push(db.delete(images).where(and(eq(images.source, image_url), eq(images.listing_id, listing_id))));
     }
 
-    const { tags_to_remove }: { tags_to_remove: string[] } = req.body;
+    const {tags_to_remove}: {tags_to_remove: string[]} = req.body;
     for (const tag of tags_to_remove) {
       deleteQueue.push(db.delete(tags).where(and(eq(tags.tag_name, tag), eq(tags.listing_id, listing_id))));
     }
@@ -409,7 +409,7 @@ app.put("/listing/:listing_id", validateListingId, async (req: Request, res: Res
       .where(eq(listings.id, listing_id));
     await Promise.all(imageUrlPromises);
     await Promise.all(deleteQueue);
-    return res.status(200).json({ message: "OK" });
+    return res.status(200).json({message: "OK"});
   } catch (error) {
     console.log(error);
     return res.status((error as any)?.status ?? 500).json({
@@ -425,7 +425,7 @@ app.put("/listing/:listing_id", validateListingId, async (req: Request, res: Res
  * @returns {JSON} - 200 { "message": "OK" } or 500 { "error": "some error" }
  */
 app.delete("/listing/:listing_id", validateListingId, async (req: Request, res: Response) => {
-  let { listing_id: listing_id_string } = req.params;
+  let {listing_id: listing_id_string} = req.params;
   const listing_id = parseInt(listing_id_string as string);
   try {
     const deleteQueue = [];
@@ -433,10 +433,10 @@ app.delete("/listing/:listing_id", validateListingId, async (req: Request, res: 
     deleteQueue.push(db.delete(tags).where(eq(tags.listing_id, listing_id)));
     await Promise.all(deleteQueue);
     await db.delete(listings).where(eq(listings.id, listing_id));
-    return res.status(200).json({ message: "OK" });
+    return res.status(200).json({message: "OK"});
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: String(error) });
+    return res.status(500).json({error: String(error)});
   }
 });
 
@@ -448,27 +448,24 @@ app.delete("/listing/:listing_id", validateListingId, async (req: Request, res: 
  * @returns {ListingData}
  */
 app.get("/listing/:listing_id", validateListingId, async (req: Request, res: Response) => {
-  let { listing_id: listing_id_string } = req.params;
+  let {listing_id: listing_id_string} = req.params;
   const listing_id = parseInt(listing_id_string as string);
   try {
     // Get the listing's data from the DB
     const listingDataFromDb = await db.select().from(listings).where(eq(listings.id, listing_id));
     const listingFromDb = listingDataFromDb["0"];
     if (listingFromDb === undefined) {
-      return res.status(400).json({ error: "No listing with that id exists" });
+      return res.status(400).json({error: "No listing with that id exists"});
     }
 
-    const listingTagData = await db
-      .select({ tag_name: tags.tag_name })
-      .from(tags)
-      .where(eq(tags.listing_id, listing_id));
-    const listingTags: string[] = listingTagData.map((tagData) => tagData.tag_name);
+    const listingTagData = await db.select({tag_name: tags.tag_name}).from(tags).where(eq(tags.listing_id, listing_id));
+    const listingTags: string[] = listingTagData.map(tagData => tagData.tag_name);
 
     const listingImageData = await db
-      .select({ source: images.source })
+      .select({source: images.source})
       .from(images)
       .where(eq(images.listing_id, listing_id));
-    const listingImages: string[] = listingImageData.map((imageData) => imageData.source);
+    const listingImages: string[] = listingImageData.map(imageData => imageData.source);
 
     const responseData = {
       ...listingFromDb,
@@ -478,7 +475,7 @@ app.get("/listing/:listing_id", validateListingId, async (req: Request, res: Res
     return res.status(200).json(responseData);
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: String(error) });
+    return res.status(500).json({error: String(error)});
   }
 });
 
@@ -511,7 +508,7 @@ app.post("/listing", async (req: Request, res: Response) => {
     if (session) {
       const imageUrlPromises = [];
       if (!req.files?.file) {
-        return res.status(400).json({ error: "No image provided for listing" });
+        return res.status(400).json({error: "No image provided for listing"});
       }
       if (Array.isArray(req.files?.file)) {
         for (const file of req.files?.file as UploadedFile[]) {
@@ -528,7 +525,7 @@ app.post("/listing", async (req: Request, res: Response) => {
       // Validate info for sizing
       if (listingFormData.category === "top") {
         if (listingFormData.size === undefined) {
-          return res.status(400).json({ message: "Please include a size for tops" });
+          return res.status(400).json({message: "Please include a size for tops"});
         } else if (!SIZE_OPTIONS.includes(listingFormData.size)) {
           return res.status(400).json({
             message: "Please include a valid size for tops, accepted values inlcude XXS, XS, S, M, L, XL, 2XL, and 3XL",
@@ -538,7 +535,7 @@ app.post("/listing", async (req: Request, res: Response) => {
 
       if (listingFormData.category !== "bottom") {
         if (+listingFormData.waist > 0 || +listingFormData.inseam > 0) {
-          return res.status(400).json({ message: "Only bottoms can have a waist or an inseam" });
+          return res.status(400).json({message: "Only bottoms can have a waist or an inseam"});
         }
         listingFormData.waist = undefined;
         listingFormData.inseam = undefined;
@@ -546,7 +543,7 @@ app.post("/listing", async (req: Request, res: Response) => {
 
       const owner_id = session.user.userId;
       // Update DB
-      const [{ inserted_id }]: any = await db
+      const [{inserted_id}]: any = await db
         .insert(listings)
         .values({
           listing_name: listingFormData.listing_name,
@@ -557,18 +554,18 @@ app.post("/listing", async (req: Request, res: Response) => {
           waist: listingFormData.waist ? Number(listingFormData.waist) : undefined,
           size: listingFormData.size ? (listingFormData.size as any) : undefined,
         })
-        .returning({ inserted_id: listings.id });
+        .returning({inserted_id: listings.id});
 
       // Add images to images table
       for (const url of imageUrls) {
-        await db.insert(images).values({ listing_id: inserted_id, source: url });
+        await db.insert(images).values({listing_id: inserted_id, source: url});
       }
 
       // Add tags to the tags table
-      const { tags: userProvidedTags } = listingFormData;
+      const {tags: userProvidedTags} = listingFormData;
       if (Array.isArray(userProvidedTags)) {
         for (const tag of userProvidedTags) {
-          await db.insert(tags).values({ listing_id: inserted_id, tag_name: tag });
+          await db.insert(tags).values({listing_id: inserted_id, tag_name: tag});
         }
       } else if (typeof userProvidedTags === "string") {
         await db.insert(tags).values({
@@ -577,7 +574,7 @@ app.post("/listing", async (req: Request, res: Response) => {
         });
       }
 
-      return res.status(200).json({ message: "OK" });
+      return res.status(200).json({message: "OK"});
     }
     return res.status(401).json("No session cookie found. Please sign in");
   } catch (error) {
@@ -601,7 +598,7 @@ app.get("/account", async (req: Request, res: Response) => {
     return res.json(await getAccountInfo(your_user_id));
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: String(error) });
+    return res.status(500).json({error: String(error)});
   }
 });
 
@@ -613,13 +610,13 @@ app.get("/account", async (req: Request, res: Response) => {
  * @returns {}
  */
 app.get("/account/:account_id", async (req: Request, res: Response) => {
-  let { account_id } = req.params;
+  let {account_id} = req.params;
 
   try {
     return res.json(await getAccountInfo(account_id));
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: String(error) });
+    return res.status(500).json({error: String(error)});
   }
 });
 

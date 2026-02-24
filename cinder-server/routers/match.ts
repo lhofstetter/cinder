@@ -1,12 +1,12 @@
-import { and, eq, inArray } from "drizzle-orm";
+import {and, eq, inArray} from "drizzle-orm";
 import express from "express";
 
-import { db } from "../db/index.ts";
-import { likes, listings } from "../db/schema.ts";
-import { auth } from "../lucia.ts";
-import { getAccountInfo } from "../utils/getAccountInfo.ts";
-import { getListingData } from "../utils/getListing.ts";
-import { validateListingId } from "../utils/listingValidation.ts";
+import {db} from "../db/index.ts";
+import {likes, listings} from "../db/schema.ts";
+import {auth} from "../lucia.ts";
+import {getAccountInfo} from "../utils/getAccountInfo.ts";
+import {getListingData} from "../utils/getListing.ts";
+import {validateListingId} from "../utils/listingValidation.ts";
 
 export const matchHandler = express.Router();
 matchHandler.get("/", async (req, res) => {
@@ -23,13 +23,13 @@ matchHandler.get("/", async (req, res) => {
     // listings
     const usersWhoLikedYourListings: string[] = (
       await db
-        .selectDistinct({ account_id: likes.account_id })
+        .selectDistinct({account_id: likes.account_id})
         .from(likes)
         .where(and(eq(likes.listing_owner_id, your_user_id), eq(likes.like, true)))
-    ).map((entry) => entry.account_id);
+    ).map(entry => entry.account_id);
 
     if (usersWhoLikedYourListings.length === 0) {
-      return res.json({ message: "You have no matches" });
+      return res.json({message: "You have no matches"});
     }
 
     // Entries of likes table where the requester liked a listing owned by
@@ -45,7 +45,7 @@ matchHandler.get("/", async (req, res) => {
       );
 
     if (yourMatchEntries.length === 0) {
-      return res.json({ message: "You have no matches" });
+      return res.json({message: "You have no matches"});
     }
 
     // Entries of likes table where a user who owns a listing you lave liked,
@@ -61,22 +61,22 @@ matchHandler.get("/", async (req, res) => {
       );
 
     if (theirMatchEntries.length === 0) {
-      return res.json({ message: "You have no matches" });
+      return res.json({message: "You have no matches"});
     }
 
     const matchInfo = {};
 
     for (const entry of yourMatchEntries) {
       if (matchInfo[entry.listing_owner_id] === undefined) {
-        matchInfo[entry.listing_owner_id] = { listings_you_have_liked: [] };
+        matchInfo[entry.listing_owner_id] = {listings_you_have_liked: []};
       }
       matchInfo[entry.listing_owner_id]["listings_you_have_liked"].push(entry.listing_id);
     }
 
     for (const account_id of Object.keys(matchInfo)) {
       const listings_they_have_liked = theirMatchEntries
-        .filter((like) => like.account_id === account_id)
-        .map((like) => like.listing_id);
+        .filter(like => like.account_id === account_id)
+        .map(like => like.listing_id);
       matchInfo[account_id]["listings_they_have_liked"] = listings_they_have_liked;
     }
 
@@ -99,70 +99,70 @@ matchHandler.get("/", async (req, res) => {
     return res.json(matchInfo);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: String(error) });
+    return res.status(500).json({error: String(error)});
   }
 });
 
 matchHandler.post("/like/:listing_id", validateListingId, async (req, res) => {
   try {
-    let { listing_id: listing_id_string } = req.params;
+    let {listing_id: listing_id_string} = req.params;
     const listing_id = parseInt(listing_id_string as string);
     const authRequest = auth.handleRequest(req, res);
     const session = await authRequest.validate();
     if (session) {
       const account_id = session.user.userId;
-      const [{ listing_owner_id }] = await db
-        .select({ listing_owner_id: listings.owner_id })
+      const [{listing_owner_id}] = await db
+        .select({listing_owner_id: listings.owner_id})
         .from(listings)
         .where(eq(listings.id, listing_id));
       if (listing_owner_id === account_id) {
-        return res.status(400).json({ message: "You can't like your own listing!" });
+        return res.status(400).json({message: "You can't like your own listing!"});
       }
-      await db.insert(likes).values({ account_id, listing_id, listing_owner_id, like: true });
+      await db.insert(likes).values({account_id, listing_id, listing_owner_id, like: true});
       const matches = await getMatches(account_id, listing_owner_id);
       if (matches.length > 0) {
-        const listings_matched = matches.map((entry) => entry.listing_id);
-        res.json({ matches: listings_matched });
+        const listings_matched = matches.map(entry => entry.listing_id);
+        res.json({matches: listings_matched});
       }
-      return res.json({ message: "Like logged successfully" });
+      return res.json({message: "Like logged successfully"});
     } else {
       return res.status(401).json("No session cookie found. Please sign in");
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "An unexpected error occurred", error: String(error) });
+    return res.status(500).json({message: "An unexpected error occurred", error: String(error)});
   }
 });
 
 matchHandler.post("/dislike/:listing_id", validateListingId, async (req, res) => {
   try {
-    let { listing_id: listing_id_string } = req.params;
+    let {listing_id: listing_id_string} = req.params;
     const listing_id = parseInt(listing_id_string as string);
     const authRequest = auth.handleRequest(req, res);
     const session = await authRequest.validate();
     if (session) {
       const account_id = session.user.userId;
-      const [{ listing_owner_id }] = await db
-        .select({ listing_owner_id: listings.owner_id })
+      const [{listing_owner_id}] = await db
+        .select({listing_owner_id: listings.owner_id})
         .from(listings)
         .where(eq(listings.id, listing_id));
       if (listing_owner_id === account_id) {
-        return res.status(400).json({ message: "You can't dislike your own listing!" });
+        return res.status(400).json({message: "You can't dislike your own listing!"});
       }
-      await db.insert(likes).values({ account_id, listing_id, listing_owner_id, like: false });
-      return res.json({ message: "Dislike logged successfully" });
+      await db.insert(likes).values({account_id, listing_id, listing_owner_id, like: false});
+      return res.json({message: "Dislike logged successfully"});
     } else {
       return res.status(401).json("No session cookie found. Please sign in");
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "An unexpected error occurred", error: String(error) });
+    return res.status(500).json({message: "An unexpected error occurred", error: String(error)});
   }
 });
 
 async function getMatches(account_id: string, owner_id: string) {
   return await db
-    .select({ listing_id: likes.listing_id })
+    .select({listing_id: likes.listing_id})
     .from(likes)
     .where(and(eq(likes.like, true), and(eq(likes.account_id, owner_id), eq(likes.listing_owner_id, account_id))));
 }

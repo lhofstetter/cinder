@@ -1,11 +1,11 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import dotenv from "dotenv";
 import * as path from "path";
-import { fileURLToPath } from "url";
+import {fileURLToPath} from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const envFilePath = path.resolve(__dirname, "../.env");
-dotenv.config({ path: envFilePath });
+dotenv.config({path: envFilePath});
 
 const CLIENT_ID = process.env.CLIENT_ID;
 if (CLIENT_ID === undefined) {

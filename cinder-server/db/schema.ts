@@ -1,5 +1,5 @@
-import { sql, InferSelectModel } from "drizzle-orm";
-import { integer, text, sqliteTable, primaryKey, blob } from "drizzle-orm/sqlite-core";
+import {sql, InferSelectModel} from "drizzle-orm";
+import {integer, text, sqliteTable, primaryKey, blob} from "drizzle-orm/sqlite-core";
 
 export const likes = sqliteTable(
   "likes",
@@ -13,9 +13,9 @@ export const likes = sqliteTable(
     listing_owner_id: text("listing_owner_id")
       .notNull()
       .references(() => user.id),
-    like: integer("like", { mode: "boolean" }).notNull(),
+    like: integer("like", {mode: "boolean"}).notNull(),
   },
-  (table) => ({ pk: primaryKey(table.account_id, table.listing_id) }),
+  table => ({pk: primaryKey(table.account_id, table.listing_id)}),
 );
 
 export const user = sqliteTable("user", {
@@ -50,19 +50,19 @@ export const key = sqliteTable("user_key", {
 });
 
 export const listings = sqliteTable("listings", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
+  id: integer("id").primaryKey({autoIncrement: true}),
   listing_name: text("listing_name").notNull(),
   owner_id: text("owner_id").notNull(),
   description: text("description").notNull(),
-  size: text("size", { enum: ["XXS", "XS", "S", "M", "L", "XL", "2XL", "3XL"] }),
+  size: text("size", {enum: ["XXS", "XS", "S", "M", "L", "XL", "2XL", "3XL"]}),
   waist: integer("waist"),
   inseam: integer("inseam"),
   category: text("category").notNull(),
-  created_at: integer("created_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
+  created_at: integer("created_at", {mode: "timestamp"}).default(sql`(strftime('%s', 'now'))`),
 });
 
 export const images = sqliteTable("images", {
-  image_id: integer("id").primaryKey({ autoIncrement: true }),
+  image_id: integer("id").primaryKey({autoIncrement: true}),
   listing_id: integer("listing_id")
     .references(() => listings.id)
     .notNull(),
@@ -77,7 +77,7 @@ export const tags = sqliteTable(
       .references(() => listings.id)
       .notNull(),
   },
-  (table) => ({ pk: primaryKey(table.tag_name, table.listing_id) }),
+  table => ({pk: primaryKey(table.tag_name, table.listing_id)}),
 );
 
 export type Listing = InferSelectModel<typeof listings>;
